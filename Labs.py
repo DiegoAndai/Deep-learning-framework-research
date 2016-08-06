@@ -4,7 +4,7 @@ from time import sleep
 
 class ResultSetLab:
 
-    """Analyzer for questions."""
+    """Super analyzer."""
 
     def __init__(self, result_set=None, site=StackOverflow):
         self.result_set = result_set
@@ -31,7 +31,24 @@ class QuestionLab(ResultSetLab):
         self.item = "question"
 
 
+class TagLab(ResultSetLab):
+
+    def __init__(self):
+        super().__init__()
+
+    def get_related(self, tag_name):
+        self.result_set = self.site.build('tags/%s/related' % tag_name, Tag, 'tag')
+
+    def get_tags(self):
+        self.result_set = self.site.build('tags/', Tag, 'tag')
+
+    def get_tag_synonyms(self, tag_name):
+        self.result_set = self.site.build('tags/{}/synonyms'.format(tag_name), Tag, 'tag')
+
+
 if __name__ == '__main__':
-    lab = ResultSetLab()
-    lab.result_set = lab.site.questions(pagesize=100, tagged=["chrono"])
-    lab.get_all_items()
+    lab = TagLab()
+    lab.get_related("caffe")
+    for tag in lab.result_set:
+        print(tag.name)
+    #lab.get_all_items()
