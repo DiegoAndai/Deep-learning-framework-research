@@ -47,6 +47,15 @@ class ResultSetLab:
 
         self.result_sets.update({key: value})
 
+    def get_occurrence_list(self, result_set_name):
+
+        """Returns the list of creation dates for items in a result set, if they exist"""
+
+        try:
+            return [item.creation_date for item in self.result_sets[result_set_name]]
+        except AttributeError:
+            print("It appears that this result set doesn't have an associated creation time for each item.")
+
     def reset_rs(self):
         self.result_sets = {}
 
@@ -58,11 +67,11 @@ class QuestionLab(ResultSetLab):
     def __init__(self, *result_set_ids):
         super().__init__(*result_set_ids, item="question")
 
-    def get_questions(self, *tags, result_set, pagesize=100):
+    def get_questions(self, *tags, result_set_name, pagesize=100):
 
         """Retrieves pagesize questions into specified result set."""
 
-        self.result_sets[result_set] = self.site.questions(tagged=[tag for tag in tags], pagesize=pagesize)
+        self.result_sets[result_set_name] = self.site.questions(tagged=[tag for tag in tags], pagesize=pagesize)
 
 
 class TagLab(ResultSetLab):
@@ -92,6 +101,10 @@ class TagLab(ResultSetLab):
 
     def get_tag_synonyms(self, tag_name, result_set_name):
         self.result_sets[result_set_name] = self.site.build('tags/{}/synonyms'.format(tag_name), TagSynonym, 'tag')
+        return self.result_sets[result_set_name]
+
+    def get_tagged_questions(self, tag_name, result_set_name):
+        self.result_sets[result_set_name] = self.site.search(tagged=tag_name)
         return self.result_sets[result_set_name]
 
 if __name__ == '__main__':
