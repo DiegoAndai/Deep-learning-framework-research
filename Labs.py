@@ -78,8 +78,8 @@ class TagLab(ResultSetLab):
     def get_tags(self, result_set):
         self.result_sets[result_set] = self.site.build('tags/', Tag, 'tag')
 
-    def get_tag_synonyms(self, tag_name, result_set):
-        self.result_sets[result_set] = self.site.build('tags/{}/synonyms'.format(tag_name), Tag, 'tag')
+    def get_tag_synonyms(self, tag_name, result_set_name):
+        self.result_sets[result_set_name] = self.site.build('tags/{}/synonyms'.format(tag_name), TagSynonym, 'tag')
 
 
 if __name__ == '__main__':
@@ -89,5 +89,7 @@ if __name__ == '__main__':
     lab.get_related("python", "PyRel")  # initialize a result set in the "PyRel" key with at most 100 tags related to
     # python
     lab.get_tags("All")  # initialize a rs in the "All" key with at most 100 tags.
-    for tag in lab.result_sets["PyRel"]:
-        print(tag.name)
+    lab.add_result_set("PySyn")
+    lab.get_tag_synonyms("python", "PySyn")
+    for tag in lab.result_sets["PySyn"]:
+        print(tag.from_tag)
