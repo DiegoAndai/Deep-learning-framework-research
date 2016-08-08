@@ -53,7 +53,7 @@ class ResultSetLab:
 
         try:
             occurrence_list=[item.creation_date for item in self.result_sets[result_set_name]]
-            return occurrence_list
+            return sorted(occurrence_list)
         except AttributeError:
             print("It appears that this result set doesn't have an associated creation time for each item.")
 
