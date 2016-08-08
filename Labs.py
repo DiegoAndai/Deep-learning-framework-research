@@ -14,15 +14,15 @@ class ResultSetLab:
         self.site = Site(site)
         self.item = item
 
-    def get_all_items(self, result_set):
+    def get_all_items(self, result_set_name):
 
         """Extends specified result set with data until there is no more data to be retrieved."""
 
-        result_set = self.result_sets[result_set]
-        while result_set.has_more:
+        result_set_name = self.result_sets[result_set_name]
+        while result_set_name.has_more:
             try:
-                print("Current {} count: {}. Getting more {}s...".format(self.item, len(result_set), self.item))
-                result_set = result_set.extend_next()
+                print("Current {} count: {}. Getting more {}s...".format(self.item, len(result_set_name), self.item))
+                result_set_name = result_set_name.extend_next()
             except StackExchangeError:
                 sleep(5)
         print("Final {} count: {}".format(self.item, len(self.result_sets)))
@@ -72,15 +72,27 @@ class TagLab(ResultSetLab):
     def __init__(self, *result_set_ids):
         super().__init__(*result_set_ids, item="tag")
 
-    def get_related(self, tag_name, result_set):
-        self.result_sets[result_set] = self.site.build('tags/{}/related'.format(tag_name), Tag, 'tag')
+    def get_tags(self, result_set_name=None, *tags):
 
-    def get_tags(self, result_set):
-        self.result_sets[result_set] = self.site.build('tags/', Tag, 'tag')
+        """Retrieves specified tags into specified result set and returns the latter."""
+
+        tag_string = ""
+        for tag in tags:
+            tag_string = tag_string + tag + ";"
+        self.result_sets[result_set_name] = self.site.build("tags/{}/info".format(tag_string), Tag, "tag")
+        return self.result_sets[result_set_name]
+
+    def get_related(self, tag_name, result_set_name):
+        self.result_sets[result_set_name] = self.site.tag_related(tag_name)
+        return self.result_sets[result_set_name]
+
+    def get_all_tags(self, result_set_name):
+        self.result_sets[result_set_name] = self.site.tags()
+        return self.result_sets[result_set_name]
 
     def get_tag_synonyms(self, tag_name, result_set_name):
         self.result_sets[result_set_name] = self.site.build('tags/{}/synonyms'.format(tag_name), TagSynonym, 'tag')
-
+        return self.result_sets[result_set_name]
 
 if __name__ == '__main__':
 
@@ -88,8 +100,13 @@ if __name__ == '__main__':
     lab = TagLab("All", "PyRel")  # Create a tag lab with two keys for result sets in self.result_sets: All and PyRel.
     lab.get_related("python", "PyRel")  # initialize a result set in the "PyRel" key with at most 100 tags related to
     # python
-    lab.get_tags("All")  # initialize a rs in the "All" key with at most 100 tags.
+    lab.get_all_tags("All")  # initialize a rs in the "All" key with at most 100 tags.
     lab.add_result_set("PySyn")
     lab.get_tag_synonyms("python", "PySyn")
-    for tag in lab.result_sets["PySyn"]:
-        print(tag.from_tag)
+    # for tag in lab.result_sets["PySyn"]:
+    #     print(tag.from_tag)
+
+
+    #Example of tags retrieved specifically by their names. They are automatically sorted
+    for tag in lab.get_tags("ANN", "caffe", "openNN", "Keras", "Tensor Flow", "Mxnet", "Torch"):
+        print(tag.name, tag.count)
