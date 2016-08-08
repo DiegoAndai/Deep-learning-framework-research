@@ -14,11 +14,8 @@ class OccurrencePlot:
         """parameter result_set_lab: ResultSetLab object"""
 
         self.lab = result_set_lab
-
-        """occurrences stored as result_set_id:ocurrence_list key:value pair"""
-
-        self.result_sets_ocurrence={}
-        self.color_map=[]
+        self.result_sets_occurrence = {}  # occurrences stored as result_set_id:occurrence_list/creation_dates
+        self.color_map = []
 
         """Styling"""
 
@@ -32,35 +29,36 @@ class OccurrencePlot:
 
     def add_result_set(self, result_set_name):
 
-        """This method assumes the result_set_name already has data with items that have a creation date"""
+        """This method assumes the result set with name result_set_name in the lab already has items that have a
+        creation date"""
 
-        self.result_sets_ocurrence[result_set_name] = self.lab.get_creation_dates(result_set_name)
-        self.color_map.append('#{:02x}{:02x}{:02x}'.format(r(),r(),r()))
+        self.result_sets_occurrence[result_set_name] = self.lab.get_creation_dates(result_set_name)
+        self.color_map.append('#{:02x}{:02x}{:02x}'.format(r(), r(), r()))
 
     def rm_result_set(self, result_set_name):
-        self.result_sets_ocurrence.pop(result_set_name, None)
+        self.result_sets_occurrence.pop(result_set_name, None)
         self.color_map.pop()
 
-    def set_date_domain(self, year_start, month_start, year_finish, month_finish):
+    @staticmethod
+    def set_date_domain(year_start, month_start, year_finish, month_finish):
         if datetime.datetime(year_finish,month_finish,31,0,0,0)>datetime.datetime.today():
             plt.xlim(datetime.datetime(year_start,month_start,1,0,0,0), datetime.datetime.today())
         else:
             plt.xlim(datetime.datetime(year_start,month_start,1,0,0,0), datetime.datetime(year_finish,month_finish,31,0,0,0))
 
     def plot_by_month(self):
-        color_index=0
+        color_index = 0
         """plots time count for every added result_set"""
-        for (result_set_name, occurrence_list) in self.result_sets_ocurrence.items():
+        for (result_set_name, occurrence_list) in self.result_sets_occurrence.items():
 
             """Group occurrences by year and month"""
 
-            self.occurrence_date_list=[datetime.datetime(item.year,item.month,1,0,0,0) for item in occurrence_list]
-
+            occurrence_date_list = [datetime.datetime(item.year,item.month,1,0,0,0) for item in occurrence_list]
 
             """Create month list so no month gets left out even if there's no entry for it"""
-            actual_date=self.occurrence_date_list[0]
-            self.month_list=[actual_date]
-            while actual_date!=self.occurrence_date_list[-1]:
+            actual_date=occurrence_date_list[0]
+            month_list=[actual_date]
+            while actual_date!=occurrence_date_list[-1]:
                 if actual_date.month==12:
                     actual_year=actual_date.year+1
                     actual_month=1
@@ -68,13 +66,15 @@ class OccurrencePlot:
                 else:
                     actual_month=actual_date.month+1
                     actual_date=datetime.datetime(actual_date.year,actual_month,1,0,0,0)
-                self.month_list.append(actual_date)
+                month_list.append(actual_date)
 
             """Create a dict with datetime format date and number of occurrences"""
 
-            self.occurrence_count_list=[self.occurrence_date_list.count(month) for month in self.month_list]
-            plt.plot(self.month_list, self.occurrence_count_list, lw=2.5, label=('{}: {}'.format(result_set_name,sum(self.occurrence_count_list))) ,color=self.color_map[color_index])
-            color_index+=1
+            occurrence_count_list = [occurrence_date_list.count(month) for month in month_list]
+            plt.plot(month_list, occurrence_count_list, lw=2.5,
+                     label=('{}: {}'.format(result_set_name, sum(occurrence_count_list))),
+                     color=self.color_map[color_index])
+            color_index += 1
         plt.legend(loc=2)
         plt.savefig('Framework popularity by question count per month in 2016')
         plt.show()
