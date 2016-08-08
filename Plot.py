@@ -14,7 +14,7 @@ class OccurrencePlot:
         """parameter result_set_lab: ResultSetLab object"""
 
         self.lab = result_set_lab
-        self.result_sets_occurrence = {}  # occurrences stored as result_set_id:occurrence_list/creation_dates
+        self.result_sets_occurrences = {}  # occurrences stored as result_set_id:occurrence_list/creation_dates
         self.color_map = []
 
         """Styling"""
@@ -27,16 +27,16 @@ class OccurrencePlot:
         ax.get_xaxis().tick_bottom()
         ax.get_yaxis().tick_left()
 
-    def add_result_set(self, result_set_name):
+    def add_occurrences(self, result_set_name):
 
         """This method assumes the result set with name result_set_name in the lab already has items that have a
         creation date"""
 
-        self.result_sets_occurrence[result_set_name] = self.lab.get_creation_dates(result_set_name)
+        self.result_sets_occurrences[result_set_name] = self.lab.get_creation_dates(result_set_name)
         self.color_map.append('#{:02x}{:02x}{:02x}'.format(r(), r(), r()))
 
     def rm_result_set(self, result_set_name):
-        self.result_sets_occurrence.pop(result_set_name, None)
+        self.result_sets_occurrences.pop(result_set_name, None)
         self.color_map.pop()
 
     @staticmethod
@@ -49,7 +49,7 @@ class OccurrencePlot:
     def plot_by_month(self):
         color_index = 0
         """plots time count for every added result_set"""
-        for (result_set_name, occurrence_list) in self.result_sets_occurrence.items():
+        for (result_set_name, occurrence_list) in self.result_sets_occurrences.items():
 
             """Group occurrences by year and month"""
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 #    Lab=QuestionLab('Tags') #creates the ResultLab object with a 'Tags' result_set_name
 #    Plot=OccurrencePlot(Lab) #creates ocurrence plot object, with its respective lab
 #    Plot.lab.get_questions('mxnet',result_set_name='Tags') #gets all questions with the desired tan ('mxnet' here) in the result_set_name ('Tags')
-#    Plot.add_result_set('Tags') #adds the result set, in the format: {result_set_id:ocurrence_list} to the plot object
+#    Plot.add_occurrences('Tags') #adds the result set, in the format: {result_set_id:ocurrence_list} to the plot object
 #    Plot.plot_by_month()
 
 
@@ -96,8 +96,8 @@ if __name__ == '__main__':
     Plot=OccurrencePlot(Lab)
     for fmwk in fmwks:
         rs_name='Tagged{}'.format(fmwk.title())
-        Plot.lab.add_result_set(rs_name)
+        Plot.lab.add_occurrences(rs_name)
         Plot.lab.get_questions(fmwk,result_set_name=rs_name)
-        Plot.add_result_set(rs_name)
+        Plot.add_occurrences(rs_name)
     Plot.set_date_domain(2016,1,2016,12)
     Plot.plot_by_month()
