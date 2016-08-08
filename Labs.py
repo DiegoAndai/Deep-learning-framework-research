@@ -73,6 +73,14 @@ class QuestionLab(ResultSetLab):
 
         self.result_sets[result_set_name] = self.site.questions(tagged=[tag for tag in tags], pagesize=pagesize)
 
+    def print_questions_info(self, result_set_name, detail_level = 2):  # In development
+
+        """:parameter detail_level: int in range [1, 3] indicating how much information to print for each question.
+        1 being minimum information and 3 being maximum information."""
+
+        for q in self.result_sets[result_set_name]:
+            print(q.title)
+
 
 class TagLab(ResultSetLab):
 
@@ -103,15 +111,19 @@ class TagLab(ResultSetLab):
         self.result_sets[result_set_name] = self.site.build('tags/{}/synonyms'.format(tag_name), TagSynonym, 'tag')
         return self.result_sets[result_set_name]
 
+    def print_tag_info(self, result_set_name):
+        for tag in self.result_sets[result_set_name]:
+            print("Name: {}\nCount: {}\n".format(tag.name, tag.count))
+
 if __name__ == '__main__':
 
     # Example usage:
     lab = TagLab("All", "PyRel")  # Create a tag lab with two keys for result sets in self.result_sets: All and PyRel.
-    lab.get_related("python", "PyRel")  # initialize a result set in the "PyRel" key with at most 100 tags related to
+    # lab.get_related("python", "PyRel")  # initialize a result set in the "PyRel" key with at most 100 tags related to
     # python
-    lab.get_all_tags("All")  # initialize a rs in the "All" key with at most 100 tags.
-    lab.add_result_set("PySyn")
-    lab.get_tag_synonyms("python", "PySyn")
+    # lab.get_all_tags("All")  # initialize a rs in the "All" key with at most 100 tags.
+    # lab.add_result_set("PySyn")
+    # lab.get_tag_synonyms("python", "PySyn")
     # for tag in lab.result_sets["PySyn"]:
     #     print(tag.from_tag)
 

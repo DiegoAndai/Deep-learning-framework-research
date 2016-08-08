@@ -97,7 +97,7 @@ if __name__ == '__main__':
     for fmwk in fmwks:
         rs_name='Tagged{}'.format(fmwk.title())
         Plot.lab.add_result_set(rs_name)
-        Plot.lab.get_questions(fmwk,result_set_name=rs_name)
+        Plot.lab.get_questions(fmwk, result_set_name=rs_name)
         Plot.add_occurrences(rs_name)
     Plot.set_date_domain(2016,1,2016,12)
     Plot.plot_by_month()
