@@ -104,10 +104,6 @@ class TagLab(ResultSetLab):
         self.result_sets[result_set_name] = self.site.build('tags/{}/synonyms'.format(tag_name), TagSynonym, 'tag')
         return self.result_sets[result_set_name]
 
-    def get_tagged_questions(self, tag_name, result_set_name):
-        self.result_sets[result_set_name] = self.site.search(tagged=tag_name)
-        return self.result_sets[result_set_name]
-
 if __name__ == '__main__':
 
     # Example usage:
