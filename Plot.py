@@ -29,23 +29,43 @@ class OccurrencePlot():
         self.color_map.pop()
 
     def plot_by_month(self):
+        color_index=0
+        """plots time count for every added result_set"""
+        for (result_set_name, occurrence_list) in self.result_sets_ocurrence.items():
 
-        #for result_set_name in self.result_sets:
+            """Group occurrences by year and month"""
 
-        """Group occurrences by year and month"""
+            self.occurrence_date_list=[datetime.datetime(item.year,item.month,1,0,0,0) for item in occurrence_list]
+            self.month_set=set(self.occurrence_date_list)
+            self.month_list=(sorted(list(self.month_set)))
 
-        self.occurrence_year_month_list=[(item.creation_date.year,item.creation_date.month) for item in self.result_sets[result_set_name]]
 
-        """Create a dict with datetime format date and number of occurrences"""
+            """Create a dict with datetime format date and number of occurrences"""
 
-        self.occurrence_count_dict={datetime(year,month,1,0,0,0):self.occurrence_year_month_list.count((year,month)) for (year,month) in  self.occurrence_year_month_list}
+            self.occurrence_count_list=[self.occurrence_date_list.count(month) for month in self.month_list]
+
+            print(sum(self.occurrence_count_list))
+            plt.plot(self.month_list, self.occurrence_count_list, 'bo-', label=result_set_name[6:] ,color=self.color_map[color_index])
+            color_index+=1
+        plt.legend(loc=2)
+        plt.show()
 
 
 if __name__ == '__main__':
 
     #Example usage:
-    Lab=TagLab('Tags') #creates the ResultLab object with a 'Tags' result_set_name
-    Plot=OccurrencePlot(Lab) #creates ocurrence plot object, with its respective lab
-    Plot.lab.get_tagged_questions('mxnet','Tags') #gets all questions with the desired tan ('mxnet' here) in the result_set_name ('Tags')
-    Plot.add_result_set('Tags') #adds the result set, in the format: {result_set_id:ocurrence_list} to the plot object
-    print(Plot.result_sets_ocurrence)
+#    Lab=TagLab('Tags') #creates the ResultLab object with a 'Tags' result_set_name
+#    Plot=OccurrencePlot(Lab) #creates ocurrence plot object, with its respective lab
+#    Plot.lab.get_tagged_questions('mxnet','Tags') #gets all questions with the desired tan ('mxnet' here) in the result_set_name ('Tags')
+#    Plot.add_result_set('Tags') #adds the result set, in the format: {result_set_id:ocurrence_list} to the plot object
+#    Plot.plot_by_month()
+
+    fmwks=['mxnet','keras','torch','tensorflow','caffe']
+    Lab=TagLab()
+    Plot=OccurrencePlot(Lab)
+    for fmwk in fmwks:
+        rs_name='TagLab{}'.format(fmwk.title())
+        Plot.lab.add_result_set(rs_name)
+        Plot.lab.get_tagged_questions(fmwk,rs_name)
+        Plot.add_result_set(rs_name)
+    Plot.plot_by_month()

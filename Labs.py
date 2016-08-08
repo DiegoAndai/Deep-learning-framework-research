@@ -6,12 +6,12 @@ class ResultSetLab:
 
     """Super analyser. Has a dict attribute to contain desired Py-StackExchange ResultSets."""
 
-    def __init__(self, *result_set_ids, site=StackOverflow, item="item"):
+    def __init__(self, *result_set_ids, site=StackOverflow, item="item", key='jCFTIME1vn7cqg)SjQAzQA(('):
 
         """:parameter result_set_ids: dict keys to identify result sets in self.result_sets."""
 
         self.result_sets = {typ: None for typ in result_set_ids}
-        self.site = Site(site)
+        self.site = Site(site, key)
         self.item = item
 
     def get_all_items(self, result_set_name):
@@ -52,7 +52,8 @@ class ResultSetLab:
         """Returns the list of creation dates for items in a result set, if they exist"""
 
         try:
-            return [item.creation_date for item in self.result_sets[result_set_name]]
+            occurrence_list=[item.creation_date for item in self.result_sets[result_set_name]]
+            return occurrence_list
         except AttributeError:
             print("It appears that this result set doesn't have an associated creation time for each item.")
 
