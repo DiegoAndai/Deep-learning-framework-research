@@ -2,15 +2,18 @@ from Labs import *
 import matplotlib.pyplot as plt
 from random import randint
 
-r= lambda: randint(0,255)
+r = lambda: randint(0, 255)
 
-class OccurrencePlot():
+
+class OccurrencePlot:
+
+    """Class to plot data from labs according to creation date."""
 
     def __init__(self, result_set_lab):
 
         """parameter result_set_lab: ResultSetLab object"""
 
-        self.lab=result_set_lab
+        self.lab = result_set_lab
 
         """occurrences stored as result_set_id:ocurrence_list key:value pair"""
 
@@ -31,7 +34,7 @@ class OccurrencePlot():
 
         """This method assumes the result_set_name already has data with items that have a creation date"""
 
-        self.result_sets_ocurrence[result_set_name]=self.lab.get_occurrence_list(result_set_name)
+        self.result_sets_ocurrence[result_set_name] = self.lab.get_creation_dates(result_set_name)
         self.color_map.append('#{:02x}{:02x}{:02x}'.format(r(),r(),r()))
 
     def rm_result_set(self, result_set_name):

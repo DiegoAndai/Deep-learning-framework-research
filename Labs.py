@@ -47,13 +47,12 @@ class ResultSetLab:
 
         self.result_sets.update({key: value})
 
-    def get_occurrence_list(self, result_set_name):
+    def get_creation_dates(self, result_set_name):
 
         """Returns the list of creation dates for items in a result set, if they exist"""
 
         try:
-            occurrence_list=[item.creation_date for item in self.result_sets[result_set_name]]
-            return sorted(occurrence_list)
+            return sorted([item.creation_date for item in self.result_sets[result_set_name]])
         except AttributeError:
             print("It appears that this result set doesn't have an associated creation time for each item.")
 
