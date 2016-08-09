@@ -40,15 +40,20 @@ class OccurrencePlot:
         self.color_map.pop()
 
     @staticmethod
-    def set_date_domain(year_start, month_start, year_finish, month_finish):
-        if datetime.datetime(year_finish,month_finish,31,0,0,0)>datetime.datetime.today():
-            plt.xlim(datetime.datetime(year_start,month_start,1,0,0,0), datetime.datetime.today())
+    def set_date_domain(start_date,finish_date):
+
+        """dates are in datetime.datetime format"""
+
+        if finish_date>datetime.datetime.today():
+            plt.xlim(start_date, datetime.datetime.today())
         else:
-            plt.xlim(datetime.datetime(year_start,month_start,1,0,0,0), datetime.datetime(year_finish,month_finish,31,0,0,0))
+            plt.xlim(start_date, finish_date)
 
     def plot_by_month(self):
         color_index = 0
+
         """plots time count for every added result_set"""
+
         for (result_set_name, occurrence_list) in self.result_sets_occurrences.items():
 
             """Group occurrences by year and month"""
@@ -75,11 +80,49 @@ class OccurrencePlot:
                      label=('{}: {}'.format(result_set_name, sum(occurrence_count_list))),
                      color=self.color_map[color_index])
             color_index += 1
-        plt.legend(loc=2)
-        plt.savefig('Framework popularity by question count per month in 2016')
-        plt.show()
-        plt.gcf().clear()
 
+    def plot_by_week(self):
+        color_index=0
+        """plots time count for every added result_set"""
+        for (result_set_name, occurrence_list) in self.result_sets_occurrences.items():
+
+            """Group occurrences by year, month and week"""
+
+            occurrence_date_list=[datetime.datetime(item.year,item.month,item.day,0,0,0) for item in occurrence_list]
+
+            """Create week list so no week gets left out even if there's no entry for it"""
+
+            delta=(occurrence_date_list[-1]-occurrence_date_list[0]).days
+            delta_weeks=(delta)//7+1
+            week_list=[occurrence_date_list[0]+datetime.timedelta(days=i*7) for i in range(delta_weeks+1)]
+
+            week_occurrence_list=[]
+            for occurrence in occurrence_date_list:
+                for i in range(delta_weeks):
+                    if occurrence>=week_list[i]:
+                        try:
+                            if occurrence<week_list[i+1]:
+                                week_occurrence_list.append(week_list[i])
+                        except IndexError:
+                            week_occurrence_list.append(week_list[i])
+
+            """Create a dict with datetime format date and number of occurrences"""
+
+            occurrence_count_list=[week_occurrence_list.count(week) for week in week_list]
+            plt.plot(week_list, occurrence_count_list, 'bo-', label=('{}: {}'.format(result_set_name,sum(occurrence_count_list))) ,color=self.color_map[color_index])
+            color_index+=1
+
+    def show_plot(self, legend=True):
+
+        """shows all elements in the current plot"""
+        if legend:
+            plt.legend(loc=2)
+        plt.show()
+
+    def reset_plot(self):
+
+        """empties plot"""
+        plt.gcf().clear()
 
 if __name__ == '__main__':
 
@@ -91,7 +134,7 @@ if __name__ == '__main__':
 #    Plot.plot_by_month()
 
 
-    fmwks=['mxnet','keras','tensorflow','caffe','torch','deeplearning4j','theano','lasagne','pybrain']
+    fmwks=['keras','caffe','torch','tensorflow','keras','lasagne','mxnet']
     Lab=QuestionLab()
     Plot=OccurrencePlot(Lab)
     for fmwk in fmwks:
@@ -99,5 +142,6 @@ if __name__ == '__main__':
         Plot.lab.add_result_set(rs_name)
         Plot.lab.get_questions(fmwk, result_set_name=rs_name)
         Plot.add_occurrences(rs_name)
-    Plot.set_date_domain(2016,1,2016,12)
+    Plot.set_date_domain(datetime.datetime(2016,1,1,0,0,0),datetime.datetime(2016,7,1,0,0,0))
     Plot.plot_by_month()
+    Plot.show_plot()
