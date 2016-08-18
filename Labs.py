@@ -25,7 +25,7 @@ class ResultSetLab:
                 result_set_name = result_set_name.extend_next()
             except StackExchangeError:
                 sleep(5)
-        print("Final {} count: {}".format(self.item, len(self.result_sets)))
+        print("Final {} count: {}".format(self.item, len(self.result_sets[result_set_name])))
 
     def get_all_for_all(self):
 
@@ -33,7 +33,7 @@ class ResultSetLab:
 
         for name, rs in self.result_sets.items():
             print("Retrieving {}s for result set {}...".format(self.item, name))
-            self.get_all_items(rs)
+            self.get_all_items(name)
 
     def show_rs_types(self):
 
@@ -81,6 +81,13 @@ class QuestionLab(ResultSetLab):
         for q in self.result_sets[result_set_name]:
             print(q.title)
 
+    def get_faq(self, result_set_name, *tags):
+        tag_string = ""
+        for tag in tags:
+            tag_string = tag_string + tag + ";"
+        self.result_sets[result_set_name] = self.site.build("tags/{}/faq".format(tag_string), Question, "faq")
+        return self.result_sets[result_set_name]
+
 
 class TagLab(ResultSetLab):
 
@@ -117,17 +124,6 @@ class TagLab(ResultSetLab):
 
 if __name__ == '__main__':
 
-    # Example usage:
-    lab = TagLab("All", "PyRel")  # Create a tag lab with two keys for result sets in self.result_sets: All and PyRel.
-    # lab.get_related("python", "PyRel")  # initialize a result set in the "PyRel" key with at most 100 tags related to
-    # python
-    # lab.get_all_tags("All")  # initialize a rs in the "All" key with at most 100 tags.
-    # lab.add_result_set("PySyn")
-    # lab.get_tag_synonyms("python", "PySyn")
-    # for tag in lab.result_sets["PySyn"]:
-    #     print(tag.from_tag)
-
-
-    #Example of tags retrieved specifically by their names. They are automatically sorted
-    for tag in lab.get_tags("ANN", "caffe", "openNN", "Keras", "Tensor Flow", "Mxnet", "Torch"):
-        print(tag.name, tag.count)
+    lab = QuestionLab("pythonfaq")
+    for q in lab.get_faq("pythonfaq", "python", "caffe"):
+        print(q)

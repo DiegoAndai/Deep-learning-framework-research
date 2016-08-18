@@ -2,7 +2,9 @@ from Labs import *
 import matplotlib.pyplot as plt
 from random import randint
 
-r = lambda: randint(0, 255)
+
+def r():
+    return randint(0, 255)
 
 
 class OccurrencePlot:
@@ -54,29 +56,29 @@ class OccurrencePlot:
 
         """plots time count for every added result_set"""
 
-        for (result_set_name, occurrence_list) in self.result_sets_occurrences.items():
+        for (result_set_name, creation_date_list) in self.result_sets_occurrences.items():
 
             """Group occurrences by year and month"""
 
-            occurrence_date_list = [datetime.datetime(item.year,item.month,1,0,0,0) for item in occurrence_list]
+            datetime_creation_dates_list = [datetime.datetime(creation_date.year,creation_date.month,1,0,0,0) for creation_date in creation_date_list]
 
             """Create month list so no month gets left out even if there's no entry for it"""
-            actual_date=occurrence_date_list[0]
-            month_list=[actual_date]
-            while actual_date!=occurrence_date_list[-1]:
-                if actual_date.month==12:
-                    actual_year=actual_date.year+1
-                    actual_month=1
-                    actual_date=datetime.datetime(actual_year,actual_month,1,0,0,0)
+            current_date=datetime_creation_dates_list[0]
+            month_list=[current_date]
+            while current_date!=datetime_creation_dates_list[-1]:
+                if current_date.month==12:
+                    current_year=current_date.year+1
+                    current_month=1
+                    current_date=datetime.datetime(current_year,current_month,1,0,0,0)
                 else:
-                    actual_month=actual_date.month+1
-                    actual_date=datetime.datetime(actual_date.year,actual_month,1,0,0,0)
-                month_list.append(actual_date)
+                    current_month=current_date.month+1
+                    current_date=datetime.datetime(current_date.year,current_month,1,0,0,0)
+                month_list.append(current_date)
 
             """Create a dict with datetime format date and number of occurrences"""
 
-            occurrence_count_list = [occurrence_date_list.count(month) for month in month_list]
-            plt.plot(month_list, occurrence_count_list, lw=2.5,
+            occurrence_count_list = [datetime_creation_dates_list.count(month) for month in month_list]
+            plt.plot(month_list, occurrence_count_list, marker="o", lw=2.5,
                      label=('{}: {}'.format(result_set_name, sum(occurrence_count_list))),
                      color=self.color_map[color_index])
             color_index += 1
@@ -138,10 +140,11 @@ if __name__ == '__main__':
     Lab=QuestionLab()
     Plot=OccurrencePlot(Lab)
     for fmwk in fmwks:
-        rs_name='Tagged{}'.format(fmwk.title())
+        rs_name='Tagged {}'.format(fmwk.title())
         Plot.lab.add_result_set(rs_name)
         Plot.lab.get_questions(fmwk, result_set_name=rs_name)
         Plot.add_occurrences(rs_name)
+
     Plot.set_date_domain(datetime.datetime(2016,1,1,0,0,0),datetime.datetime(2016,7,1,0,0,0))
     Plot.plot_by_month()
     Plot.show_plot()
