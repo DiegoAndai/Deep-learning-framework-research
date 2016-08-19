@@ -2,10 +2,10 @@
 
 | Name      | Complexity | Performance | Interface | Used in        | Developing OS  | Comments |
 | :-------  | :--------- | :----------------- | :---------- | :-------- | :------------- | :-------    |:------------- |
-| [Caffe]() |            |                    |             |           |  Mac OS X, Linux | |
-| [Keras]() |            |                    |             |           |                |                  |
-| [Torch]() |            |                    |             |           |                |                   |
-| [Tensorflow]() |            |                    |             |           | Mac OS X, Linux    |         |
-| [Theano]() |            |                    |             |           |                |                  |
-| [Lasagne]() |            |                    |             |           |                |                 |
-| [Mxnet]() |            |                    |             |           |                |                 |
+| [Caffe]() |            |                    |             |           | Linux, Mac OS X | |
+| [Keras]() |            |                    |             |           | Mac OS X, Ubuntu, Windows |  |
+| [Torch]() |            |                    |             |           | Mac OS X, Ubuntu |  |
+| [Tensorflow]() |            |                    |             |           | Linux, Mac OS X    |         |
+| [Theano]() |            |                    |             |           | Linux, Mac OS X, Windows |  |
+| [Lasagne]() |            |                    |             |           | Mac OS X, Ubuntu, Windows|  |
+| [Mxnet]() |            |                    |             |           | Mac OS X, Ubuntu, Windows |   |
