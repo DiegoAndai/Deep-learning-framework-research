@@ -1,5 +1,5 @@
+from Labs import TagLab, QuestionLab
 from flask import Flask, render_template
-from Labs import QuestionLab, TagLab
 
 app = Flask(__name__)
 qlab = QuestionLab()

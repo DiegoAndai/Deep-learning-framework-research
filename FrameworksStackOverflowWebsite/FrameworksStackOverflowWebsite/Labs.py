@@ -6,12 +6,12 @@ class ResultSetLab:
 
     """Super analyser. Has a dict attribute to contain desired Py-StackExchange ResultSets."""
 
-    def __init__(self, *result_set_ids, site=StackOverflow, item="item", key='jCFTIME1vn7cqg)SjQAzQA(('):
+    def __init__(self, *result_set_ids, site_=StackOverflow, item="item", key='jCFTIME1vn7cqg)SjQAzQA(('):
 
         """:parameter result_set_ids: dict keys to identify result sets in self.result_sets."""
 
         self.result_sets = {typ: None for typ in result_set_ids}
-        self.site = Site(site, key)
+        self.site = Site(site_, key)
         self.item = item
 
     def get_all_items(self, result_set_name):
