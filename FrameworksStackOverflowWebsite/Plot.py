@@ -1,6 +1,8 @@
-from Labs import *
-import matplotlib.pyplot as plt
 from random import randint
+
+import matplotlib.pyplot as plt
+
+from FrameworksStackOverflowWebsite.Labs import *
 
 
 def r():
@@ -140,11 +142,12 @@ if __name__ == '__main__':
     Lab=QuestionLab()
     Plot=OccurrencePlot(Lab)
     for fmwk in fmwks:
-        rs_name='Tagged {}'.format(fmwk.title())
+        rs_name='{}'.format(fmwk.title())
         Plot.lab.add_result_set(rs_name)
         Plot.lab.get_questions(fmwk, result_set_name=rs_name)
         Plot.add_occurrences(rs_name)
 
     Plot.set_date_domain(datetime.datetime(2016,1,1,0,0,0),datetime.datetime(2016,7,1,0,0,0))
     Plot.plot_by_month()
-    Plot.show_plot()
+    plt.legend(loc=2)
+    plt.savefig("./static/plots/overview_plot.png")

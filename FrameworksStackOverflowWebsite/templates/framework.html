@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div id="rel_tags">
+        <h1>Related tags</h1>
+        <ul class="taglist">
+            {% for t in rtags %}
+                <li><a href="{{ t.twiki }}">{{ t.tname }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="faq">
+        <h1>Frequently asked questions</h1>
+        <ul>
+            {% for q in faq %}
+                <li><a href="{{ q.qlink }}">{{ q.qname }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}

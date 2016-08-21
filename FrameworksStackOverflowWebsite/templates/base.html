@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="/static/eztylo.css">
+    <script src="/static/jquery-3.1.0.min.js"></script>
+    <script src="/static/peity.js"></script>
+    <script src="/static/jas.js"></script>
+
+</head>
+<body>
+
+    <ul class="menu" id="main_menu">
+        <li><a href={{ url_for("overview") }}>Overview</a></li>
+        {% for framework in frameworks %}
+            <li><a href="{{ framework.href }}">{{ framework.caption }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% block content %}{% endblock content %}
+
+</body>
+</html>
