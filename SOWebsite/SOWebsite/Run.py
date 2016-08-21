@@ -1,5 +1,5 @@
-from SOWebsite.SOWebsite.Labs import TagLab, QuestionLab
 from flask import Flask, render_template
+from SOWebsite.SOWebsite.Labs import TagLab, QuestionLab
 
 app = Flask(__name__)
 qlab = QuestionLab()

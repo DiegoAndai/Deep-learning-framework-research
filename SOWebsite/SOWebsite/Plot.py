@@ -127,27 +127,3 @@ class OccurrencePlot:
 
         """empties plot"""
         plt.gcf().clear()
-
-if __name__ == '__main__':
-
-    #Example usage:
-#    Lab=QuestionLab('Tags') #creates the ResultLab object with a 'Tags' result_set_name
-#    Plot=OccurrencePlot(Lab) #creates ocurrence plot object, with its respective lab
-#    Plot.lab.get_questions('mxnet',result_set_name='Tags') #gets all questions with the desired tan ('mxnet' here) in the result_set_name ('Tags')
-#    Plot.add_occurrences('Tags') #adds the result set, in the format: {result_set_id:ocurrence_list} to the plot object
-#    Plot.plot_by_month()
-
-
-    fmwks=['keras','caffe','torch','tensorflow','keras','lasagne','mxnet']
-    Lab=QuestionLab()
-    Plot=OccurrencePlot(Lab)
-    for fmwk in fmwks:
-        rs_name='{}'.format(fmwk.title())
-        Plot.lab.add_result_set(rs_name)
-        Plot.lab.get_questions(fmwk, result_set_name=rs_name)
-        Plot.add_occurrences(rs_name)
-
-    Plot.set_date_domain(datetime.datetime(2016,1,1,0,0,0),datetime.datetime(2016,7,1,0,0,0))
-    Plot.plot_by_month()
-    plt.legend(loc=2)
-    plt.savefig("./static/plots/overview_plot.png")

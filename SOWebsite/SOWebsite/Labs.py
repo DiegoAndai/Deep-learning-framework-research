@@ -121,9 +121,3 @@ class TagLab(ResultSetLab):
     def print_tag_info(self, result_set_name):
         for tag in self.result_sets[result_set_name]:
             print("Name: {}\nCount: {}\n".format(tag.name, tag.count))
-
-if __name__ == '__main__':
-
-    lab = QuestionLab("pythonfaq")
-    for q in lab.get_faq("pythonfaq", "python", "caffe"):
-        print(q)
