@@ -1,6 +1,5 @@
 from flask import Flask, render_template
-
-from FrameworksStackOverflowWebsite.FrameworksStackOverflowWebsite.Labs import QuestionLab, TagLab
+from Labs import QuestionLab, TagLab
 
 app = Flask(__name__)
 qlab = QuestionLab()
