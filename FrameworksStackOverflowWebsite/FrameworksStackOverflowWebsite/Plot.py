@@ -2,7 +2,7 @@ from random import randint
 
 import matplotlib.pyplot as plt
 
-from FrameworksStackOverflowWebsite.Labs import *
+from FrameworksStackOverflowWebsite.FrameworksStackOverflowWebsite.Labs import *
 
 
 def r():
