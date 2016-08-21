@@ -1,4 +1,4 @@
-from Labs import TagLab, QuestionLab
+from .Labs import TagLab, QuestionLab
 from flask import Flask, render_template
 
 app = Flask(__name__)
