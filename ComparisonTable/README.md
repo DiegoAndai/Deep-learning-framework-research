@@ -9,7 +9,7 @@
 | [CNTK]() |b||Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| 
 | [Theano]() |a||Python|Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | 
 | [Lasagne]() |b||Python|NTM, Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  
-| [Mxnet]() |a||Python, R, Julia, Scala (Docker)|Neural-art-mini, Mxnet-face| Mac OS X, Ubuntu, Windows. |  
+| [Mxnet]() |a||Python, R, Julia, Scala|Neural-art-mini, Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|  
 
 #Complexity indices:
   
