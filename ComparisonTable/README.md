@@ -5,7 +5,7 @@
 | [Caffe]() |b, c|                    |             |Fast R-CNN, Expresso| CentOS, Fedora, Mac OS X, RHEL, Ubuntu, Windows. (Docker, OpenCL) |
 | [Keras]() |b, c|                    |             |DeepJazz, visua-qa| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. |  
 | [Torch]() |a, b, c|                    |             |Neural-style, NeuralTalk2| Mac OS X, Ubuntu. (Docker, AWS) *¿CentOS, RHEL? | 
-| [Tensorflow]() |a|                    |             |RankBrain, Keras| Mac OS X, Ubuntu    |
+| [Tensorflow]() |a|                    |             |RankBrain, OnDevice Computer Vision for OCR, Keras| Mac OS X, Ubuntu    |
 | [CNTK]() |b|         | |Microsoft cognitive services|Ubuntu, Windows. *¿+Linux? | 
 | [Theano]() |a|                    |             |Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | 
 | [Lasagne]() |b|                    |             |NTM, Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  
