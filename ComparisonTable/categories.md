@@ -28,6 +28,7 @@ The next are ideas for categories to compare multiple NN frameworks. On completi
 	24) external contribution (is it open source, how much the community contributes)
 	25) ‘installing and using for the first time with one of the examples provided’
 	26) ‘installing and using for the first time with own code’
+	27) comments*, observations for remarkable or bad/missing behavior/characteristics
   
 Marked (*) categories should go on the principal info chart, the others can be seen if more info is required.
 
