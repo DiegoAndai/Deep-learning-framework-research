@@ -23,7 +23,7 @@ def framework(fmw):
     faq = [{"qname": str(q)[:str(q).rfind("@") - 2].lstrip("<Question '"), "qlink": q.link} for q in qlab.get_faq("{}faq".format(fmw), fmw)]
     wiki_string = "http://stackoverflow.com/tags/{}/info"
     rtags = [{"tname": t.name, "twiki": wiki_string.format(t.name)} for t in tlab.get_related(fmw, "{}related".format(fmw))]
-    return render_template("framework.html", frameworks=frameworks, faq=faq, rtags=rtags)
+    return render_template("framework.html", frameworks=frameworks, faq=faq, rtags=rtags, fmw=fmw)
 
 
 @app.route("/faq/caffe")
