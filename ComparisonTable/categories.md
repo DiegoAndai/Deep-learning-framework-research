@@ -13,7 +13,7 @@ The next are ideas for categories to compare multiple NN frameworks. On completi
 	9)  dependencies*
 	10) previous knowledge required*
 	11) computer requirements*
-	12) OS list*
+	12) OS list (development/deployment)*
 	13) sintaxis complexity*
 	14) associated entities (organizations, researchers, companies)*
 	15) principal tasks covered (for neural network developing)*
