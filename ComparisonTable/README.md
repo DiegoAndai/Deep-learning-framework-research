@@ -19,3 +19,6 @@
 | [Lasagne]() |b|Python|NTM, Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  
 | [Mxnet]() |a, b|Python, R, Julia, Scala|Neural-art-mini, Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|  
 
+##References:
+
+  [1]for Caffe: ffe.berkeleyvision.org
