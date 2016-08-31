@@ -21,4 +21,11 @@
 
 ##References:
 
-  [1]for Caffe: [caffe.berkeleyvision.org]()
+  [1]for Caffe: [caffe.berkeleyvision.org](http://caffe.berkeleyvision.org/), [GitHub page](https://github.com/BVLC/caffe)
+  [2]for Keras: [keras.io](https://keras.io/), [GitHub page](https://github.com/fchollet/keras)
+  [3]for Torch: [torch.ch](http://torch.ch/), [GitHub page](https://github.com/torch/torch7)
+  [4]for TensorFlow: [tensorflow.org](https://www.tensorflow.org/), [GitHub Page](https://github.com/tensorflow/tensorflow)
+  [5]for CNTK: [cntk.ai](https://cntk.ai/), [GitHub Page](https://github.com/Microsoft/CNTK/wiki)
+  [6]for Theano: [deeplearning.net/software/theano](http://deeplearning.net/software/theano/), [GitHub Page](https://github.com/Theano/Theano)
+  [7]for Lasagne: [lasagne.readthedocs.io](http://lasagne.readthedocs.io/en/latest/), [GitHub Page](https://github.com/Lasagne/Lasagne/blob/master/docs/index.rst)
+  [8]for MxNet: [mxnet.readthedocs.io](http://mxnet.readthedocs.io/en/latest/), [GitHub Page](https://github.com/dmlc/mxnet/)
