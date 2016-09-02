@@ -13,7 +13,7 @@
 | [Caffe]() |b, c|Command Line, Python, MATLAB|Fast R-CNN, Expresso| CentOS, Fedora, Mac OS X, RHEL, Ubuntu, Windows. (Docker, OpenCL) |
 | [Keras]() |b, c|Python|DeepJazz, visua-qa| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. |  
 | [Torch]() |a, b, c|LuaJIT|Neural-style, NeuralTalk2| Mac OS X, Ubuntu. (Docker, AWS)| 
-| [Tensorflow]() |a|Python|RankBrain, OnDevice Computer Vision for OCR, Keras| Mac OS X, Ubuntu    |
+| [Tensorflow]() |a,b|Python|RankBrain, OnDevice Computer Vision for OCR, Keras| Mac OS X, Ubuntu    |
 | [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| 
 | [Theano]() |a|Python|Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | 
 | [Lasagne]() |b|Python|NTM, Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  
