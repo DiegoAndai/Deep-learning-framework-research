@@ -11,5 +11,5 @@ Docs quality: (Low|Medium|High) </br>
 Comments: </br>
 
 
-Final thoughts:
+Final thoughts: </br>
 Testing installation:
