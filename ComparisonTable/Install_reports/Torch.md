@@ -7,5 +7,5 @@
 **Docs quality**: high </br>
 **Comments**: few commands to install.
 
-Final thoughts: installation time may vary depending on network connection. </br>
-Testing installation:
+**Final thoughts**: installation time may vary depending on network connection. </br>
+**Testing installation**:
