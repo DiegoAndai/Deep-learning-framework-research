@@ -14,7 +14,7 @@
 | [Keras]() |b, c|Python|DeepJazz| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. |  [install report]()|
 | [Torch]() |a, b, c|LuaJIT|Neural-style| Mac OS X, Ubuntu. (Docker, AWS)| [install report]()|
 | [Tensorflow]() |a,b|Python|RankBrain, keras| Mac OS X, Ubuntu    |[install report]()|
-| [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| [install report]()|
+| [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| [install report](Install_reports/TensorFlow.md)|
 | [Theano]() |a|Python|Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | [install report]()|
 | [Lasagne]() |b|Python|Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  [install report]()|
 | [Mxnet]() |a, b|Python, R, Julia, Scala|Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|[install report]()|  
