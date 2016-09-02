@@ -8,16 +8,16 @@
 
 ##Comparison table for neural network frameworks
 
-| Name      | Complexity | Interface | Used in | Developing OS  | 
+| Name      | Complexity | Interface | Used in | Developing OS  | Go to...|
 | :-------  | :--- | :---------- | :-------- | :------------- | :-------    |
-| [Caffe]() |b, c|Command Line, Python, MATLAB|Fast R-CNN| CentOS, Fedora, Mac OS X, RHEL, Ubuntu, Windows. (Docker, OpenCL) |
-| [Keras]() |b, c|Python|DeepJazz| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. |  
-| [Torch]() |a, b, c|LuaJIT|Neural-style| Mac OS X, Ubuntu. (Docker, AWS)| 
-| [Tensorflow]() |a,b|Python|RankBrain, keras| Mac OS X, Ubuntu    |
-| [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| 
-| [Theano]() |a|Python|Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | 
-| [Lasagne]() |b|Python|Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  
-| [Mxnet]() |a, b|Python, R, Julia, Scala|Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|  
+| [Caffe]() |b, c|Command Line, Python, MATLAB|Fast R-CNN| CentOS, Fedora, Mac OS X, RHEL, Ubuntu, Windows. (Docker, OpenCL) |[install report]()|
+| [Keras]() |b, c|Python|DeepJazz| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. |  [install report]()|
+| [Torch]() |a, b, c|LuaJIT|Neural-style| Mac OS X, Ubuntu. (Docker, AWS)| [install report]()|
+| [Tensorflow]() |a,b|Python|RankBrain, keras| Mac OS X, Ubuntu    |[install report]()|
+| [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| [install report]()|
+| [Theano]() |a|Python|Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | [install report]()|
+| [Lasagne]() |b|Python|Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  [install report]()|
+| [Mxnet]() |a, b|Python, R, Julia, Scala|Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|[install report]()|  
 
 ##References:
 
