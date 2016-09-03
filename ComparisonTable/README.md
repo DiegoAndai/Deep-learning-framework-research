@@ -13,9 +13,9 @@
 | [Caffe]() |b, c|Command Line, Python, MATLAB|Fast R-CNN| CentOS, Fedora, Mac OS X, RHEL, Ubuntu, Windows. (Docker, OpenCL) |[install report](/ComparisonTable/Install_reports/Caffe.md)|
 | [Keras]() |b, c|Python|DeepJazz| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. |  [install report](/ComparisonTable/Install_reports/Keras.md)|
 | [Torch]() |a, b, c|LuaJIT|Neural-style| Mac OS X, Ubuntu. (Docker, AWS)| [install report](/ComparisonTable/Install_reports/Torch.md)|
-| [Tensorflow]() |a,b|Python|RankBrain, keras| Mac OS X, Ubuntu    |[install report](/ComparisonTable/Install_reports/TensorFlow.md)|
+| [Tensorflow]() |a,b|Python|RankBrain| Mac OS X, Ubuntu    |[install report](/ComparisonTable/Install_reports/TensorFlow.md)|
 | [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| [install report]()|
-| [Theano]() |a|Python|Keras, Lasagne| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | [install report](/ComparisonTable/Install_reports/Theano.md)|
+| [Theano]() |a|Python|Galaxy morphology prediction| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | [install report](/ComparisonTable/Install_reports/Theano.md)|
 | [Lasagne]() |b|Python|Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  [install report](/ComparisonTable/Install_reports/Lasagne.md)|
 | [Mxnet]() |a, b|Python, R, Julia, Scala|Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|[install report](/ComparisonTable/Install_reports/Mxnet.md)|  
 
