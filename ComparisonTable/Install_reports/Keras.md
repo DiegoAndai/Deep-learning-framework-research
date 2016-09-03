@@ -1,11 +1,11 @@
 **Name**: Keras </br>
-**[Installation guide](https://www.tensorflow.org/versions/r0.10/get_started/os_setup.html#download-and-setup)**
+**[Installation guide](https://keras.io/#installation)**
 
 **OS**: Mac OSX </br>
 **Method**: pip </br>
 **Difficulty**: low</br>
 **Docs quality**: high </br>
-**Comments**: 
+**Comments**: Worked right away.
 
 **Final thoughts**: </br>
 **Testing installation**:
