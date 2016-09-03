@@ -11,7 +11,7 @@
 **Method**: pip </br>
 **Difficulty**: low</br>
 **Docs quality**: high </br>
-**Comments**: Installation succeded, but theano.test() failed at first with 80 errors because a python module called nose-parameterized was not installed and required for the test function. After installing nose-parameterized with pip, Theano's test function succeded with skipped tests which are normal according to the guide.
+**Comments**: Installation was easy and straightforward. If you are going to test the installation with theano.test() make sure you have spare time and the python libraries nose and nose-parameterized installed.
 
 **Final thoughts**: </br>
 **Testing installation**:
