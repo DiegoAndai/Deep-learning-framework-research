@@ -1,7 +1,7 @@
 from mnist import MNIST
 #you can find python-mnist source code on https://github.com/sorki/python-mnist
 
-datahandler = MNIST('python-mnist/data')
+datahandler = MNIST('data') #change for data path
 train_data = datahandler.load_training()
 for i in range(59989, 60000):
     print('IMAGE: {}'.format(i+1))
