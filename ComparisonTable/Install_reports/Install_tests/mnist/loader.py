@@ -65,7 +65,7 @@ class MNIST(object):
         return images, labels
 
     @classmethod
-    def display(cls, img, width=28, threshold=200):
+    def display(cls, img, width=28, threshold=160):
         render = ''
         for i in range(len(img)):
             if i % width == 0:
