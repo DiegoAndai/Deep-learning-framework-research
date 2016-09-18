@@ -1,5 +1,5 @@
-from mnist import MNIST
-#you can find python-mnist source code on https://github.com/sorki/python-mnist
+from MNIST.mnist_data_loader.loader import MNIST
+#you can find python-mnist_data_loader source code on https://github.com/sorki/python-mnist
 
 datahandler = MNIST() #change for data path
 train_data = datahandler.load_training()

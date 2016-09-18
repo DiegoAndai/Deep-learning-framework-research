@@ -4,7 +4,7 @@ from array import array
 
 
 class MNIST(object):
-    def __init__(self, path='.'):
+    def __init__(self, path=''):
         self.path = path
 
         self.test_img_fname = 't10k-images-idx3-ubyte'
