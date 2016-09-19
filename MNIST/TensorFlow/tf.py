@@ -32,9 +32,6 @@ flags.DEFINE_string('data_dir', '/tmp/data/', 'Directory for storing data')
 
 mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
-print(type(mnist.train.images), len(mnist.train.images),
-      type(mnist.train.labels), len(mnist.train.labels))
-
 sess = tf.InteractiveSession()
 
 # Create the model
@@ -48,13 +45,36 @@ y_ = tf.placeholder(tf.float32, [None, 10])
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
-# Train
 tf.initialize_all_variables().run()
+
+# Train
 for i in range(1000):
   batch_xs, batch_ys = mnist.train.next_batch(100)
   train_step.run({x: batch_xs, y_: batch_ys})
+
 
 # Test trained model
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print(accuracy.eval({x: mnist.test.images, y_: mnist.test.labels}))
+
+
+predicted_classes = tf.argmax(y, 1)  # 1-D tensor with classes predicted for each image.
+true_classes = tf.argmax(y_, 1)  # 1-D tensor with the actual classes.
+for cls in range(10):
+
+    cls_is_predicted = tf.equal(predicted_classes, cls)  # True when cls was predicted, false otherwise.
+    cls_is_not_predicted = tf.logical_not(cls_is_predicted)  # True when cls was not predicted.
+
+    cls_is_label = tf.equal(true_classes, cls)  # True when actual value was cls.
+    cls_is_not_label = tf.logical_not(cls_is_label)  # True when actual value was not cls.
+
+    tp = tf.reduce_sum(tf.cast(tf.logical_and(cls_is_label, cls_is_predicted), tf.float32))  # True positives.
+    fp = tf.reduce_sum(tf.cast(tf.logical_and(cls_is_predicted, cls_is_not_label), tf.float32))  # False positives.
+    fn = tf.reduce_sum(tf.cast(tf.logical_and(cls_is_not_predicted, cls_is_label), tf.float32))  # False negatives.
+
+    precision = tf.div(tp, tf.add(fp, tp))
+    recall = tf.div(tp, tf.add(fn, tp))
+    print("Class {}:\nPrecision: {}\nRecall: {}\n".format(cls,
+                                                          precision.eval({x: mnist.test.images, y_: mnist.test.labels}),
+                                                          recall.eval({x: mnist.test.images, y_: mnist.test.labels})))
