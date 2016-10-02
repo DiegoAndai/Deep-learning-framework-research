@@ -20,7 +20,7 @@ net:add(nn.LogSoftMax())  -- Softmax layer.
 --training
 criterion = nn.CrossEntropyCriterion()
 trainer = nn.StochasticGradient(net, criterion)
-trainer.learningRate = 0.001
+trainer.learningRate = 0.5
 trainer.maxIteration = 5 -- just do 5 epochs of training.
 
 trainer:train(trainset)
@@ -36,9 +36,6 @@ for i=1,10000 do
         correct = correct + 1
     end
 end
-
-print('Hits: ' .. correct, 'Accuracy: ' .. 100*correct/10000 .. ' % ') -- accuracy
-
 
 -- precision and recall
 
@@ -73,11 +70,12 @@ for cls=1,#classes do
 	avg_precision = avg_precision + precision
 	avg_recall = avg_recall + recall
 
-	print("Class " .. cls - 1 .. ":\nPrecision: " .. precision .. "\nRecall: " .. recall)
+	print("Class " .. cls - 1 .. ":\nPrecision: " .. precision .. "\nRecall: " .. recall .. "\n")
 end
 
 avg_recall = avg_recall/#classes
 avg_precision = avg_precision/#classes
 print("Average precision: " .. avg_precision)
 print("Average recall: " .. avg_recall)
+print('Hits: ' .. correct, 'Accuracy: ' .. 100*correct/10000 .. ' % ') -- accuracy
 
