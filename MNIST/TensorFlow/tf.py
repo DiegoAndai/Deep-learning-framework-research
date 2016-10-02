@@ -17,21 +17,14 @@
 See extensive documentation at
 http://tensorflow.org/tutorials/mnist/beginners/index.md
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
-# Import data
-from tensorflow.examples.tutorials.mnist import input_data
-
+from MNIST.mnist_data_loader import loader
 import tensorflow as tf
 
-flags = tf.app.flags
-FLAGS = flags.FLAGS
-flags.DEFINE_string('data_dir', '/tmp/data/', 'Directory for storing data')
-
-mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
-
+# Load data
+datahandler = loader.MNIST('../mnist_data_loader')
+datahandler.load_testing()
+datahandler.load_training()
 
 sess = tf.InteractiveSession()
 
@@ -48,9 +41,9 @@ train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
 tf.initialize_all_variables().run()
 
-# Train
-for i in range(1000):
-    batch_xs, batch_ys = mnist.train.next_batch(100)
+# Train (five epochs with batch size 500)
+for i in range(6000):
+    batch_xs, batch_ys = datahandler.next_train_batch(10)
     train_step.run({x: batch_xs, y_: batch_ys})
 
 
@@ -78,8 +71,8 @@ for cls in range(10):
     precision = tf.div(tp, tf.add(fp, tp))
     recall = tf.div(tp, tf.add(fn, tp))
 
-    current_p = precision.eval({x: mnist.test.images, y_: mnist.test.labels})  # evaluate precision
-    current_r = recall.eval({x: mnist.test.images, y_: mnist.test.labels})  # evaluate recall
+    current_p = precision.eval({x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels})  # evaluate precision
+    current_r = recall.eval({x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels})  # evaluate recall
 
     avg_precision += current_p
     avg_recall += current_r
@@ -89,4 +82,4 @@ for cls in range(10):
 avg_precision /= 10
 avg_recall /= 10
 print("Average precision: {}\nAverage recall: {}".format(avg_precision, avg_recall))
-print("Accuracy: {}\n".format(accuracy.eval({x: mnist.test.images, y_: mnist.test.labels})))
+print("Accuracy: {}\n".format(accuracy.eval({x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels})))
