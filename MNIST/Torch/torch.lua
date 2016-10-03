@@ -20,9 +20,8 @@ net:add(nn.LogSoftMax())  -- Softmax layer.
 --training
 criterion = nn.CrossEntropyCriterion()
 trainer = nn.StochasticGradient(net, criterion)
-trainer.learningRate = 0.5
-trainer.maxIteration = 5 -- just do 5 epochs of training.
-
+trainer.learningRate = 0.01
+trainer.maxIteration = 10 -- 10 epochs
 trainer:train(trainset)
 
 
@@ -37,8 +36,8 @@ for i=1,10000 do
     end
 end
 
--- precision and recall
-
+-- precision, recall and confusion matrix
+conf_matrix = torch.zeros(10, 10)
 avg_recall, avg_precision = 0, 0
 for cls=1,#classes do
 	tp, fn, fp = 0, 0 ,0
@@ -46,7 +45,12 @@ for cls=1,#classes do
 	for i=1,10000 do
 		groundtruth = testset.label[i]  -- actual digit
 		prediction = net:forward(testset.data[i])  -- predicted digit (log probabilities)
+
 		confidences, indices = torch.sort(prediction, true)  -- true means sort in descending order
+
+		if cls == 1 then  -- only calculate confusion matrix once
+			conf_matrix[groundtruth][indices[1]] = conf_matrix[groundtruth][indices[1]] + 1
+		end
 
 
 		if groundtruth == cls then  -- if the actual digit is of the class cls
@@ -77,5 +81,8 @@ avg_recall = avg_recall/#classes
 avg_precision = avg_precision/#classes
 print("Average precision: " .. avg_precision)
 print("Average recall: " .. avg_recall)
-print('Hits: ' .. correct, 'Accuracy: ' .. 100*correct/10000 .. ' % ') -- accuracy
+print('Hits: ' .. correct, 'Accuracy: ' .. 100*correct/10000 .. ' % \n') -- accuracy
+print("Confusion matrix:")
+print(conf_matrix)
+
 
