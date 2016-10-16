@@ -1,4 +1,4 @@
-#Evaluation of Keras, MXNet, TensorFlow and Torch through MNIST implementation
+#Evaluation of Keras, MXNet, TensorFlow and Torch through an MNIST classifier implementation
 
 We wondered, as beginners in the area of Machine Learning and Deep Learning, which were the main differences between the frameworks 
 available in this area, but also which advantages and disadvantages these have depending on the context of development. So
