@@ -3,8 +3,8 @@
 We wondered, as beginners in the area of Machine Learning and Deep Learning, which were the main differences between the frameworks 
 available in this area, but also which advantages and disadvantages these frameworks have depending on the context of development. So
 in order to pacify our bewilderment, we took the time to implement the so called "Hello World!!!" of neural networks, the MNIST handwriten
-digit classification, in four well known frameworks: Keras, MXNet, TensorFlow and Torch. <br>
-The neural network we chose to implement was overly simple: we flattened the 28&times;28 digit images to vectors (tensors) of 784 pixels, then we applied a linear layer and finally obtained a probability distribution for the possible classes (the digits) with softmax regression. The data that we fed to the implementation of this net in each framework was exactly the same, and it was obtained from [Yann LeCun's website](http://yann.lecun.com/exdb/mnist/) and processed by parsers that we found on the web and also edited ourselves.
+digit classification, in four well known frameworks: Keras, MXNet, TensorFlow and Torch. You can see the detailed implementations in the folders in this directory. <br>
+The neural network we chose to implement was overly simple: we flattened the 28&times;28 digit images to vectors (tensors) of 784 pixels, then we applied a linear layer and finally obtained a probability distribution for the possible classes (the digits) with softmax regression. The data that we fed to the implementation of this net in each framework was exactly the same, and it was obtained from [Yann LeCun's website](http://yann.lecun.com/exdb/mnist/) and processed by parsers that we found on the web and also edited ourselves. Finally, for each framework implementation, we calculated some metrics, accuracy, precission, recall, and a confussion matrix, to be precise.
 
 ##TensorFlow
 
@@ -36,3 +36,49 @@ recall = tf.div(tp, tf.add(fn, tp))
 ```
 All in all ~~you're just another brick in the wall~~, TensorFlow is very useful an efficient, but it may take some time to adjust to the way it's meant to be used. So if you are looking for efficiency or you want to implement a well known network, TensorFlow is for you, but if you are a beginner and are not used to tensor operations or you want to meddle a lot with your variables in a pythonic way and don't care much about efficiency, maybe something else would be better.
 
+##Torch
+
+This framework is not as efficient as TensorFlow, but has what TensorFlow lacks: flexibility. Basically, you can twist it in any direction you want. It also has different levels of abstraction, as specified in our framework comparison table. In our implementation of MNIST, we used a library called nn (neural networks), which is highly abstracted. A minor setback, although, might be that Lua, the programming language that Torch uses, has indexes that start at 1, not at 0 (fact that certainly gave us problems). Here is how we defined the network (not so different from the other frameworks):
+
+```lua
+-- nn definition
+
+net = nn.Sequential()  -- sequential nn.
+
+net:add(nn.Reshape(28*28))  -- flatten images. (could use View)
+net:add(nn.Linear(28*28, #classes))  -- Fully connected layer.
+net:add(nn.LogSoftMax())  -- Softmax layer.
+```
+
+And here is how we calculated precission and recall for class `cls`:
+
+
+```lua
+tp, fn, fp = 0, 0 ,0  -- true positives, false negatives, false positives
+for i=1,10000 do  -- indexes from 1!!!!
+  groundtruth = testset.label[i]  -- actual digit
+  prediction = net:forward(testset.data[i])  -- predicted digit (log probabilities)
+
+  confidences, indices = torch.sort(prediction, true)  -- true means sort in descending order
+
+  if groundtruth == cls then  -- if the actual digit is of the class cls
+      if groundtruth == indices[1] then  -- if prediction was correct
+        tp = tp + 1
+      else  -- if prediction was incorrect
+        fn = fn + 1
+      end
+
+  else  -- if the actual digit is not of class cls
+
+    if indices[1] == cls then -- and class cls was predicted
+      fp = fp + 1
+    end
+  end
+end
+precision = tp/(tp + fp)
+recall = tp/(tp + fn)
+avg_precision = avg_precision + precision
+avg_recall = avg_recall + recall
+```
+Notice that, despite the code consisting of more lines than the one of TensorFlow, it has a flow that is more natural for a programmer, consisting of loops and conditionals rather than of tensor operations (also the tensors are indexable!). Nevertheless, keep in mind that for the networks, tensor manipulation is most likely not avoidable, but probably abstractable.<br>
+If you are into creating something new and/or you are not worried about extreme efficiency (because torch is still efficient) and you are looking for something that can bend easily to your will, then torch is your choice.  
