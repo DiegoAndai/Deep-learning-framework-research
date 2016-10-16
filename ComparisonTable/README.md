@@ -17,7 +17,7 @@
 | [CNTK]() |b|Command Line, BrainScript|Microsoft cognitive services|Ubuntu, Windows.| [install report]()|
 | [Theano]() |a|Python|Galaxy morphology prediction| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker) | [install report](/ComparisonTable/Install_reports/Theano.md)|
 | [Lasagne]() |b|Python|Lasagne-draw| CentOS, Gentoo, Mac OS X, Mandriva, Ubuntu, Windows. (Docker)|  [install report](/ComparisonTable/Install_reports/Lasagne.md)|
-| [Mxnet]() |a, b|Python, R, Julia, Scala|Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|[install report](/ComparisonTable/Install_reports/Mxnet.md)|  
+| [Mxnet]() |a, b|C++, Python, R, Scala, Julia, Matlab, Javascript|Mxnet-face| Mac OS X, Ubuntu, Windows.  (Docker)|[install report](/ComparisonTable/Install_reports/Mxnet.md)|  
 
 ##References:
 
