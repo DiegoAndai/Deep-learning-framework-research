@@ -60,9 +60,19 @@ Metrics:
 
 
 ##Keras
-This framework was developed by François Chollet, and it relies on either Theano or Tensorflow for it’s mathematical computation. It’s a high level library, focused on fast experimentation and easy prototyping. It has most of the options you would want to see on a neural network. It’s main advantage is how fast you can set up and use a model.
+This framework was developed by François Chollet, and it relies on either Theano or Tensorflow for it’s mathematical computation. It’s a high level library, focused on fast experimentation and easy prototyping. It has most of the options you would want to see on a neural network. It’s main advantage is how fast you can set up and use a model. The net implementation defined [here](/MNIST/Keras/Keras_mnist_mlp.ipynb) was:
 
-[Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Keras/Keras_mnist_mlp.ipynb)
+```python
+model = Sequential([
+    Dense(10, batch_input_shape=(None, 784), activation = 'sigmoid'),
+    Dense(10, activation = 'softmax'),
+])
+
+sgd = SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
+
+model.compile(loss='binary_crossentropy', optimizer=sgd, metrics = ['accuracy'])
+```
+
 
 Implementing the MNIST classifier net on Keras was, as expected, fast and straightforward, even though we were new to it. This is the principal objective of the framework, and it did wat it was build to do. The main sintaxis of Keras is very pythonic and intuitive, you declare the model, compile it and train/test it with raw numpy arrays. Metrics obtained were:
 
@@ -72,14 +82,26 @@ Implementing the MNIST classifier net on Keras was, as expected, fast and straig
 | Recall | 0.84972 |
 | Precision | 0.85565 |
 
-The running time was approximately 40 seconds. Keras' training system provided live progress reports (see implementation) for every epoch, showing loss anc accuracy metrics as they develop. This is a good feature, expecially if you're training for a long time, as you can see if something isn't going well very soon, and don't have to wait untill the training ends. This framework doesn't yet have metrics like recall or precision. 
+The running time was approximately 40 seconds. Keras' training system provided live progress reports (see [the code](/MNIST/Keras/Keras_mnist_mlp.ipynb)) for every epoch, showing loss anc accuracy metrics as they develop. This is a good feature, expecially if you're training for a long time, as you can see if something isn't going well very soon, and don't have to wait untill the training ends. This framework doesn't yet have metrics like recall or precision. 
 
 ##MXNet
-Developed by a group of collaborators supported by companies like Intel, Nvidia and many more.  It focus on mixing symbolic and imperative programming in order to obtain both efficiency and flexibility. It supports over 7 programming languages, this is an important advantage over the other frameworks.
+Developed by a group of collaborators supported by companies like Intel, Nvidia and many more.  It focus on mixing symbolic and imperative programming in order to obtain both efficiency and flexibility. It supports over 7 programming languages, this is an important advantage over the other frameworks. The net implementation defined [here](/MNIST/Mxnet/Mxnet_mnist_mlp.ipynb) was:
 
-[Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Mxnet/Mxnet_mnist_mlp.ipynb)
+```python
+data = mx.symbol.Variable('data')
+fc1  = mx.symbol.FullyConnected(data = data, num_hidden=784)
+act1 = mx.symbol.Activation(data = fc1, act_type="sigmoid")
+fc2  = mx.symbol.FullyConnected(data = act1, num_hidden=10)
+mlp  = mx.symbol.SoftmaxOutput(data = fc2, name = 'softmax')
 
-Implementing the MNIST classifier net on Mxnet was challenging. The first steps with this framework were confusing, as it’s sintaxis and design isn’t intuitive. for example the separated declaration of layers and it's activations, which were connected later almost like distinct layers (see implementation). Maybe it’s principal characteristics and advantages like flexibility and the programming paradigm duality didn’t apply to a simple net like this one. Even though, results were good.  Metrics obtained were:
+model = mx.model.FeedForward(
+    symbol = mlp,
+    num_epoch = 10,
+    learning_rate = .01
+)
+```
+
+Implementing the MNIST classifier net on Mxnet was challenging. The first steps with this framework were confusing, as it’s sintaxis and design isn’t intuitive. for example the separated declaration of layers and it's activations, which were connected later almost like distinct layers (see [the code](/MNIST/Mxnet/Mxnet_mnist_mlp.ipynb)). Maybe it’s principal characteristics and advantages like flexibility and the programming paradigm duality didn’t apply to a simple net like this one. Even though, results were good.  Metrics obtained were:
 
 | Metric | Value |
 |:-------|:------|
