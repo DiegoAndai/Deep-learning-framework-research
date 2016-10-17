@@ -121,4 +121,4 @@ Implementing the net on these four different frameworks had us faced with our fi
 
 **Results**: MXNet had slightly better metrics, but differences with TensorFlow were negligible. 
 
-Finally, for this simple model and when starting to understand how neural networks are implemented, we recommend Keras if you’re more familiar with Python than Lua, and Torch otherwise. 
+Finally, for this simple model and when starting to understand how neural networks are implemented, we recommend Keras if you’re more familiar with Python than Lua, and Torch otherwise. Note that the objective of this evaluation was to learn about neural networks implementations on different frameworks, and not obtaining superb results.
