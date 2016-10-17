@@ -3,7 +3,7 @@
 We wondered, as beginners in the area of Machine Learning and Deep Learning, which were the main differences between the frameworks 
 available in this area, but also which advantages and disadvantages these frameworks have depending on the context of development. So
 in order to pacify our bewilderment, we took the time to implement the so called "Hello World!!!" of neural networks, the MNIST handwriten
-digit classification, in four well known frameworks: Keras, MXNet, TensorFlow and Torch. You can see the detailed implementations in the folders in this directory. <br>
+digit classification, in four well known frameworks: Keras, Mxnet, TensorFlow and Torch. You can see the detailed implementations in the folders in this directory. <br>
 <br>
 The neural network we chose to implement was overly simple: we flattened the 28&times;28 digit images to vectors (tensors) of 784 pixels, then we applied a linear layer and finally obtained a probability distribution for the possible classes (the digits) with softmax regression. The data that we fed to the implementation of this net in each framework was exactly the same, and it was obtained from [Yann LeCun's website](http://yann.lecun.com/exdb/mnist/) and processed by parsers that we found on the web and also edited ourselves. Finally, for each framework implementation, we calculated some metrics, accuracy, precission, recall, and a confussion matrix, to be precise. They did not vary greatly between implementations, which is nice.
 <br>
@@ -93,7 +93,7 @@ This framework was developed by François Chollet, and it relies on either Thean
 
 [Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Keras/Keras_mnist_mlp.ipynb)
 
-Implementing the MNIST classifier net on Keras was, as expected, fast and straightforward, even though we were new to it. This is the principal objective of the framework, and it did wat it was build to do. The main sintaxis of Keras is very pythonic and intuitive, you declare the model, compile it and train/test it with raw numpy arrays. Metrics obtained were:
+Implementing the MNIST classifier net on Keras was, as expected, fast and straightforward, even though we were new to it. This is the principal objective of the framework, and it did what it was build to do. The main sintaxis of Keras is very pythonic and intuitive, you declare the model, compile it and train/test it with raw numpy arrays. Metrics obtained were:
 
 | Metric | Value |
 |:-------|:------|
@@ -101,7 +101,7 @@ Implementing the MNIST classifier net on Keras was, as expected, fast and straig
 | Recall | 0.84972 |
 | Precision | 0.85565 |
 
-The running time was approximately 40 seconds. Keras' training system provided live progress reports (see implementation) for every epoch, showing loss anc accuracy metrics as they develop. This is a good feature, expecially if you're training for a long time, as you can see if something isn't going well very soon, and don't have to wait untill the training ends. This framework doesn't yet have metrics like recall or precision. 
+The running time was approximately 40 seconds. Keras' training system provided live progress reports (see implementation) for every epoch, showing loss and accuracy metrics as they develop. This is a good feature, expecially if you're training for a long time, as you can see if something isn't going well very soon, and don't have to wait untill the training ends. This framework doesn't yet have metrics like recall or precision. 
 
 ##Mxnet
 Developed by a group of collaborators supported by companies like Intel, Nvidia and many more.  It focus on mixing symbolic and imperative programming in order to obtain both efficiency and flexibility. It supports over 7 programming languages, this is an important advantage over the other frameworks.
