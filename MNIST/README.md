@@ -82,3 +82,30 @@ avg_recall = avg_recall + recall
 ```
 Notice that, despite the code consisting of more lines than the one of TensorFlow, it has a flow that is more natural for a programmer, consisting of loops and conditionals rather than of tensor operations (also the tensors are indexable!). Nevertheless, keep in mind that for the networks, tensor manipulation is most likely not avoidable, but probably abstractable.<br>
 If you are into creating something new and/or you are not worried about extreme efficiency (because torch is still efficient) and you are looking for something that can bend easily to your will, then torch is your choice.  
+
+
+##Keras
+This framework was developed by François Chollet, and it relies on either Theano or Tensorflow for it’s mathematical computation. It’s a high level library, focused on fast experimentation and easy prototyping. It has most of the options you would want to see on a neural network. It’s main advantage is how fast you can set up and use a model.
+
+[Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Keras/Keras_mnist_mlp.ipynb)
+
+Implementing the MNIST classifier net on Keras was, as expected, fast and straightforward, even though we were new to it. This is the principal objective of the framework, and it did wat it was build to do.  Metrics obtained were:
+
+| Metric | Value |
+|:-------|:------|
+| Accuracy | 0.85360 |
+| Recall | 0.84972 |
+| Precision | 0.85565 |
+
+##Mxnet
+Developed by a group of collaborators supported by companies like Intel, Nvidia and many more.  It focus on mixing symbolic and imperative programming in order to obtain both efficiency and flexibility. It supports over 7 programming languages, this is an important advantage over the other frameworks.
+
+[Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Mxnet/Mxnet_mnist_mlp.ipynb)
+
+Implementing the MNIST classifier net on Mxnet was challenging. The first steps with this framework were confusing, as it’s sintaxis and design isn’t intuitive. Maybe it’s principal characteristics and advantages like flexibility and the programming paradigm duality didn’t apply to a simple net like this one. Even though, results were good.  Metrics obtained were:
+
+| Metric | Value |
+|:-------|:------|
+| Accuracy | 0.93720 |
+| Recall | 0.93632 |
+| Precision | 0.93861 |
