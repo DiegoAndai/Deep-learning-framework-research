@@ -108,7 +108,7 @@ Developed by a group of collaborators supported by companies like Intel, Nvidia 
 
 [Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Mxnet/Mxnet_mnist_mlp.ipynb)
 
-Implementing the MNIST classifier net on Mxnet was challenging. The first steps with this framework were confusing, as it’s sintaxis and design isn’t intuitive. for example the separated declaration of layers and it's activations, which were connected later almost like distinct layers (see implementation). Maybe it’s principal characteristics and advantages like flexibility and the programming paradigm duality didn’t apply to a simple net like this one. Even though, results were good.  Metrics obtained were:
+Implementing the MNIST classifier net on Mxnet was challenging. The first steps with this framework were confusing, as it’s sintaxis and design isn’t intuitive. For example the separated declaration of layers and it's activations, which were connected later almost like distinct layers (see implementation). Maybe it’s principal characteristics and advantages like flexibility and the programming paradigm duality didn’t apply to a simple net like this one. Even though, results were good.  Metrics obtained were:
 
 | Metric | Value |
 |:-------|:------|
