@@ -7,6 +7,7 @@ digit classification, in four well known frameworks: Keras, MXNet, TensorFlow an
 <br>
 The neural network we chose to implement was overly simple: we flattened the 28&times;28 digit images to vectors (tensors) of 784 pixels, then we applied a linear layer and finally obtained a probability distribution for the possible classes (the digits) with softmax regression. The data that we fed to the implementation of this net in each framework was exactly the same, and it was obtained from [Yann LeCun's website](http://yann.lecun.com/exdb/mnist/) and processed by parsers that we found on the web and also edited ourselves. Finally, for each framework implementation, we calculated some metrics, accuracy, precission, recall, and a confussion matrix, to be precise. They did not vary greatly between implementations, which is nice.
 <br>
+<br>
 The model was trained on a 60,000 digits training sample, and tested using 10,000 digits. The learning rate was setted to 0.01, using cross_entropy as the loss function and gradient descent as the optimizer. Other parameters like momentum were not considered. The training process was extended to 10 epochs, with a batch size of 10.
 
 ##TensorFlow
