@@ -74,7 +74,7 @@ Implementing the MNIST classifier net on Keras was, as expected, fast and straig
 
 The running time was approximately 40 seconds. Keras' training system provided live progress reports (see implementation) for every epoch, showing loss anc accuracy metrics as they develop. This is a good feature, expecially if you're training for a long time, as you can see if something isn't going well very soon, and don't have to wait untill the training ends. This framework doesn't yet have metrics like recall or precision. 
 
-##Mxnet
+##MXNet
 Developed by a group of collaborators supported by companies like Intel, Nvidia and many more.  It focus on mixing symbolic and imperative programming in order to obtain both efficiency and flexibility. It supports over 7 programming languages, this is an important advantage over the other frameworks.
 
 [Implementation](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/MNIST/Mxnet/Mxnet_mnist_mlp.ipynb)
@@ -87,7 +87,7 @@ Implementing the MNIST classifier net on Mxnet was challenging. The first steps 
 | Recall | 0.93632 |
 | Precision | 0.93861 |
 
-Mxnet's training lasted 4 minutes approximately. That's longer than it's counterparts, but it's performance was better. Various metrics are implemented in this library, not recall nor precision, though. Accuracy was implemented, but it was calculated here manually with the confusion matrix as the other metrics, because when trying to use the implementation, a lot of errors came up, referring to the type of the input it needed. This kind of errors, of type and how to use tools from Mxnet were frequent, and as a beginner they cause distractions from the principal task, learning how to use the framework with a simple example.
+MXNet's training lasted 4 minutes approximately. That's longer than it's counterparts, but it's performance was better. Various metrics are implemented in this library, not recall nor precision, though. Accuracy was implemented, but it was calculated here manually with the confusion matrix as the other metrics, because when trying to use the implementation, a lot of errors came up, referring to the type of the input it needed. This kind of errors, of type and how to use tools from Mxnet were frequent, and as a beginner they cause distractions from the principal task, learning how to use the framework with a simple example.
 <br>
 ##Conclusion
 
@@ -95,8 +95,8 @@ Implementing the net on these four different frameworks had us faced with our fi
 
 **Beginner Difficulty**: Leaving experience in Python or Lua aside, Keras and Torch have a similar complexity when you’re starting to use them, being more beginner friendly than their counterparts.
 
-**Intuitiveness**: Torch, Keras and Mxnet have similar syntax for this simple network. Making them equally intuitive. Whereas TensorFlow is less intuitive because it does not provide concrete layer definition, as we expected.
+**Intuitiveness**: Torch, Keras and MXNet have similar syntax for this simple network. Making them equally intuitive. Whereas TensorFlow is less intuitive because it does not provide concrete layer definition, as we expected.
 
-**Results**: Mxnet had slightly better metrics, but differences with TensorFlow were negligible. 
+**Results**: MXNet had slightly better metrics, but differences with TensorFlow were negligible. 
 
 Finally, for this simple model and when starting to understand how neural networks are implemented, we recommend Keras if you’re more familiar with Python than Lua, and Torch otherwise. 
