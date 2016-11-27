@@ -3,24 +3,33 @@ import string
 
 class PaperReader:
 
-    def __init__(self, papers):
+    def __init__(self, papers, *filters):
         self.papers = papers
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
         self.words = []
+        self.filter_by = list(filters)  # filter by paper classification (systematic-review,
+        # structured-summary-of-systematic-review, primary-study, overview, structured-summary-of-primary-study)
+
+    def apply_filter(self, f):
+        self.filter_by = f
+
+    def remove_filter(self, f):
+        self.filter_by.remove(f)
 
     def __iter__(self):
         for paper in self.papers:
-            try:
-                abstract = paper["abstract"]
-                if abstract:
-                    yield self.parse_line(abstract)
+            if paper["classification"] in self.filter_by:
+                try:
+                    abstract = paper["abstract"]
+                    if abstract:
+                        yield self.parse_line(abstract)
 
-            except KeyError:
-                print("no abstract for paper {}".format(paper["id"]))
+                except KeyError:
+                    print("no abstract for paper {}".format(paper["id"]))
         raise StopIteration
 
-    def __getitem__(self, index):
+    def __getitem__(self, index):  # ignores filters
         abstract = self.papers[index]["abstract"]
         if abstract:
             return self.parse_line(abstract)
