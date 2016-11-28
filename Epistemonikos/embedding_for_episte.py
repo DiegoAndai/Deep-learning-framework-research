@@ -23,7 +23,7 @@ else:
     with open("documents_array.json", "r") as json_file:
         loaded = json.load(json_file)
 
-    reader = PaperReader(loaded)
+    reader = PaperReader(loaded, "primary-study")  # filter by primary study
 
     reader.generate_words_list()
     reader.save_words()
@@ -56,6 +56,7 @@ def build_dataset(words):
 
 data, count, dictionary, reverse_dictionary = build_dataset(words)
 del words  # Hint to reduce memory.
+
 print('Most common words (+UNK)', count[:5])
 print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]])
 
@@ -188,7 +189,16 @@ with tf.Session(graph=graph) as session:
           close_word = reverse_dictionary[nearest[k]]
           log_str = "%s %s," % (log_str, close_word)
         print(log_str)
+
+  lfreq = [t[1] for t in count]
+  freq = np.array(lfreq, ndmin=2)
+  nwords = sum(lfreq)
+  rel_freq = freq / nwords
   final_embeddings = normalized_embeddings.eval()
+
+  data_vector = np.dot(rel_freq, final_embeddings)
+  print("DATA VECTOR:", data_vector)
+
 
 # Step 6: Visualize the embeddings.
 
