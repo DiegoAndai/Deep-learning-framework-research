@@ -12,14 +12,18 @@ class PaperReader:
         # structured-summary-of-systematic-review, primary-study, overview, structured-summary-of-primary-study)
 
     def apply_filter(self, f):
-        self.filter_by = f
+        self.filter_by.append(f)
+
+    def remove_all_filters(self):
+        self.filter_by = list()
 
     def remove_filter(self, f):
         self.filter_by.remove(f)
 
     def __iter__(self):
         for paper in self.papers:
-            if paper["classification"] in self.filter_by:
+            if self.filter_by == [] or paper["classification"] and \
+                                      paper["classification"] in self.filter_by:
                 try:
                     abstract = paper["abstract"]
                     if abstract:
@@ -50,6 +54,7 @@ class PaperReader:
 
     def generate_words_list(self):
         i = 0
+        self.words = []
         for abstract in self:
             if abstract:
                 self.words += abstract

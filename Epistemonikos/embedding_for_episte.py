@@ -8,6 +8,7 @@ import math
 import os
 import random
 import zipfile
+import pickle
 
 import numpy as np
 from six.moves import urllib
@@ -23,14 +24,14 @@ else:
     with open("documents_array.json", "r") as json_file:
         loaded = json.load(json_file)
 
-    reader = PaperReader(loaded, "primary-study")  # filter by primary study
-
+    reader = PaperReader(loaded)
+    print("generating words")
     reader.generate_words_list()
     reader.save_words()
-
     words = reader.words
 
 # Step 2: Build the dictionary and replace rare words with UNK token.
+print("step 2")
 vocabulary_size = 50000
 
 def build_dataset(words):
@@ -64,6 +65,7 @@ data_index = 0
 
 
 # Step 3: Function to generate a training batch for the skip-gram model.
+print("step 3")
 def generate_batch(batch_size, num_skips, skip_window):
   global data_index
   assert batch_size % num_skips == 0
@@ -94,6 +96,8 @@ for i in range(8):
       '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
 # Step 4: Build and train a skip-gram model.
+print("step 4")
+
 
 batch_size = 128
 embedding_size = 128  # Dimension of the embedding vector.
@@ -152,6 +156,8 @@ with graph.as_default():
   init = tf.initialize_all_variables()
 
 # Step 5: Begin training.
+print("step 5")
+
 num_steps = 100001
 
 with tf.Session(graph=graph) as session:
@@ -190,43 +196,13 @@ with tf.Session(graph=graph) as session:
           log_str = "%s %s," % (log_str, close_word)
         print(log_str)
 
-  lfreq = [t[1] for t in count]
-  freq = np.array(lfreq, ndmin=2)
-  nwords = sum(lfreq)
-  rel_freq = freq / nwords
   final_embeddings = normalized_embeddings.eval()
 
-  data_vector = np.dot(rel_freq, final_embeddings)
-  print("DATA VECTOR:", data_vector)
+with open("embedding", "wb") as embed_file:
+    pickle.dump(final_embeddings, embed_file)
 
+with open("count", "wb") as count_file:
+    pickle.dump(count, count_file)
 
-# Step 6: Visualize the embeddings.
-
-def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
-  assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
-  plt.figure(figsize=(18, 18))  #in inches
-  for i, label in enumerate(labels):
-    x, y = low_dim_embs[i,:]
-    plt.scatter(x, y)
-    plt.annotate(label,
-                 xy=(x, y),
-                 xytext=(5, 2),
-                 textcoords='offset points',
-                 ha='right',
-                 va='bottom')
-
-  plt.savefig(filename)
-
-try:
-  from sklearn.manifold import TSNE
-  import matplotlib.pyplot as plt
-
-  tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
-  plot_only = 500
-  low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only,:])
-  labels = [reverse_dictionary[i] for i in xrange(plot_only)]
-  plot_with_labels(low_dim_embs, labels)
-
-except ImportError:
-  print("Please install sklearn, matplotlib, and scipy to visualize embeddings.")
-
+with open("reverse_dictionary", "wb") as reverse_dictionary_file:
+    pickle.dump(reverse_dictionary, reverse_dictionary_file)
