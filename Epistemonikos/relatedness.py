@@ -15,7 +15,7 @@ with open("embedding", "rb") as embed_serialized:
 with open("reverse_dictionary", "rb") as reverse_dictionary_file:
     reverse_dictionary = pickle.load(reverse_dictionary_file)
 
-labels = [word for word in reverse_dictionary.values()]
+labels = [reverse_dictionary[i] for i in range(len(reverse_dictionary))]
 
 pairs = []
 with open("UMNSRS_relatedness.csv", "r") as csv_file:
