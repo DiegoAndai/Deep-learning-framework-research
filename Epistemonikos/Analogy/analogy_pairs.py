@@ -1,6 +1,6 @@
 """This file generates pairs of words, groups them
 by the relationship of their words and saves that
-information in a JSON file"""
+information in a file"""
 
 import json
 import requests
@@ -20,7 +20,14 @@ def generate_pairs(words, relations):
         rel_dict = {}
         for word in words:
 
-            obj = requests.get('{}query?start=/c/en/{}&rel=/r/{}'.format(concept_net, word, rel)).json()
+            try:
+                obj = requests.get('{}query?start=/c/en/{}&rel=/r/{}'.format(concept_net, word, rel)).json()
+            except json.decoder.JSONDecodeError:
+                print("Hourly request limit reached.")
+                if rel_dict:
+                    all_rel_dict[rel] = rel_dict
+                return all_rel_dict
+
             accounted_for = []
             for edge in obj["edges"]:
                 end = edge["end"]
@@ -53,5 +60,3 @@ if __name__ == '__main__':
 
     with open("relation_pairs", 'w') as pf:
         json.dump(generate_pairs(words, relations), pf)
-
-
