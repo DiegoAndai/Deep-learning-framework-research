@@ -1,3 +1,7 @@
+"""This code is based on a TensorFlow tutorial about Word2Vec at
+https://www.tensorflow.org/versions/r0.12/tutorials/word2vec/index.html"""
+
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -15,13 +19,12 @@ from six.moves import urllib
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-
 n = input("Press w and enter to load from words file or just enter to parse from json file ").lower()
-if os.path.exists('words.txt') and n == "w":
-    with open('words.txt') as w_file:
+if os.path.exists('SkipGram/words.txt') and n == "w":
+    with open('SkipGram/words.txt') as w_file:
         words = [word.rstrip() for word in w_file]
 else:
-    with open("documents_array.json", "r") as json_file:
+    with open("SkipGram/documents_array.json", "r") as json_file:
         loaded = json.load(json_file)
 
     reader = PaperReader(loaded)
@@ -119,7 +122,7 @@ with graph.as_default():
   # Input data.
   train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
   train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
-  valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
+  valid_dataset = tf.constant(np.array([0,1,2,3]), dtype=tf.int32)  # change [0,1,2,3] back to valid_examples
 
   # Ops and variables pinned to the CPU because of missing GPU implementation
   with tf.device('/cpu:0'):

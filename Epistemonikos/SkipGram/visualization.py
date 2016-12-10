@@ -4,17 +4,17 @@ import json
 import collections
 import numpy as np
 
-with open("embedding", "rb") as embed_serialized:
+with open("SkipGram/embedding", "rb") as embed_serialized:
     final_embeddings = pickle.load(embed_serialized)
 print(final_embeddings.shape, final_embeddings[0].shape)
 
-with open("documents_array.json", "r") as json_file:
+with open("SkipGram/documents_array.json", "r") as json_file:
     loaded = json.load(json_file)
 
-with open("count", "rb") as count_file:
+with open("SkipGram/count", "rb") as count_file:
     count = pickle.load(count_file)
 
-with open("reverse_dictionary", "rb") as reverse_dictionary_file:
+with open("SkipGram/reverse_dictionary", "rb") as reverse_dictionary_file:
     reverse_dictionary = pickle.load(reverse_dictionary_file)
 
 

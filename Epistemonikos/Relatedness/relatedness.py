@@ -7,12 +7,13 @@ from scipy.stats.stats import pearsonr
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import namedtuple
 
+
 RelatedTuple = namedtuple("RelatedTuple", ["term1", "term2", "relatedness"])
 
-with open("embedding", "rb") as embed_serialized:
+with open("../SkipGram/embedding", "rb") as embed_serialized:
     final_embeddings = pickle.load(embed_serialized)
 
-with open("reverse_dictionary", "rb") as reverse_dictionary_file:
+with open("../SkipGram/reverse_dictionary", "rb") as reverse_dictionary_file:
     reverse_dictionary = pickle.load(reverse_dictionary_file)
 
 labels = [reverse_dictionary[i] for i in range(len(reverse_dictionary))]
