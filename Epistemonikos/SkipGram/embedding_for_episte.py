@@ -19,11 +19,13 @@ from six.moves import urllib
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-n = input("Press w and enter to load from words file or just enter to parse from json file ").lower()
+n = input("Enter 'original' to train with Tensorflow's tutorial words, enter 'w' to load Epistemonikos data from words "
+          "file or just enter to parse Epistemonikos data from json file ").lower()
+
 if os.path.exists('SkipGram/words.txt') and n == "w":
     with open('SkipGram/words.txt') as w_file:
         words = [word.rstrip() for word in w_file]
-else:
+elif not n:
     with open("SkipGram/documents_array.json", "r") as json_file:
         loaded = json.load(json_file)
 
@@ -32,6 +34,36 @@ else:
     reader.generate_words_list()
     reader.save_words()
     words = reader.words
+elif n == "original":
+    # Step 1: Download the data.
+    url = 'http://mattmahoney.net/dc/'
+
+
+    def maybe_download(filename, expected_bytes):
+      """Download a file if not present, and make sure it's the right size."""
+      if not os.path.exists(filename):
+        filename, _ = urllib.request.urlretrieve(url + filename, filename)
+      statinfo = os.stat(filename)
+      if statinfo.st_size == expected_bytes:
+        print('Found and verified', filename)
+      else:
+        print(statinfo.st_size)
+        raise Exception(
+            'Failed to verify ' + filename + '. Can you get to it with a browser?')
+      return filename
+
+    filename = maybe_download('text8.zip', 31344016)
+
+
+    # Read the data into a list of strings.
+    def read_data(filename):
+      """Extract the first file enclosed in a zip file as a list of words"""
+      with zipfile.ZipFile(filename) as f:
+        data = tf.compat.as_str(f.read(f.namelist()[0])).split()
+      return data
+
+    words = read_data(filename)
+    print('Data size', len(words))
 
 # Step 2: Build the dictionary and replace rare words with UNK token.
 print("step 2")
@@ -122,7 +154,7 @@ with graph.as_default():
   # Input data.
   train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
   train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
-  valid_dataset = tf.constant(np.array([0,1,2,3]), dtype=tf.int32)  # change [0,1,2,3] back to valid_examples
+  valid_dataset = tf.constant(np.array(valid_examples), dtype=tf.int32)
 
   # Ops and variables pinned to the CPU because of missing GPU implementation
   with tf.device('/cpu:0'):
