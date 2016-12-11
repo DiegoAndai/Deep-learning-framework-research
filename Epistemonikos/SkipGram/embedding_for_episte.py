@@ -185,7 +185,8 @@ with graph.as_default():
   valid_embeddings = tf.nn.embedding_lookup(
       normalized_embeddings, valid_dataset)
   similarity = tf.matmul(
-      valid_embeddings, normalized_embeddings, transpose_b=True)
+      valid_embeddings, normalized_embeddings, transpose_b=True)  # matrix (16x50000) in which each line has
+  # the similarity values
 
   # Add variable initializer.
   init = tf.initialize_all_variables()
@@ -223,8 +224,8 @@ with tf.Session(graph=graph) as session:
       sim = similarity.eval()
       for i in xrange(valid_size):
         valid_word = reverse_dictionary[valid_examples[i]]
-        top_k = 8 # number of nearest neighbors
-        nearest = (-sim[i, :]).argsort()[1:top_k+1]
+        top_k = 8  # number of nearest neighbors
+        nearest = (-sim[i, :]).argsort()[1:top_k+1]  # note argsort gives indices, not elements.
         log_str = "Nearest to %s:" % valid_word
         for k in xrange(top_k):
           close_word = reverse_dictionary[nearest[k]]
