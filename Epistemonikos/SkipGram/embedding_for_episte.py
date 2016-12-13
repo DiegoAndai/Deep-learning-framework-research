@@ -26,7 +26,7 @@ if os.path.exists('SkipGram/words.txt') and n == "w":
     with open('SkipGram/words.txt') as w_file:
         words = [word.rstrip() for word in w_file]
 elif not n:
-    with open("SkipGram/documents_array.json", "r") as json_file:
+    with open("documents_array.json", "r") as json_file:
         loaded = json.load(json_file)
 
     reader = PaperReader(loaded)

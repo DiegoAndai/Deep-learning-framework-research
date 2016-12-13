@@ -52,12 +52,12 @@ class PaperReader:
                 return None
         return "".join(ch for ch in word if ch in self.keep)
 
-    def generate_words_list(self):
+    def generate_words_list(self, word_limit=None):
         i = 0
         self.words = []
         for abstract in self:
             if abstract:
-                self.words += abstract
+                self.words += abstract[:word_limit] if word_limit else abstract
             if i % 50000 == 0:
                 print("{} papers parsed so far".format(i))
             i += 1
