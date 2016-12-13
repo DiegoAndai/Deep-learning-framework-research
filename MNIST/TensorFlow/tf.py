@@ -1,3 +1,6 @@
+# The base of this code was obtained from 
+# https://www.tensorflow.org/versions/r0.10/tutorials/mnist/beginners/index.html
+
 from MNIST.mnist_data_loader import loader
 import tensorflow as tf
 import numpy as np
