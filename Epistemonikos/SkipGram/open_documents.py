@@ -40,6 +40,9 @@ class PaperReader:
         else:
             return None
 
+    def __len__(self):
+        return len(self.papers)
+
     def parse_line(self, line):
             line = line.lower()
             words = line.split()

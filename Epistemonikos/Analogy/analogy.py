@@ -1,4 +1,6 @@
-# TO-DO: define the graph only once and not each time predict_word is called.
+# TO-DO:
+# - define the graph only once and not each time predict_word is called.
+# - define predicted_word_ids inside the graph
 import pickle
 import numpy as np
 import tensorflow as tf
@@ -26,11 +28,16 @@ def predict_word(wa, wb, wc):
     with tf.Session() as session:
         init.run()
         sim = session.run(similarity)
-        predicted_word_ids = (-sim[0, :]).argsort()[:100]
+        predicted_word_ids = (-sim[0, :]).argsort()[:10]
         predicted_words = [reverse_dictionary[predicted_word_id] for predicted_word_id in predicted_word_ids]
+        print("{} is to {} as {} is to {}".format(wa, wb, wc, predicted_words))
         return predicted_words
 
 
 if __name__ == '__main__':
 
-    print(predict_word("health", "sickness", "good"))  # "evil" is expected
+    predict_word("health", "sickness", "good")  # "evil" or similar is expected
+    predict_word("paris", "france", "rome")  # italy
+    predict_word("big", "bigger", "small")
+    predict_word("copper", "cu", "gold")
+
