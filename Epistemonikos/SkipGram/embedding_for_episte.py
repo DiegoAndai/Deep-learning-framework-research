@@ -13,20 +13,25 @@ import os
 import random
 import zipfile
 import pickle
+import string
 
 import numpy as np
 from six.moves import urllib
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-n = input("Enter 'original' to train with Tensorflow's tutorial words, enter 'w' to load Epistemonikos data from words "
+n = input("Enter 'original' to train with Tensorflow's tutorial words, 'wiki' to use wikipedia corpus, enter 'w' to load Epistemonikos data from words "
           "file or just enter to parse Epistemonikos data from json file ").lower()
 
-if os.path.exists('SkipGram/words.txt') and n == "w":
-    with open('SkipGram/words.txt') as w_file:
+if os.path.exists('../words.txt') and n == "w":
+    with open('../words.txt') as w_file:
         words = [word.rstrip() for word in w_file]
 elif not n:
+<<<<<<< HEAD
+    with open("../documents_array.json", "r") as json_file:
+=======
     with open("documents_array.json", "r") as json_file:
+>>>>>>> 7b47a33df15ac0516d698b3ae503d3c1a14b0ecd
         loaded = json.load(json_file)
 
     reader = PaperReader(loaded)
@@ -34,6 +39,20 @@ elif not n:
     reader.generate_words_list()
     reader.save_words()
     words = reader.words
+elif n == "wiki":
+    keep = string.ascii_lowercase + '-'
+    with open("allwiki", "r") as allwiki:
+        words = []
+        for line in allwiki:
+            line = line.lower()
+            line_words = line.split()
+            for word in line_words:
+                valid = True
+                for ch in "123456789</>":
+                    if ch in word:
+                        valid = False
+                if valid:
+                    words.append("".join(ch for ch in word if ch in keep))
 elif n == "original":
     # Step 1: Download the data.
     url = 'http://mattmahoney.net/dc/'
@@ -63,7 +82,7 @@ elif n == "original":
       return data
 
     words = read_data(filename)
-    print('Data size', len(words))
+print('Data size', len(words))
 
 # Step 2: Build the dictionary and replace rare words with UNK token.
 print("step 2")
@@ -134,16 +153,16 @@ for i in range(8):
 print("step 4")
 
 
-batch_size = 128
-embedding_size = 128  # Dimension of the embedding vector.
-skip_window = 2       # How many words to consider left and right.
+batch_size = 50
+embedding_size = 1200  # Dimension of the embedding vector.
+skip_window = 3      # How many words to consider left and right.
 num_skips = 2         # How many times to reuse an input to generate a label.
 
 # We pick a random validation set to sample nearest neighbors. Here we limit the
 # validation samples to the words that have a low numeric ID, which by
 # construction are also the most frequent.
 valid_size = 16     # Random set of words to evaluate similarity on.
-valid_window = 100  # Only pick dev samples in the head of the distribution.
+valid_window = 10000 # Only pick dev samples in the head of the distribution.
 valid_examples = np.random.choice(valid_window, valid_size, replace=False)
 num_sampled = 64    # Number of negative examples to sample.
 
@@ -176,8 +195,8 @@ with graph.as_default():
       tf.nn.nce_loss(nce_weights, nce_biases, embed, train_labels,
                      num_sampled, vocabulary_size))
 
-  # Construct the SGD optimizer using a learning rate of 1.0.
-  optimizer = tf.train.GradientDescentOptimizer(1.0).minimize(loss)
+  # Construct the SGD optimizer using a learning rate of 0.1.
+  optimizer = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
 
   # Compute the cosine similarity between minibatch examples and all embeddings.
   norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
@@ -194,7 +213,7 @@ with graph.as_default():
 # Step 5: Begin training.
 print("step 5")
 
-num_steps = 100001
+num_steps = 300001
 
 with tf.Session(graph=graph) as session:
   # We must initialize all variables before we use them.
@@ -202,6 +221,7 @@ with tf.Session(graph=graph) as session:
   print("Initialized")
 
   average_loss = 0
+  loss_progress = list()
   for step in xrange(num_steps):
     batch_inputs, batch_labels = generate_batch(
         batch_size, num_skips, skip_window)
@@ -217,6 +237,7 @@ with tf.Session(graph=graph) as session:
         average_loss /= 2000
       # The average loss is an estimate of the loss over the last 2000 batches.
       print("Average loss at step ", step, ": ", average_loss)
+      loss_progress.append(average_loss)
       average_loss = 0
 
     # Note that this is expensive (~20% slowdown if computed every 500 steps)
@@ -242,3 +263,11 @@ with open("count", "wb") as count_file:
 
 with open("reverse_dictionary", "wb") as reverse_dictionary_file:
     pickle.dump(reverse_dictionary, reverse_dictionary_file)
+
+#graph of loss progress
+import matplotlib.pyplot as plt
+from numpy import arange
+range_ = arange(0, len(loss_progress), 1)
+plt.plot(range_, loss_progress)
+#plt.savefig("Adamoptimizer")
+plt.show()
