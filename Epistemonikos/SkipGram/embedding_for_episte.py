@@ -20,18 +20,15 @@ from six.moves import urllib
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-n = input("Enter 'original' to train with Tensorflow's tutorial words, 'wiki' to use wikipedia corpus, enter 'w' to load Epistemonikos data from words "
+n = input("Enter 'original' to train with Tensorflow's tutorial words, 'wiki' to use wikipedia corpus, "
+          "enter 'w' to load Epistemonikos data from words "
           "file or just enter to parse Epistemonikos data from json file ").lower()
 
-if os.path.exists('../words.txt') and n == "w":
-    with open('../words.txt') as w_file:
+if os.path.exists('words.txt') and n == "w":
+    with open('words.txt') as w_file:
         words = [word.rstrip() for word in w_file]
 elif not n:
-<<<<<<< HEAD
-    with open("../documents_array.json", "r") as json_file:
-=======
     with open("documents_array.json", "r") as json_file:
->>>>>>> 7b47a33df15ac0516d698b3ae503d3c1a14b0ecd
         loaded = json.load(json_file)
 
     reader = PaperReader(loaded)

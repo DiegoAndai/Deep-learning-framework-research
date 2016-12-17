@@ -28,6 +28,8 @@ class PaperReader:
                     abstract = paper["abstract"]
                     if abstract:
                         yield self.parse_line(abstract)
+                    else:
+                        yield []
 
                 except KeyError:
                     print("no abstract for paper {}".format(paper["id"]))

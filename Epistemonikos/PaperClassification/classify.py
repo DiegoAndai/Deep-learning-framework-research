@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 import json
+import sys
 from Epistemonikos.SkipGram.open_documents import PaperReader
 
 
@@ -92,6 +93,8 @@ def get_abs_vectors(to_classify, abstracts_limit=None, save=True):
         parsed += 1
         if not parsed % 10000:
             print("{}/{}".format(parsed, n_abstracts))
+    assert n_abstracts == parsed
+    assert len(abs_vectors) == n_abstracts
     abs_vectors = np.asarray(abs_vectors)
 
     if save:
@@ -128,12 +131,12 @@ def get_n_papers(n, i=0):
     with open("../SkipGram/documents_array.json", "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
-    to_classify_reader = PaperReader(loaded)
-    return to_classify_reader.papers[i:i + n]
+    return loaded[i:i + n]
 
 
 def get_accuracy(labels, predictions):
 
+    assert len(labels) == len(predictions)
     hits = 0
     for l, p in zip(labels, predictions):
         if l == p:
@@ -149,22 +152,40 @@ if __name__ == '__main__':
                       "overview",
                       "structured-summary-of-primary-study"]
 
-    option = input("0 -> fresh\n"
-                   "else -> load\n")
+    words = 10
 
-    # Classify first 50 papers
-    papers_to_classify = get_n_papers(50)
+    option = input("0 -> all fresh\n"
+                   "1 -> fresh abs, load refs\n"
+                   "2 -> fresh refs, load abs\n"
+                   "3 -> load all\n")
+
+    papers_to_classify = get_n_papers(1000, 10000)
 
     if option == "0":
-        ref_vecs = get_ref_vectors(document_types, abstracts_limit=10)
-        abs_vecs = get_abs_vectors(papers_to_classify, abstracts_limit=10)
+        ref_vecs = get_ref_vectors(document_types, abstracts_limit=words)
+        abs_vecs = get_abs_vectors(papers_to_classify, abstracts_limit=words)
 
-    else:
+    elif option == "1":
+        with open("reference_vectors", "rb") as rv:
+            ref_vecs = pickle.load(rv)
+        abs_vecs = get_abs_vectors(papers_to_classify, abstracts_limit=words)
+
+    elif option == "2":
+        with open("abstracts_vectors", "rb") as av:
+            abs_vecs = pickle.load(av)
+        ref_vecs = get_ref_vectors(document_types, abstracts_limit=words)
+
+    elif option == "3":
         with open("reference_vectors", "rb") as rv, open("abstracts_vectors", "rb") as av:
             ref_vecs = pickle.load(rv)
             abs_vecs = pickle.load(av)
+    else:
+        print("unkown option")
+        sys.exit()
+
+    print(ref_vecs.shape, abs_vecs.shape)
 
     labels = [paper["classification"] for paper in papers_to_classify]  # ground truth; actual classification of papers
     predictions = classify(ref_vecs, abs_vecs, document_types)  # predicted classification
-
+    print(len(labels), len(predictions))
     print(get_accuracy(labels, predictions))
