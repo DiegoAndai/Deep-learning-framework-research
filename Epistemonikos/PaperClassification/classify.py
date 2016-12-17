@@ -8,6 +8,7 @@ from Epistemonikos.SkipGram.open_documents import PaperReader
 
 class PVPClassifier:  # Pondered vector paper classifier
 
+    # Definition of ONE TensorFlow classification graph to use between instances. One graph to rule them all.
     classification_graph = tf.Graph()
     with classification_graph.as_default():
         ref_vecs = tf.placeholder(tf.float32, shape=[None, None])  # vectors to decide classification. Shape depends
