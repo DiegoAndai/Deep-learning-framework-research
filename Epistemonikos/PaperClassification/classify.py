@@ -39,7 +39,7 @@ class PVPClassifier:  # Pondered vector paper classifier
 
         """Generates one reference vector for each paper type.
         :parameter new_n_save: when True, the vectors are calculated and saved to a file,
-        otherwise they are obtained from reverence_vectors file."""
+        otherwise they are obtained from reference_vectors file."""
 
         if not new_n_save:
             with open("reference_vectors", "rb") as rv:
