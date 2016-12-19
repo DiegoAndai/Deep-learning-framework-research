@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 import json
-from Epistemonikos.SkipGram.open_documents import PaperReader
+from open_documents import PaperReader
 
 
 class PVPClassifier:  # Pondered vector paper classifier
@@ -132,11 +132,11 @@ class PVPClassifier:  # Pondered vector paper classifier
 
         print("Classifying papers...")
         with tf.Session(graph=PVPClassifier.classification_graph) as session:
-
             PVPClassifier.init_op.run()
             sim = session.run(PVPClassifier.similarity,
                               feed_dict={PVPClassifier.ref_vecs: self.reference_vectors,
                                          PVPClassifier.to_classify: self.abstracts_vectors})
+
 
         # list with the classification for abs_to_classify (no argsort in TensorFlow!!!!!)
         self.predictions = [self.classes[(-row).argsort()[0]] for row in sim]
@@ -149,15 +149,58 @@ class PVPClassifier:  # Pondered vector paper classifier
         for l, p in zip(self.labels, self.predictions):
             if l == p:
                 hits += 1
-        return hits / len(self.labels)
+        return '\nAccuracy: {:.5f}'.format(hits / len(self.labels))
+
+    def get_conf_matrix(self):
+        if len(self.labels) != len(self.predictions):
+            print("dimensions error. labels: {}, predictions: {}".format(len(self.labels),
+                                                                         len(self.predictions)))
+
+        class_dimension = len(self.classes)
+        conf_mtx = np.zeros([class_dimension, class_dimension])
+        for i in range(0, len(self.predictions)):
+            predicted_class = self.classes.index(self.predictions[i])
+            actual_class = self.classes.index(self.labels[i])
+            conf_mtx[actual_class][predicted_class] += 1
+        np.set_printoptions(suppress=True)
+        return conf_mtx
+
+    def get_recall(self, verbose = False):
+        conf_mtx = self.get_conf_matrix()
+        class_dimension = len(self.classes)
+        recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0, class_dimension)))
+        recall_sum = 0
+        for i in range(0, class_dimension):
+            rcl = recall(i)
+            if not np.isnan(rcl):
+                recall_sum += rcl
+            if verbose:
+                print('Recall {}: {:.5f}'.format(i, rcl))
+
+        return '\nRecall mean: {:.5f}'.format(recall_sum/class_dimension)
+
+    def print_precision(self, verbose = False):
+        conf_mtx = self.get_conf_matrix()
+        class_dimension = len(self.classes)
+        precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0, class_dimension)))
+        precision_sum = 0
+        for i in range(0, class_dimension):
+            label_precision = precision(i)
+            if not np.isnan(label_precision):
+                precision_sum += label_precision
+            if verbose:
+                print('Precision {}: {:.5f}'.format(i, label_precision))
+
+        return '\nPrecision mean: {:.5f}'.format(precision_sum / class_dimension)
 
 
 def get_n_papers(n, i=0):
 
-    with open("../SkipGram/documents_array.json", "r", encoding="utf-8") as json_file:
+    with open("../documents_array.json", "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
     return loaded[i:i + n]
+
 
 
 if __name__ == '__main__':
@@ -181,4 +224,7 @@ if __name__ == '__main__':
     classifier.get_ref_vectors(new_n_save=False)
     classifier.get_abs_vectors(get_n_papers(200), new_n_save=False)
     classifier.classify()
+    print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())
+    print(classifier.get_recall())
+    print(classifier.get_precision())
