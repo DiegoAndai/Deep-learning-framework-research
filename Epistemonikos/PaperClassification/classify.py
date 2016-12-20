@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 import json
-from open_documents import PaperReader
+from Epistemonikos.SkipGram.open_documents import PaperReader
 
 
 class PVPClassifier:  # Pondered vector paper classifier
@@ -196,11 +196,10 @@ class PVPClassifier:  # Pondered vector paper classifier
 
 def get_n_papers(n, i=0):
 
-    with open("../documents_array.json", "r", encoding="utf-8") as json_file:
+    with open("../SkipGram/documents_array.json", "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
     return loaded[i:i + n]
-
 
 
 if __name__ == '__main__':
@@ -227,4 +226,4 @@ if __name__ == '__main__':
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())
     print(classifier.get_recall())
-    print(classifier.get_precision())
+    print(classifier.print_precision())
