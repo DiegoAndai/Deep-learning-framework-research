@@ -30,7 +30,10 @@ There are some large datasets needed to train models that are not on this reposi
 │   │   ├── analogy_pairs.py
 │   │
 │   ├── PaperClassification
+│   │   ├── abstract_vectors
 │   │   ├── classify.py
+│   │   ├── open_documents.py
+│   │   ├── reference_vectors
 │   │
 │   ├── Relatedness
 │   │   ├── UMNSRS_relatedness.csv
@@ -38,11 +41,14 @@ There are some large datasets needed to train models that are not on this reposi
 │   │   ├── wordsim_relatedness_goldstandard.txt
 │   │
 │   ├── Skipgram
+│       ├── count
+│       ├── documents_array.json
 │       ├── embedding
 │       ├── embedding_for_episte.py
 │       ├── open_documents.py
 │       ├── reverse_dictionary
 │       ├── visualization.py
+│       ├── words.txt
 │       ├── Advanced
 │           ├── word2vec_optimized.py
 │
