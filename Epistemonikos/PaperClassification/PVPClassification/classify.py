@@ -1,3 +1,8 @@
+# TODO: Output results to a file, optionally letting the user specify it
+# TODO: fix RuntimeWarning: invalid value encountered in true_divide rel_freq = freq / nwords
+# (caused by abstract absence)
+# TODO: change reference_papers constructor parameter to a path to a json file with the papers
+
 import collections
 import tensorflow as tf
 import numpy as np
@@ -137,7 +142,6 @@ class PVPClassifier:  # Pondered vector paper classifier
                               feed_dict={PVPClassifier.ref_vecs: self.reference_vectors,
                                          PVPClassifier.to_classify: self.abstracts_vectors})
 
-
         # list with the classification for abs_to_classify (no argsort in TensorFlow!!!!!)
         self.predictions = [self.classes[(-row).argsort()[0]] for row in sim]
         print("Papers classified.")
@@ -219,9 +223,18 @@ if __name__ == '__main__':
     with open("../SkipGram/documents_array.json", encoding="utf-8") as da:
         ref_papers = json.load(da)
 
+    # with open("../SkipGram/Advanced/Saved/embeddings", "rb") as e:
+    #     model = pickle.load(e)
+    #
+    # with open("../SkipGram/Advanced/Saved/vocab.txt", "r") as v:
+    #     l_m_order = [line.split()[0].strip("b'") for line in v]
+    #
+    # with open("../SkipGram/documents_array.json", encoding="utf-8") as da:
+    #     ref_papers = json.load(da)
+
     classifier = PVPClassifier(model, l_m_order, document_types, ref_papers)
-    classifier.get_ref_vectors(new_n_save=False)
-    classifier.get_abs_vectors(get_n_papers(200), new_n_save=False)
+    classifier.get_ref_vectors(new_n_save=True)
+    classifier.get_abs_vectors(get_n_papers(200), new_n_save=True)  # classify first 200 papers
     classifier.classify()
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())

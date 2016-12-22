@@ -417,6 +417,7 @@ def _start_shell(local_ns=None):
 
 def main(_):
     """Train a word2vec model."""
+
     if not FLAGS.train_data or not FLAGS.eval_data or not FLAGS.save_path:
         print("--train_data --eval_data and --save_path must be specified.")
         sys.exit(1)
@@ -424,10 +425,10 @@ def main(_):
     with tf.Graph().as_default(), tf.Session() as session:
         with tf.device("/cpu:0"):
             model = Word2Vec(opts, session)
-            # model.read_analogies()  # Read analogy questions
+            model.read_analogies()  # Read analogy questions
         for _ in xrange(opts.epochs_to_train):
             model.train()  # Process one epoch
-            # model.eval()  # Eval analogies.
+            model.eval()  # Eval analogies.
         # Perform a final save.
         # model.saver.save(session, os.path.join(opts.save_path, "model.ckpt"),
         #                 global_step=model.global_step)
@@ -436,8 +437,12 @@ def main(_):
             # [0]: model.analogy(b'france', b'paris', b'russia')
             # [1]: model.nearby([b'proton', b'elephant', b'maxwell'])
             _start_shell(locals())
-        with open('Saved/embeddings', 'wb') as e:
+        with open(os.path.join(opts.save_path, 'embeddings'), 'wb') as e, \
+                open(os.path.join(opts.save_path, 'params.txt'), 'w') as p:
             pickle.dump(model._w_in.eval(), e)
+            print("Model type: SkipGram")
+            for flag, value in opts.__dict__.items():
+                print('{}: {}'.format(flag, value), file=p)
 
 
 if __name__ == "__main__":
