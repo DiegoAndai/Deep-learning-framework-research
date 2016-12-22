@@ -4,6 +4,8 @@ There are some large datasets needed to train models that are not on this reposi
 
 ## Structure
 ```
+├──Readme.md
+├──Repository's structure.md
 ├──ComparisonTable
 │   ├── README.md
 │   ├── categories.md
@@ -42,14 +44,57 @@ There are some large datasets needed to train models that are not on this reposi
 │       ├── reverse_dictionary
 │       ├── visualization.py
 │       ├── Advanced
-            ├── word2vec_optimized.py
+│           ├── word2vec_optimized.py
+│
+├── MNIST
+│   ├── README.md
+│   ├── Keras
+│   │   ├── Keras_mnist_mlp.ipynb
+│   │
+│   ├── Mxnet
+│   │   ├── Mxnet_mnist_mlp.ipynb
+│   │
+│   ├── Tensorflow
+│   │   ├── tf.py
+│   │   ├── tf.png
+│   │
+│   ├── Torch
+│   │   ├── torch.png
+│   │   ├── torch.lua
+│   │   ├── MNISTParser.lua
+│   │
+│   ├── mnist_data_loader
+│       ├── loader.py
+│       ├── mnist_parse.py
+│       ├── t10k-images-idx3-ubyte
+│       ├── t10k-labels-idx1-ubyte
+│       ├── train-images-idx3-ubyte
+│       ├── train-labels-idx1-ubyte
+│
+├── SOWebsite
+│   ├── Labs.py
+│   ├── Plot.py
+│   ├── Run.py
+│   ├── static
+│   │   ├── eztylo.css
+│   │   ├── plots
+│   │       ├── overview_plot.png
+│   │
+│   ├── templates
+│       ├── base.html
+│       ├── framework.html
+│           ├── overview.html
+│   
+├── Word2Vec
+    ├── 3 datasets word embedding 1,000.png
+    ├── 3 datasets word embedding 10,000.png
+    ├── 3 datasets word embedding 2,500.png
+    ├── 3 datasets word embedding 5,000.png
+    ├── Word2Vec.ipynb
+    ├── movie quotes word embedding 1,000.png
+    ├── movie quotes word embedding 10,000.png
+    ├── movie quotes word embedding 5,000.png
 
-
-MNIST
-SOWebsite
-Word2Vec
-Readme.md
-Repository's structure.md
 ```
 
 
