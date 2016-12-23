@@ -1,9 +1,14 @@
+# TODO: Output results to a file, optionally letting the user specify it
+# TODO: fix RuntimeWarning: invalid value encountered in true_divide rel_freq = freq / nwords
+# (caused by abstract absence)
+# TODO: change reference_papers constructor parameter to a path to a json file with the papers
+
 import collections
 import tensorflow as tf
 import numpy as np
 import pickle
 import json
-from open_documents import PaperReader
+from Epistemonikos.SkipGram.open_documents import PaperReader
 
 
 class PVPClassifier:  # Pondered vector paper classifier
@@ -29,11 +34,14 @@ class PVPClassifier:  # Pondered vector paper classifier
         # of the papers to be classified.
         self.reference_papers = reference_papers  # List with papers (dictionaries) used to generate reference vectors.
         self.classes = classes
-        self.language_model = language_model  # Word embeddings used to get vectors from text.
+
         self.lang_mod_order = lang_mod_order  # list of words of the language model (to know which
         # word an embedding represents).
         self.predictions = None  # Classification
         self.labels = None
+        with tf.Session().as_default():
+            self.language_model = tf.nn.l2_normalize(language_model,
+                                                     1).eval()  # Word embeddings used to get vectors from text.
 
     def get_ref_vectors(self, new_n_save=True):
 
@@ -137,7 +145,6 @@ class PVPClassifier:  # Pondered vector paper classifier
                               feed_dict={PVPClassifier.ref_vecs: self.reference_vectors,
                                          PVPClassifier.to_classify: self.abstracts_vectors})
 
-
         # list with the classification for abs_to_classify (no argsort in TensorFlow!!!!!)
         self.predictions = [self.classes[(-row).argsort()[0]] for row in sim]
         print("Papers classified.")
@@ -149,7 +156,7 @@ class PVPClassifier:  # Pondered vector paper classifier
         for l, p in zip(self.labels, self.predictions):
             if l == p:
                 hits += 1
-        return '\nAccuracy: {:.5f}'.format(hits / len(self.labels))
+        return hits / len(self.labels)
 
     def get_conf_matrix(self):
         if len(self.labels) != len(self.predictions):
@@ -196,11 +203,10 @@ class PVPClassifier:  # Pondered vector paper classifier
 
 def get_n_papers(n, i=0):
 
-    with open("../documents_array.json", "r", encoding="utf-8") as json_file:
+    with open("../../SkipGram/documents_array.json", "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
     return loaded[i:i + n]
-
 
 
 if __name__ == '__main__':
@@ -211,20 +217,26 @@ if __name__ == '__main__':
                       "overview",
                       "structured-summary-of-primary-study"]
 
-    with open("../SkipGram/embedding", "rb") as e:
+    # with open("../../SkipGram/embedding", "rb") as e:
+    #     model = pickle.load(e)
+    #
+    # with open("../../SkipGram/count", "rb") as c:
+    #     l_m_order = [w[0] for w in pickle.load(c)]
+
+    with open("Tests/Test1/Model/embeddings", "rb") as e:
         model = pickle.load(e)
 
-    with open("../SkipGram/count", "rb") as c:
-        l_m_order = [w[0] for w in pickle.load(c)]
+    with open("Tests/Test1/Model/vocab.txt", "r") as v:
+        l_m_order = [line.split()[0].strip("b'") for line in v]
 
-    with open("../SkipGram/documents_array.json", encoding="utf-8") as da:
+    with open("../../SkipGram/documents_array.json", encoding="utf-8") as da:
         ref_papers = json.load(da)
 
     classifier = PVPClassifier(model, l_m_order, document_types, ref_papers)
-    classifier.get_ref_vectors(new_n_save=False)
-    classifier.get_abs_vectors(get_n_papers(200), new_n_save=False)
+    classifier.get_ref_vectors(new_n_save=True)
+    classifier.get_abs_vectors(get_n_papers(200), new_n_save=True)  # classify first 200 papers
     classifier.classify()
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())
     print(classifier.get_recall())
-    print(classifier.get_precision())
+    print(classifier.print_precision())
