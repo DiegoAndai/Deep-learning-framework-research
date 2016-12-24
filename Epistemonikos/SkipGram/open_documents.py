@@ -33,7 +33,7 @@ class PaperReader:
 
         self.loop_train = True  # whether __iter__ should loop over train or test papers.
 
-    def toogle_loop_train(self):
+    def toggle_loop_train(self):
         self.loop_train = False if self.loop_train else True
 
     def apply_filter(self, f):
