@@ -11,19 +11,19 @@ class PaperReader:
         # to limit the words used to generate words' list
 
         # Dispose of short (if abstracts_min is True) or empty abstracts otherwise
-        self.papers = []
+        self._papers = []
         for paper in papers:
             if abstracts_min and len(paper["abstract"]) >= abstracts_min:
-                self.papers.append(paper)
+                self._papers.append(paper)
             elif not abstracts_min and paper["abstract"] and dispose_no_abstract:
-                self.papers.append(paper)
+                self._papers.append(paper)
             elif not abstracts_min and not dispose_no_abstract:
-                self.papers = papers
+                self._papers = papers
                 break
 
-        divide = int(len(self.papers) * train_percent / 100)
-        self._train_papers = self.papers[:divide]
-        self._test_papers = self.papers[divide:] if divide < len(self.papers) else self.papers
+        divide = int(len(self._papers) * train_percent / 100)
+        self._train_papers = self._papers[:divide]
+        self._test_papers = self._papers[divide:] if divide < len(self._papers) else self._papers
 
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
@@ -64,14 +64,14 @@ class PaperReader:
     def __getitem__(self, index):  # ignores filters
         if self.filter_by:
             print("WARNING: __getitem__ for class PaperReader is ignoring filters {}".format(self.filter_by))
-        abstract = self.papers[index]["abstract"]
+        abstract = self._papers[index]["abstract"]
         if abstract:
             return self.parse_line(abstract)
         else:
             return None
 
     def __len__(self):
-        return len(self.papers)
+        return len(self._papers)
 
     def parse_line(self, line):
             line = line.lower()
@@ -113,3 +113,11 @@ class PaperReader:
             with open("words.txt", 'w') as words_file:
                 for w in self.words:
                     words_file.write("{}\n".format(w))
+
+    def save_train(self, path):
+        with open(path, "wb") as trs:
+            pickle.dump(self.get_filtered_train_papers(), trs)
+
+    def save_test(self, path):
+        with open(path, "wb") as tes:
+            pickle.dump(self.get_filtered_test_papers(), tes)

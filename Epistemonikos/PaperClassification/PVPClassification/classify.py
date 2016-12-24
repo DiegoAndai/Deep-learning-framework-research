@@ -212,29 +212,29 @@ def get_n_papers(n, path, i=0):
 if __name__ == '__main__':
 
     document_types = ["systematic-review",
-                      "structured-summary-of-systematic-review",
-                      "primary-study",
-                      "overview",
-                      "structured-summary-of-primary-study"]
+                      "primary-study"]
 
-    # with open("../../SkipGram/embedding", "rb") as e:
-    #     model = pickle.load(e)
-    #
-    # with open("../../SkipGram/count", "rb") as c:
-    #     l_m_order = [w[0] for w in pickle.load(c)]
-
-    with open("Tests/Test4/Model/embeddings", "rb") as e:
+    with open("../../SkipGram/embedding", "rb") as e:
         model = pickle.load(e)
 
-    with open("Tests/Test4/Model/vocab.txt", "r") as v:
-        l_m_order = [line.split()[0].strip("b'") for line in v]
+    with open("../../SkipGram/count", "rb") as c:
+        l_m_order = [w[0] for w in pickle.load(c)]
 
-    with open("../../SkipGram/documents_array.json", encoding="utf-8") as da:
-        ref_papers = json.load(da)
+    # with open("Tests/Test4/Model/embeddings", "rb") as e:
+    #     model = pickle.load(e)
+    #
+    # with open("Tests/Test4/Model/vocab.txt", "r") as v:
+    #     l_m_order = [line.split()[0].strip("b'") for line in v]
 
-    classifier = PVPClassifier(model, l_m_order, document_types, ref_papers)
-    classifier.get_ref_vectors(new_n_save=False)
-    classifier.get_abs_vectors(get_n_papers(2000, "../../SkipGram/documents_array.json"), new_n_save=True)  # classify first 200 papers
+    with open("../../SkipGram/train_set", "rb", encoding="utf-8") as da:
+        ref_papers = pickle.load(da)
+
+    with open("../../SkipGram/test_set", "rb", encoding="utf-8") as te:
+        papers_to_classify = pickle.load(te)
+
+    classifier = PVPClassifier(model, l_m_order, document_types, ref_papers, span=20)
+    classifier.get_ref_vectors(new_n_save=True)
+    classifier.get_abs_vectors(papers_to_classify, new_n_save=True)
     classifier.classify()
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())

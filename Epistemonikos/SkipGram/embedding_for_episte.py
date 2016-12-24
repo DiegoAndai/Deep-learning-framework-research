@@ -45,13 +45,15 @@ if os.path.exists('words.txt') and n == "w":
         words = [word.rstrip() for word in w_file]
 
 elif not n:
-    with open("documents_array.json", "r") as json_file:
+    with open("documents_array.json", "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
-    reader = PaperReader(loaded)
+    reader = PaperReader(loaded, train_percent=80, filters=["systematic-review", "primary-study"], abstracts_min=20)
     print("generating words")
     reader.generate_words_list()
     reader.save_words()
+    reader.save_train("train_set")
+    reader.save_test("test_set")
     words = reader.words
 
 elif n == "wiki":
