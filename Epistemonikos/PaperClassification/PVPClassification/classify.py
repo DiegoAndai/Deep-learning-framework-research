@@ -201,9 +201,9 @@ class PVPClassifier:  # Pondered vector paper classifier
         return '\nPrecision mean: {:.5f}'.format(precision_sum / class_dimension)
 
 
-def get_n_papers(n, i=0):
+def get_n_papers(n, path, i=0):
 
-    with open("../../SkipGram/documents_array.json", "r", encoding="utf-8") as json_file:
+    with open(path, "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
     return loaded[i:i + n]
@@ -217,24 +217,24 @@ if __name__ == '__main__':
                       "overview",
                       "structured-summary-of-primary-study"]
 
-    # with open("../../SkipGram/embedding", "rb") as e:
-    #     model = pickle.load(e)
-    #
-    # with open("../../SkipGram/count", "rb") as c:
-    #     l_m_order = [w[0] for w in pickle.load(c)]
-
-    with open("Tests/Test1/Model/embeddings", "rb") as e:
+    with open("../../SkipGram/embedding", "rb") as e:
         model = pickle.load(e)
 
-    with open("Tests/Test1/Model/vocab.txt", "r") as v:
-        l_m_order = [line.split()[0].strip("b'") for line in v]
+    with open("../../SkipGram/count", "rb") as c:
+        l_m_order = [w[0] for w in pickle.load(c)]
+
+    # with open("Tests/Test2/Model/embeddings", "rb") as e:
+    #     model = pickle.load(e)
+    #
+    # with open("Tests/Test2/Model/vocab.txt", "r") as v:
+    #     l_m_order = [line.split()[0].strip("b'") for line in v]
 
     with open("../../SkipGram/documents_array.json", encoding="utf-8") as da:
         ref_papers = json.load(da)
 
     classifier = PVPClassifier(model, l_m_order, document_types, ref_papers)
     classifier.get_ref_vectors(new_n_save=True)
-    classifier.get_abs_vectors(get_n_papers(200), new_n_save=True)  # classify first 200 papers
+    classifier.get_abs_vectors(get_n_papers(2000), new_n_save=True)  # classify first 200 papers
     classifier.classify()
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())
