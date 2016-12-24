@@ -4,18 +4,37 @@ import pickle
 
 class PaperReader:
 
-    def __init__(self, papers, filters=None, types=("systematic-review",
-                                                    "structured-summary-of-systematic-review",
-                                                    "primary-study",
-                                                    "overview",
-                                                    "structured-summary-of-primary-study"),
-                 balance=False, train_percent=100, dispose_empty=True):
-        self.papers = papers
+    def __init__(self, papers, filters=None, balance_train=False,
+                 train_percent=100, abstracts_min=None, dispose_no_abstract=True):
+
+        self.abstracts_min = abstracts_min  # used to dispose short abstracts and
+        # to limit the words used to generate words' list
+
+        # Dispose of short (if abstracts_min is True) or empty abstracts otherwise
+        self.papers = []
+        for paper in papers:
+            if abstracts_min and len(paper["abstract"]) >= abstracts_min:
+                self.papers.append(paper)
+            elif not abstracts_min and paper["abstract"] and dispose_no_abstract:
+                self.papers.append(paper)
+            elif not abstracts_min and not dispose_no_abstract:
+                self.papers = papers
+                break
+
+        divide = int(len(self.papers) * train_percent / 100)
+        self.train_papers = self.papers[:divide]
+        self.test_papers = self.papers[divide:] if divide < len(self.papers) else self.papers
+
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
         self.words = []
         self.filter_by = filters if filters else []  # filter by paper classification (systematic-review,
         # structured-summary-of-systematic-review, primary-study, overview, structured-summary-of-primary-study)
+
+        self.loop_train = True  # whether __iter__ should loop over train or test papers.
+
+    def toogle_loop_train(self):
+        self.loop_train = False if self.loop_train else True
 
     def apply_filter(self, f):
         self.filter_by.append(f)
@@ -27,7 +46,8 @@ class PaperReader:
         self.filter_by.remove(f)
 
     def __iter__(self):
-        for paper in self.papers:
+        looped_over = self.train_papers if self.loop_train else self.test_papers
+        for paper in looped_over:
             if not self.filter_by or (paper["classification"] and paper["classification"] in self.filter_by):
                 try:
                     abstract = paper["abstract"]
@@ -65,17 +85,23 @@ class PaperReader:
                 return None
         return "".join(ch for ch in word if ch in self.keep)
 
-    def generate_words_list(self, word_limit=None):
+    def generate_words_list(self):
         print("Generating list of words from abstracts with filters {}".format(self.filter_by))
         i = 0
         self.words = []
         for abstract in self:
             if abstract:
-                self.words += abstract[:word_limit] if word_limit else abstract
+                self.words += abstract[:self.abstracts_min] if self.abstracts_min else abstract
             if i % 50000 == 0 and i > 0:
                 print("{} papers parsed so far".format(i))
             i += 1
         print("Total word count: {}\nTotal papers: {}".format(len(self.words), i))
+
+    def get_train_papers(self):
+        return self.train_papers
+
+    def get_test_papers(self):
+        return self.test_papers
 
     def save_words(self, binary=False):
         if binary:
