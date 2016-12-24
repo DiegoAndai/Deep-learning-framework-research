@@ -22,8 +22,8 @@ class PaperReader:
                 break
 
         divide = int(len(self.papers) * train_percent / 100)
-        self.train_papers = self.papers[:divide]
-        self.test_papers = self.papers[divide:] if divide < len(self.papers) else self.papers
+        self._train_papers = self.papers[:divide]
+        self._test_papers = self.papers[divide:] if divide < len(self.papers) else self.papers
 
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
@@ -46,7 +46,7 @@ class PaperReader:
         self.filter_by.remove(f)
 
     def __iter__(self):
-        looped_over = self.train_papers if self.loop_train else self.test_papers
+        looped_over = self._train_papers if self.loop_train else self._test_papers
         for paper in looped_over:
             if not self.filter_by or (paper["classification"] and paper["classification"] in self.filter_by):
                 try:
@@ -97,11 +97,11 @@ class PaperReader:
             i += 1
         print("Total word count: {}\nTotal papers: {}".format(len(self.words), i))
 
-    def get_train_papers(self):
-        return self.train_papers
+    def get_filtered_train_papers(self):
+        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by, self._train_papers)]
 
-    def get_test_papers(self):
-        return self.test_papers
+    def get_filtered_test_papers(self):
+        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by, self._test_papers)]
 
     def save_words(self, binary=False):
         if binary:
