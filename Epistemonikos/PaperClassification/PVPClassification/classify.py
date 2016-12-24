@@ -54,7 +54,7 @@ class PVPClassifier:  # Pondered vector paper classifier
                 self.reference_vectors = pickle.load(rv)
             return
 
-        reader = PaperReader(self.reference_papers)
+        reader = PaperReader(self.reference_papers, abstracts_min=self.span)
 
         print("Calculating reference vectors...")
         document_vectors = list()
@@ -63,7 +63,7 @@ class PVPClassifier:  # Pondered vector paper classifier
 
             reader.remove_all_filters()
             reader.apply_filter(type_)
-            reader.generate_words_list(self.span)
+            reader.generate_words_list()
             type_words = reader.words
             type_count = collections.Counter(type_words)
 
@@ -226,15 +226,15 @@ if __name__ == '__main__':
     # with open("Tests/Test4/Model/vocab.txt", "r") as v:
     #     l_m_order = [line.split()[0].strip("b'") for line in v]
 
-    with open("../../SkipGram/train_set", "rb", encoding="utf-8") as da:
+    with open("../../SkipGram/train_set", "rb") as da:
         ref_papers = pickle.load(da)
 
-    with open("../../SkipGram/test_set", "rb", encoding="utf-8") as te:
+    with open("../../SkipGram/test_set", "rb") as te:
         papers_to_classify = pickle.load(te)
 
-    classifier = PVPClassifier(model, l_m_order, document_types, ref_papers, span=20)
+    classifier = PVPClassifier(model, l_m_order, document_types, ref_papers, span=10)
     classifier.get_ref_vectors(new_n_save=True)
-    classifier.get_abs_vectors(papers_to_classify, new_n_save=True)
+    classifier.get_abs_vectors(papers_to_classify[:1000], new_n_save=True)
     classifier.classify()
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())
