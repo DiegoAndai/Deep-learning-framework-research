@@ -98,10 +98,12 @@ class PaperReader:
         print("Total word count: {}\nTotal papers: {}".format(len(self.words), i))
 
     def get_filtered_train_papers(self):
-        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by, self._train_papers)]
+        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by if self.filter_by else True,
+                                  self._train_papers)]
 
     def get_filtered_test_papers(self):
-        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by, self._test_papers)]
+        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by if self.filter_by else True,
+                                  self._test_papers)]
 
     def save_words(self, binary=False):
         if binary:
