@@ -4,12 +4,17 @@ import pickle
 
 class PaperReader:
 
-    def __init__(self, papers, *filters):
+    def __init__(self, papers, filters=None, types=("systematic-review",
+                                                    "structured-summary-of-systematic-review",
+                                                    "primary-study",
+                                                    "overview",
+                                                    "structured-summary-of-primary-study"),
+                 balance=False, train_percent=100, dispose_empty=True):
         self.papers = papers
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
         self.words = []
-        self.filter_by = list(filters)  # filter by paper classification (systematic-review,
+        self.filter_by = filters if filters else []  # filter by paper classification (systematic-review,
         # structured-summary-of-systematic-review, primary-study, overview, structured-summary-of-primary-study)
 
     def apply_filter(self, f):
@@ -29,6 +34,7 @@ class PaperReader:
                     if abstract:
                         yield self.parse_line(abstract)
                     else:
+                        print("Abstract empty for paper {}".format(paper["id"]))
                         yield []
 
                 except KeyError:

@@ -1,6 +1,4 @@
 # TODO: Output results to a file, optionally letting the user specify it
-# TODO: fix RuntimeWarning: invalid value encountered in true_divide rel_freq = freq / nwords
-# (caused by abstract absence)
 # TODO: change reference_papers constructor parameter to a path to a json file with the papers
 
 import collections
@@ -12,6 +10,8 @@ from Epistemonikos.SkipGram.open_documents import PaperReader
 
 
 class PVPClassifier:  # Pondered vector paper classifier
+
+    class_sess = tf.Session()
 
     # Definition of ONE TensorFlow classification graph to use between instances. One graph to rule them all.
     classification_graph = tf.Graph()
@@ -39,7 +39,7 @@ class PVPClassifier:  # Pondered vector paper classifier
         # word an embedding represents).
         self.predictions = None  # Classification
         self.labels = None
-        with tf.Session().as_default():
+        with PVPClassifier.class_sess.as_default():
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
@@ -67,7 +67,7 @@ class PVPClassifier:  # Pondered vector paper classifier
             type_words = reader.words
             type_count = collections.Counter(type_words)
 
-            vector = []
+            vector = []  # list with the frequencies of words for paper type type_
             for word in self.lang_mod_order:
                 if word in type_count:
                     vector.append(type_count[word])
@@ -77,7 +77,7 @@ class PVPClassifier:  # Pondered vector paper classifier
 
             freq = np.array(vector, ndmin=2)
             nwords = sum(vector)
-            rel_freq = freq / nwords
+            rel_freq = freq / nwords if nwords else freq
             document_vectors.append(rel_freq)
 
         document_embeds = np.asarray([np.dot(vector, self.language_model) for vector in document_vectors])
@@ -120,7 +120,7 @@ class PVPClassifier:  # Pondered vector paper classifier
                     vector.append(0)
             freq = np.array(vector, ndmin=2)
             nwords = sum(vector)
-            rel_freq = freq / nwords
+            rel_freq = freq / nwords if nwords else freq
             abs_vector = np.dot(rel_freq, self.language_model).squeeze()
             abs_vectors.append(abs_vector)
             parsed += 1
@@ -217,24 +217,24 @@ if __name__ == '__main__':
                       "overview",
                       "structured-summary-of-primary-study"]
 
-    with open("../../SkipGram/embedding", "rb") as e:
-        model = pickle.load(e)
-
-    with open("../../SkipGram/count", "rb") as c:
-        l_m_order = [w[0] for w in pickle.load(c)]
-
-    # with open("Tests/Test2/Model/embeddings", "rb") as e:
+    # with open("../../SkipGram/embedding", "rb") as e:
     #     model = pickle.load(e)
     #
-    # with open("Tests/Test2/Model/vocab.txt", "r") as v:
-    #     l_m_order = [line.split()[0].strip("b'") for line in v]
+    # with open("../../SkipGram/count", "rb") as c:
+    #     l_m_order = [w[0] for w in pickle.load(c)]
+
+    with open("Tests/Test4/Model/embeddings", "rb") as e:
+        model = pickle.load(e)
+
+    with open("Tests/Test4/Model/vocab.txt", "r") as v:
+        l_m_order = [line.split()[0].strip("b'") for line in v]
 
     with open("../../SkipGram/documents_array.json", encoding="utf-8") as da:
         ref_papers = json.load(da)
 
     classifier = PVPClassifier(model, l_m_order, document_types, ref_papers)
-    classifier.get_ref_vectors(new_n_save=True)
-    classifier.get_abs_vectors(get_n_papers(2000), new_n_save=True)  # classify first 200 papers
+    classifier.get_ref_vectors(new_n_save=False)
+    classifier.get_abs_vectors(get_n_papers(2000, "../../SkipGram/documents_array.json"), new_n_save=True)  # classify first 200 papers
     classifier.classify()
     print(classifier.get_conf_matrix())
     print(classifier.get_accuracy())
