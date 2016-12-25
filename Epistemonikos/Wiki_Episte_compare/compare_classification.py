@@ -1,4 +1,4 @@
-from Epistemonikos.PaperClassification.PVPClassification.classify import PVPClassifier, get_n_papers
+from Epistemonikos.PaperClassification.PVPClassification.PVPClassifier import PVPClassifier, get_n_papers
 import pickle
 import json
 
@@ -41,5 +41,5 @@ if __name__ == '__main__':
 
     print(wiki_class.get_conf_matrix(), episte_class.get_conf_matrix())
     print(wiki_class.get_accuracy(), episte_class.get_accuracy())
-    print(wiki_class.get_recall(), episte_class.get_recall())
+    print(wiki_class.print_recall(), episte_class.print_recall())
     print(wiki_class.print_precision(), episte_class.print_precision())
