@@ -1,23 +1,23 @@
 import string
 import pickle
+import json
 
 
 class PaperReader:
 
-    def __init__(self, papers, filters=None, balance_train=False,
-                 train_percent=100, abstracts_min=None, dispose_no_abstract=True):
+    def __init__(self, papers, filters=None, train_percent=100, abstracts_min_lmt=None, dispose_no_abstract=True):
 
-        self.abstracts_min = abstracts_min  # used to dispose short abstracts and
+        self.abstracts_min_lmt = abstracts_min_lmt  # used to dispose short abstracts and
         # to limit the words used to generate words' list
 
         # Dispose of short (if abstracts_min is True) or empty abstracts otherwise
         self._papers = []
         for paper in papers:
-            if abstracts_min and len(paper["abstract"]) >= abstracts_min:
+            if abstracts_min_lmt and paper["abstract"] and len(paper["abstract"].split()) >= abstracts_min_lmt:
                 self._papers.append(paper)
-            elif not abstracts_min and paper["abstract"] and dispose_no_abstract:
+            elif not abstracts_min_lmt and paper["abstract"] and dispose_no_abstract:
                 self._papers.append(paper)
-            elif not abstracts_min and not dispose_no_abstract:
+            elif not abstracts_min_lmt and not dispose_no_abstract:
                 self._papers = papers
                 break
 
@@ -91,7 +91,7 @@ class PaperReader:
         self.words = []
         for abstract in self:
             if abstract:
-                self.words += abstract[:self.abstracts_min] if self.abstracts_min else abstract
+                self.words += abstract[:self.abstracts_min_lmt] if self.abstracts_min_lmt else abstract
             if i % 50000 == 0 and i > 0:
                 print("{} papers parsed so far".format(i))
             i += 1
@@ -121,3 +121,16 @@ class PaperReader:
     def save_test(self, path):
         with open(path, "wb") as tes:
             pickle.dump(self.get_filtered_test_papers(), tes)
+
+    def dump_text(self, path):
+        with open(path, 'w') as text:
+            for word in self.words:
+                text.write('{} '.format(word))
+
+if __name__ == '__main__':
+
+    with open("documents_array.json", encoding="utf-8") as docs:
+        reader = PaperReader(json.load(docs), filters=["systematic-review", "primary-study"], train_percent=80,
+                             abstracts_min_lmt=30)
+    reader.generate_words_list()
+    reader.dump_text("episte_sys_prima")

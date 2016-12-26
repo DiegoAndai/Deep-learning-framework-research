@@ -48,7 +48,7 @@ elif not n:
     with open("documents_array.json", "r", encoding="utf-8") as json_file:
         loaded = json.load(json_file)
 
-    reader = PaperReader(loaded, train_percent=80, filters=["systematic-review", "primary-study"], abstracts_min=20)
+    reader = PaperReader(loaded, train_percent=80, filters=["systematic-review", "primary-study"])
     print("generating words")
     reader.generate_words_list()
     reader.save_words()
