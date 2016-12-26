@@ -1,0 +1,16 @@
+learning_rate: 0.025
+epochs_to_train: 50
+eval_data: questions-words.txt
+emb_dim: 200
+num_samples: 25
+vocab_words: [b'UNK' b'the' b'of' ..., b'Belew,' b'Balsall' b'Pixie']
+concurrent_steps: 12
+batch_size: 500
+window_size: 5
+vocab_counts: [4588977 5471681 3133056 ...,      15      15      15]
+min_count: 15
+subsample: 0.001
+train_data: ../allwiki
+vocab_size: 171897
+save_path: Saved
+words_per_epoch: 83436520

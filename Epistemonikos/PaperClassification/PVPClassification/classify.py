@@ -1,7 +1,6 @@
 import argparse
 import pickle
 from PVPClassifier import PVPClassifier
-from tabulate import tabulate
 
 
 parser = argparse.ArgumentParser(description="Classify papers.")
@@ -21,6 +20,7 @@ parser.add_argument("--papers_path", help="Path to pickled list of papers (see r
 parser.add_argument("--abstracts_words", type=int, default=10,
                     help="Words from the abstracts to consider to build vectors.")
 parser.add_argument("--save_into", help="Path to file to save classification output.", default='')  # not yet used
+parser.add_argument("--max_papers", type=int, default=1000, help="Maximum amount of papers to classify.")
 args = parser.parse_args()
 
 
@@ -32,14 +32,18 @@ with open(args.model_path, 'rb') as model_file, \
     model = pickle.load(model_file)
     model_order = pickle.load(words_file)
     ref_papers = pickle.load(ref_file)
-    to_classify = pickle.load(abs_file)[:1000]
+    to_classify = pickle.load(abs_file)[:args.max_papers]
 
 classifier = PVPClassifier(model, model_order, args.classes, ref_papers, span=args.abstracts_words)
 classifier.get_ref_vectors(new_n_save=True)
 classifier.get_abs_vectors(to_classify, new_n_save=True)
 classifier.classify()
 
-print(classifier.get_conf_mat_pretty())
-print("Accuracy:", classifier.get_accuracy())
+print(classifier.get_conf_mat_pretty(), end="\n\n")
+print("Accuracy:", classifier.get_accuracy(), end="\n\n")
 classifier.print_recall()
+print()
 classifier.print_precision()
+print()
+print(args.abstracts_words, "words from the abstracts were used to classify.")
+print(len(to_classify), "papers were classified.")

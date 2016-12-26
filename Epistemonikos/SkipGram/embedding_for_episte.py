@@ -53,7 +53,7 @@ elif not n:
     reader.generate_words_list()
     reader.save_words()
     reader.save_train("train_set")
-    reader.save_test("test_set")
+    reader.save_test("papers_to_classify")
     words = reader.words
 
 elif n == "wiki":
