@@ -1,0 +1,2 @@
+papers_to_classify: all systematic reviews and primary studies with abstracts from the last 20% of the available papers.
+reference_papers: all systematic reviews and primary studies with abstracts from the first 80% of the available papers.

@@ -1,0 +1,16 @@
+vocab_size: 16039
+epochs_to_train: 50
+train_data: ../episte_sys_prima
+emb_dim: 200
+subsample: 0.001
+num_samples: 25
+save_path: ../../PaperClassification/PVPClassification/Tests/Model2
+vocab_counts: [216239 371929 366315 ...,     15     15     15]
+batch_size: 500
+vocab_words: [b'UNK' b'of' b'the' ..., b'plaque-type' b'paraparesis' b'beclin']
+concurrent_steps: 12
+min_count: 15
+window_size: 5
+words_per_epoch: 7493565
+eval_data: questions-words.txt
+learning_rate: 0.025
