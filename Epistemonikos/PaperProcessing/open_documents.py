@@ -10,7 +10,7 @@ class PaperReader:
 
     def __init__(self, papers, filters=None, train_percent=100, abstracts_min=None, dispose_no_abstract=True):
 
-        self.abstracts_min_lmt = abstracts_min  # used to dispose short abstracts and
+        self.abstracts_min_lmt = abstracts_min  # used to dispose short abstracts
 
         # Dispose of short (if abstracts_min is True) or empty abstracts otherwise
         self._papers = []
@@ -23,15 +23,20 @@ class PaperReader:
                 self._papers = papers
                 break
 
-        divide = int(len(self._papers) * train_percent / 100)
-        self._train_papers = self._papers[:divide]
-        self._test_papers = self._papers[divide:] if divide < len(self._papers) else self._papers
-
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
         self.words = []
         self.filter_by = filters if filters else []  # filter by paper classification (systematic-review,
         # structured-summary-of-systematic-review, primary-study, overview, structured-summary-of-primary-study)
+
+        self.filtered_papers = list(map(lambda pap: {"abstract": ' '.join(self.parse_line(pap["abstract"])),
+                                                     "classification": pap["classification"], "id": pap["id"]},
+                                        [p for p in filter(lambda paper: paper["classification"] in self.filter_by,
+                                                           self._papers)] if self.filter_by else self._papers))
+
+        divide = int(len(self.filtered_papers) * train_percent / 100)
+        self.filtered_train_papers = self.filtered_papers[:divide]
+        self.filtered_test_papers = self.filtered_papers[divide:] if divide < len(self._papers) else []
 
         self.loop_train = True  # whether __iter__ should loop over train or test papers.
 
@@ -60,7 +65,7 @@ class PaperReader:
         self.filter_by.remove(f)
 
     def __iter__(self):
-        looped_over = self._train_papers if self.loop_train else self._test_papers
+        looped_over = self.filtered_train_papers if self.loop_train else self.filtered_test_papers
         for paper in looped_over:
             if not self.filter_by or (paper["classification"] and paper["classification"] in self.filter_by):
                 try:
@@ -111,14 +116,6 @@ class PaperReader:
             i += 1
         print("Total word count: {}\nTotal papers: {}".format(len(self.words), i))
 
-    def get_filtered_train_papers(self):
-        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by if self.filter_by else True,
-                                  self._train_papers)]
-
-    def get_filtered_test_papers(self):
-        return [p for p in filter(lambda paper: paper["classification"] in self.filter_by if self.filter_by else True,
-                                  self._test_papers)]
-
     def save_words(self, binary=False):
         if binary:
             with open("words", "wb") as w:
@@ -133,14 +130,14 @@ class PaperReader:
         """Pickle dump the train papers."""
 
         with open(path, "wb") as trs:
-            pickle.dump(self.get_filtered_train_papers(), trs)
+            pickle.dump(self.filtered_train_papers, trs)
 
     def save_test_papers(self, path):
 
         """Pickle dump the test papers."""
 
         with open(path, "wb") as tes:
-            pickle.dump(self.get_filtered_test_papers(), tes)
+            pickle.dump(self.filtered_test_papers, tes)
 
     def dump_text(self, path):
         with open(path, 'w') as text:
@@ -151,7 +148,6 @@ class PaperReader:
 
         """Generate a text file with every word from the training abstracts"""
 
-        self.activate_loop_train()
         self.generate_words_list()
         self.dump_text(path)
 
