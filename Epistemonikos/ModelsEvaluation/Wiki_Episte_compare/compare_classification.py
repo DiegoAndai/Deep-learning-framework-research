@@ -41,5 +41,5 @@ if __name__ == '__main__':
 
     print(wiki_class.get_conf_matrix(), episte_class.get_conf_matrix())
     print(wiki_class.get_accuracy(), episte_class.get_accuracy())
-    print(wiki_class.print_recall(), episte_class.print_recall())
-    print(wiki_class.print_precision(), episte_class.print_precision())
+    print(wiki_class.recalls(), episte_class.recalls())
+    print(wiki_class.precisions(), episte_class.precisions())

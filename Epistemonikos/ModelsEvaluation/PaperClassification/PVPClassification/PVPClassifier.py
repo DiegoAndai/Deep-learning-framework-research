@@ -180,21 +180,23 @@ class PVPClassifier:  # Pondered vector paper classifier
 
         return tabulate(matrix, headers=[''] + self.classes)
 
-    def print_recall(self, verbose = True):
+    def recalls(self, verbose = True):
         conf_mtx = self.get_conf_matrix()
         class_dimension = len(self.classes)
         recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0, class_dimension)))
-        recall_sum = 0
         for i in range(0, class_dimension):
             rcl = recall(i)
-            if not np.isnan(rcl):
-                recall_sum += rcl
-            if verbose:
-                print('Recall for {}: {:.5f}'.format(self.classes[i], rcl))
+            # if verbose:
+            #     print('Recall for {}: {:.5f}'.format(self.classes[i], rcl))
+            yield self.classes[i], rcl
 
-        print("Average recall:", recall_sum/class_dimension)
+    def get_avg_recall(self):
+        avg_rcl = 0
+        for _, rcl in self.recalls():
+            avg_rcl += rcl
+        return avg_rcl/len(self.classes)
 
-    def print_precision(self, verbose = True):
+    def precisions(self, verbose = True):
         conf_mtx = self.get_conf_matrix()
         class_dimension = len(self.classes)
         precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0, class_dimension)))
@@ -203,10 +205,15 @@ class PVPClassifier:  # Pondered vector paper classifier
             label_precision = precision(i)
             if not np.isnan(label_precision):
                 precision_sum += label_precision
-            if verbose:
-                print('Precision for {}: {:.5f}'.format(self.classes[i], label_precision))
+            # if verbose:
+            #     print('Precision for {}: {:.5f}'.format(self.classes[i], label_precision))
+            yield self.classes[i], label_precision
 
-        print("Average precision:", precision_sum / class_dimension)
+    def get_avg_precision(self):
+        avg_prec = 0
+        for cls, prec in self.precisions():
+            avg_prec += prec
+        return avg_prec/len(self.classes)
 
 
 def get_n_papers(n, path, i=0):

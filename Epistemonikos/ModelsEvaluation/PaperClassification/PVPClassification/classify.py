@@ -1,5 +1,6 @@
 import argparse
 import pickle
+import sys
 from PVPClassifier import PVPClassifier
 
 
@@ -18,7 +19,8 @@ parser.add_argument("--papers_path", help="Path to pickled list of papers (see r
                     required=True)
 parser.add_argument("--abstracts_words", type=int, default=10,
                     help="Words from the abstracts to consider to build vectors.")
-parser.add_argument("--save_into", help="Path to file to save classification output.", default='')  # not yet used
+parser.add_argument("--save_into", help="Path to file to save classification output. Output will be printed to stout "
+                                        "nonetheless", default='')
 parser.add_argument("--max_papers", type=int, default=1000, help="Maximum amount of papers to classify.")
 args = parser.parse_args()
 
@@ -38,11 +40,30 @@ classifier.get_ref_vectors(new_n_save=True)
 classifier.get_abs_vectors(to_classify, new_n_save=True)
 classifier.classify()
 
-print(classifier.get_conf_mat_pretty(), end="\n\n")
-print("Accuracy:", classifier.get_accuracy(), end="\n\n")
-classifier.print_recall()
-print()
-classifier.print_precision()
-print()
-print(args.abstracts_words, "words from the abstracts were used to classify.")
-print(len(to_classify), "papers were classified.")
+
+# print to stdout
+def print_output(out=sys.stdout):
+
+    cmat = classifier.get_conf_mat_pretty()
+    acc = classifier.get_accuracy()
+    print(cmat, end="\n\n", file=out)
+    print("Accuracy:", acc, end="\n\n", file=out)
+
+    print("Recall:", file=out)
+    for cls, rcl in classifier.recalls():
+        print(cls, rcl, sep=': ', file=out)
+
+    print("\nPrecision:", file=out)
+    for cls, prec in classifier.precisions():
+        print(cls, prec, sep=': ', file=out)
+
+    print(file=out)
+    print(args.abstracts_words, "words from the abstracts were used to classify.", file=out)
+    print(len(to_classify), "papers were classified.", file=out)
+
+print_output()
+
+if args.save_into:
+    with open(args.save_into, 'w') as o:
+        print_output(o)
+
