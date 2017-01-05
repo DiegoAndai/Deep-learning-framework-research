@@ -7,8 +7,7 @@ parser = argparse.ArgumentParser(description="Classify papers.")
 parser.add_argument("--classes", nargs='+', help="Paper types to classify to.", required=True)
 parser.add_argument("--model_path", help="Path to a file containing pickled embeddings as a numpy array.",
                     required=True)
-parser.add_argument("--words_path", help="Path to a pickled list of the words in the model, "
-                                         "in the order of the embeddings.",
+parser.add_argument("--path_to_vocab", help="Path to the vocab file of the model (as created by word2vec_optimized).",
                     required=True)
 parser.add_argument("--ref_papers_path", help="Path to pickled list of papers (a paper should be represented as a "
                                               "dictionary with at least abstract and a classification keys containing "
@@ -25,12 +24,12 @@ args = parser.parse_args()
 
 
 with open(args.model_path, 'rb') as model_file, \
-     open(args.words_path, 'rb') as words_file, \
+     open(args.path_to_vocab, 'r') as words_file, \
      open(args.ref_papers_path, 'rb') as ref_file, \
      open(args.papers_path, 'rb') as abs_file:
 
     model = pickle.load(model_file)
-    model_order = pickle.load(words_file)
+    model_order = [line.split()[0].strip("b'") for line in words_file]
     ref_papers = pickle.load(ref_file)
     to_classify = pickle.load(abs_file)[:args.max_papers]
 

@@ -441,7 +441,7 @@ def main(_):
                 open(os.path.join(opts.save_path, 'params.txt'), 'w') as p:
             pickle.dump(model._w_in.eval(), e)
             print("Model type: SkipGram")
-            for flag, value in opts.__dict__.items():
+            for flag, value in vars(opts).items():
                 print('{}: {}'.format(flag, value), file=p)
 
 
