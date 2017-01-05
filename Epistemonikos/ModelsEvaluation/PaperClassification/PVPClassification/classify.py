@@ -1,7 +1,7 @@
 import argparse
 import pickle
 import sys
-from . import PVPClassifier
+from PVPClassifier import PVPClassifier
 
 
 parser = argparse.ArgumentParser(description="Classify papers.")
