@@ -1,6 +1,3 @@
-# TODO: Output results to a file, optionally letting the user specify it
-# TODO: change reference_papers constructor parameter to a path to a json file with the papers
-
 import collections
 import tensorflow as tf
 import numpy as np

@@ -3,7 +3,7 @@ import pickle
 import sys
 from PVPClassifier import PVPClassifier
 
-
+# TODO: reduce the amount of command line arguments assuming that the files related to one model are in the same path
 parser = argparse.ArgumentParser(description="Classify papers.")
 parser.add_argument("--classes", nargs='+', help="Paper types to classify to.", required=True)
 parser.add_argument("--model_path", help="Path to a file containing pickled embeddings as a numpy array.",
