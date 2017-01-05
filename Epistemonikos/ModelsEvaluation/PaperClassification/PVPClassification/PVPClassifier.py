@@ -7,7 +7,7 @@ import numpy as np
 import pickle
 import json
 import sys
-sys.path.insert(0, '../../../PaperProcessing')
+sys.path.insert(0, 'PaperProcessing')
 from open_documents import PaperReader
 from tabulate import tabulate
 
