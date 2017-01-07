@@ -181,6 +181,8 @@ class PaperReader:
     @staticmethod
     def even_papers(papers):
 
+        """Balances the papers, eliminating class imbalance."""
+
         classes = list(set(p["classification"] for p in papers))
         lf, lfapp = PaperReader.get_less_freq_cls(papers, classes)
 
