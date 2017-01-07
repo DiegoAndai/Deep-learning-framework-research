@@ -40,10 +40,10 @@ class PaperReader:
         self.filtered_test_papers = self.filtered_papers[divide:] if divide < len(self._papers) else []
 
         if even_train:
-            self.even_filtered_train_papers = self.even_papers(self.filtered_train_papers)
+            self.filtered_train_papers = self.even_papers(self.filtered_train_papers)
 
         if even_test:
-            self.even_filtered_test_papers = self.even_papers(self.filtered_test_papers)
+            self.filtered_test_papers = self.even_papers(self.filtered_test_papers)
 
         self.loop_train = True  # whether __iter__ should loop over train or test papers.
 

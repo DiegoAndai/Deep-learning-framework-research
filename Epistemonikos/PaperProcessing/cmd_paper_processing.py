@@ -26,9 +26,11 @@ parser.add_argument("--min_count", default=None, type=int,
                          "less words will not be disposed of. If omitted, every abstract"
                          "will be considered.")
 parser.add_argument("--dispose_empty", default=True, help="Whether to dispose of the empty abstracts or not.")
+parser.add_argument("--even_train", default=False)
+parser.add_argument("--even_test", default=False)
 parser.add_argument("--mode", default=0, type=int, help="0: Generate text file to train a language model."
                                                         "1: Generate a PVP classification set."
-                                                        "2: Generate a KNN classification set (not implemented)."
+                                                        "2: Generate a KNN classification set."
                                                         "3: All of the preceding.")
 parser.add_argument("--save_path", default="", help="Where to save the output file(s).")
 args = parser.parse_args()
@@ -37,7 +39,8 @@ args = parser.parse_args()
 with open(args.json_file, encoding="utf-8") as jf:
     papers = json.load(jf)
 
-paper_reader = PaperReader(papers, args.filters, args.train_percent, args.min_count, args.dispose_empty)
+paper_reader = PaperReader(papers, args.filters, args.train_percent, args.min_count,
+                           args.dispose_empty, args.even_train, args.even_test)
 
 m = args.mode
 if m == 0 or m == 3:
@@ -51,7 +54,8 @@ if m == 1 or m == 3:
 
 if m == 2 or m == 3:
 
-    pass  # TODO: generate KNN classification set. Must implement KNN classification first, although.
+    paper_reader.save_train_papers(join(args.save_path, "train_papers"), form="json")
+    paper_reader.save_test_papers(join(args.save_path, "test_papers"), form="json")
 
 
 dump_runtime_info(args, "info.txt", paper_reader)
