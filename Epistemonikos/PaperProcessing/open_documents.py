@@ -8,7 +8,8 @@ class PaperReader:
     """Class to generate training and testing sets for word2vec language models from Epistemonikos Papers. Most
     significant methods: __init__, save_train/test_papers and generate_train_text_file."""
 
-    def __init__(self, papers, filters=None, train_percent=100, abstracts_min=None, dispose_no_abstract=True):
+    def __init__(self, papers, filters=None, train_percent=100, abstracts_min=None, dispose_no_abstract=True,
+                 even_train=False, even_test=False):
 
         self.abstracts_min_lmt = abstracts_min  # used to dispose short abstracts
 
@@ -37,6 +38,12 @@ class PaperReader:
         divide = int(len(self.filtered_papers) * train_percent / 100)
         self.filtered_train_papers = self.filtered_papers[:divide]
         self.filtered_test_papers = self.filtered_papers[divide:] if divide < len(self._papers) else []
+
+        if even_train:
+            self.even_filtered_train_papers = self.even_papers(self.filtered_train_papers)
+
+        if even_test:
+            self.even_filtered_test_papers = self.even_papers(self.filtered_test_papers)
 
         self.loop_train = True  # whether __iter__ should loop over train or test papers.
 
@@ -125,19 +132,27 @@ class PaperReader:
                 for w in self.words:
                     words_file.write("{}\n".format(w))
 
-    def save_train_papers(self, path):
+    def save_train_papers(self, path, form="pickle"):
 
         """Pickle dump the train papers."""
 
-        with open(path, "wb") as trs:
-            pickle.dump(self.filtered_train_papers, trs)
+        if form == "pickle":
+            with open(path, "wb") as trs:
+                pickle.dump(self.filtered_train_papers, trs)
+        elif form == "json":
+            with open(path, "wb") as trs:
+                json.dump(self.filtered_train_papers, trs)
 
-    def save_test_papers(self, path):
+    def save_test_papers(self, path, form="pickle"):
 
-        """Pickle dump the test papers."""
+        """Pickle (or json) dump the test papers."""
 
-        with open(path, "wb") as tes:
-            pickle.dump(self.filtered_test_papers, tes)
+        if form == "pickle":
+            with open(path, "wb") as tes:
+                pickle.dump(self.filtered_test_papers, tes)
+        elif form == "json":
+            with open(path, "wb") as tes:
+                json.dump(self.filtered_test_papers, tes)
 
     def dump_text(self, path):
         with open(path, 'w') as text:
@@ -150,6 +165,34 @@ class PaperReader:
 
         self.generate_words_list()
         self.dump_text(path)
+
+    @staticmethod
+    def get_less_freq_cls(papers, classes=None):
+
+        """Returns the paper type or class that is less frequent in the papers given and its appearances."""
+        if not classes:
+            classes = list(set(p["classification"] for p in papers))
+        appearances = dict.fromkeys(classes, value=0)
+        for p in papers:
+            appearances[p["classification"]] += 1
+        l_f = min(appearances, key=lambda x: appearances[x])
+        return l_f, appearances[l_f]
+
+    @staticmethod
+    def even_papers(papers):
+
+        classes = list(set(p["classification"] for p in papers))
+        lf, lfapp = PaperReader.get_less_freq_cls(papers, classes)
+
+        new_appearances = dict.fromkeys(classes, value=0)
+        even_papers = []
+        for p in papers:
+            current_class_apps = new_appearances[p["classification"]]
+            if current_class_apps < lfapp:
+                even_papers.append(p)
+            if min(new_appearances.values()) >= lfapp:
+                break
+        return even_papers
 
 
 if __name__ == '__main__':
