@@ -1,3 +1,6 @@
+# TODO: make compatible with cmd_paper_processing.py output
+# TODO: add cmd line option for the words to consider from each abstract and for the number of nearest neighbours.
+
 from sklearn.neighbors import KNeighborsClassifier
 from open_documents import PaperReader
 
@@ -75,8 +78,8 @@ class DocumentSpace:
         return train_data, train_labels, test_data, test_labels
 
 
-
 if __name__ == "__main__":
+
     if os.path.exists("test_data"):
         print("opening previous data")
         with open("train_data", "rb") as trd, \
