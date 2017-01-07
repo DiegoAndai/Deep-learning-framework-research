@@ -172,7 +172,7 @@ class PaperReader:
         """Returns the paper type or class that is less frequent in the papers given and its appearances."""
         if not classes:
             classes = list(set(p["classification"] for p in papers))
-        appearances = dict.fromkeys(classes, value=0)
+        appearances = dict.fromkeys(classes, 0)
         for p in papers:
             appearances[p["classification"]] += 1
         l_f = min(appearances, key=lambda x: appearances[x])
@@ -186,7 +186,7 @@ class PaperReader:
         classes = list(set(p["classification"] for p in papers))
         lf, lfapp = PaperReader.get_less_freq_cls(papers, classes)
 
-        new_appearances = dict.fromkeys(classes, value=0)
+        new_appearances = dict.fromkeys(classes, 0)
         even_papers = []
         for p in papers:
             current_class_apps = new_appearances[p["classification"]]
