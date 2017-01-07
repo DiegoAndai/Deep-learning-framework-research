@@ -140,7 +140,7 @@ class PaperReader:
             with open(path, "wb") as trs:
                 pickle.dump(self.filtered_train_papers, trs)
         elif form == "json":
-            with open(path, "wb") as trs:
+            with open(path, "w") as trs:
                 json.dump(self.filtered_train_papers, trs)
 
     def save_test_papers(self, path, form="pickle"):
@@ -151,7 +151,7 @@ class PaperReader:
             with open(path, "wb") as tes:
                 pickle.dump(self.filtered_test_papers, tes)
         elif form == "json":
-            with open(path, "wb") as tes:
+            with open(path, "w") as tes:
                 json.dump(self.filtered_test_papers, tes)
 
     def dump_text(self, path):
