@@ -16,7 +16,6 @@ class DocumentSpace:
     class_sess = tf.Session()
 
     def __init__(self, language_model, lang_mod_order, span):
-        self.classificator = RadiusNeighborsClassifier() #best for class imbalance
         self.vectors_by_type = list() #structure: [(type, vector)]
         self.span = span
         self.lang_mod_order = lang_mod_order # list of words of the language model (to know which
@@ -65,13 +64,13 @@ class DocumentSpace:
 
     def get_slices(self, train_size, test_size):
         train = self.vectors_by_type[:train_size]
-        train_data = [t[0] for t in train]
-        train_labels = [t[1] for t in train]
+        train_data = [t[1] for t in train]
+        train_labels = [t[0] for t in train]
 
 
         test = self.vectors_by_type[train_size: train_size + test_size]
-        test_data = [t[0] for t in test]
-        test_labels = [t[1] for t in test]
+        test_data = [t[1] for t in test]
+        test_labels = [t[0] for t in test]
 
         return train_data, train_labels, test_data, test_labels
 
@@ -112,8 +111,8 @@ if __name__ == "__main__":
 
 
         Space = DocumentSpace(model, model_order, args.span)
-        Space.get_abs_vectors(papers[:10000])
-        train_data, train_labels, test_data, test_labels = Space.get_slices(9000, 1000)
+        Space.get_abs_vectors(papers[:105000])
+        train_data, train_labels, test_data, test_labels = Space.get_slices(90000, 10000)
 
         with open("train_data", "wb") as trd, \
              open("train_labels", "wb") as trl, \
@@ -124,15 +123,52 @@ if __name__ == "__main__":
             pickle.dump(test_data, ted)
             pickle.dump(test_labels, tel)
 
-    classifier = KNeighborsClassifier(n_neighbors = 1)
-    classifier.fit(np.asarray(train_labels), np.asarray(train_data))
-    predictions = classifier.predict(np.asarray(test_labels))
+    classifier = KNeighborsClassifier(n_neighbors = 3)
+    classifier.fit(np.asarray(train_data), np.asarray(train_labels))
+    '''predictions = classifier.predict(np.asarray(test_data))
+    classes = [ "primary-study",
+                "systematic-review",
+                "structured-summary-of-systematic-review",
+                "overview",
+                "structured-summary-of-primary-study"]
 
+    if len(test_labels) != len(predictions):
+        print("dimensions error. labels: {}, predictions: {}".format(len(test_labels),
+                                                                     len(predictions)))
 
-    assert len(test_data) == len(predictions)
+    class_dimension = len(classes)
+    conf_mtx = np.zeros([class_dimension, class_dimension])
+    for i in range(0, len(predictions)):
+        predicted_class = classes.index(predictions[i])
+        actual_class = classes.index(test_labels[i])
+        conf_mtx[actual_class][predicted_class] += 1
+    np.set_printoptions(suppress=True)
+    print(conf_mtx)
+
+    assert len(test_labels) == len(predictions)
     hits = 0
-    for l, p in zip(test_data, predictions):
-        print(l, p)
+    for l, p in zip(test_labels, predictions):
         if l == p:
             hits += 1
-    print(hits / len(test_data))
+    print(hits / len(test_labels))
+
+    recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
+    recall_sum = 0
+    for i in range(0,class_dimension):
+        rcl = recall(i)
+        recall_sum += rcl
+        print('Recall {}: {:.5f}'.format(i, rcl))
+    print()
+    print('Recall mean: {:.5f}'.format(recall_sum/class_dimension))
+
+    precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0,class_dimension)))
+    precision_sum = 0
+    for i in range(0,class_dimension):
+        label_precision = precision(i)
+        precision_sum += label_precision
+        print('Precision {}: {:.5f}'.format(i, label_precision))
+    print()
+    print('Precision mean: {:.5f}'.format(precision_sum/class_dimension))'''
+
+    for testy, label in zip(test_data, test_labels):
+        print(label, classifier.predict_proba(np.asarray([testy])), classifier.predict(np.asarray([testy])))
