@@ -7,6 +7,7 @@ import json
 def dump_runtime_info(args_namespace, file_name, paper_reader):
 
     with open(join(args_namespace.save_path, file_name), 'w', encoding="utf-8") as info_file:
+        info_file.write("cmd_paper_processing.py options:\n")
         for param, value in vars(args_namespace).items():
             info_file.write("{}: {}\n".format(param, value))
         info_file.write("Train Papers: {}\nTest Papers: {}".format(len(paper_reader.filtered_train_papers),
@@ -58,4 +59,4 @@ if m == 2 or m == 3:
     paper_reader.save_test_papers(join(args.save_path, "test_papers"), form="json")
 
 
-dump_runtime_info(args, "info.txt", paper_reader)
+dump_runtime_info(args, "creation_info.txt", paper_reader)
