@@ -20,8 +20,7 @@
 ### Constants:
 - **Number of steps** (30,000)
 - **Batch size** (50)
-- **Train size**  (400,000)
-- **Test size** (30,000)
+- **Test size** (10,000)
 
 ### Method:
 For every parameter there's going to be some hipothesis, in regard of what will happen with it's change. Each value will be tested a substantial amount of times: (insert number of times). The other parameters will be set to a fixed value. In further research, a relation between parameters could be helpful.
