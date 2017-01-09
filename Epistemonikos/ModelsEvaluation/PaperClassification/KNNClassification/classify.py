@@ -10,6 +10,7 @@ import os
 
 
 class DocumentSpace:
+
     class_sess = tf.Session()
 
     def __init__(self, language_model, lang_mod_order, span):
@@ -29,35 +30,36 @@ class DocumentSpace:
         :parameter papers: JSON array (python list) containing
         the processed papers, represented as dicts."""
 
+
         labels = [paper["classification"] for paper in papers]  # ground truth
 
         print("Calculating abstracts' vectors...")
-        abs_vectors = list()
         parsed = 0
         n_abstracts = len(papers)
         print("started vector build")
-        for paper in papers:
-            abstract = paper["abstract"]
-            abs_count = collections.Counter(abstract[:self.span])
-            vector = []
-            for word in self.lang_mod_order:
-                if word in abs_count:
-                    vector.append(abs_count[word])
-                    del abs_count[word]
-                else:
-                    vector.append(0)
-            freq = np.array(vector, ndmin=2)
-            nwords = sum(vector)
-            rel_freq = freq / nwords if nwords else freq
-            abs_vector = np.dot(rel_freq, self.language_model).squeeze()
-            abs_vectors.append(abs_vector)
+        rel_freqs = []
+        append_rel_freqs = rel_freqs.append
+        lmo = self.lang_mod_order
+        span = self.span
+        asarr = np.asarray
+        for paper in papers:  # 10000
+            abs_count = collections.Counter(paper["abstract"][:span])
+            vector = [abs_count[word] if word in abs_count else 0 for word in lmo]
+            nwords = sum(abs_count.values())
+            append_rel_freqs(asarr(vector) / nwords)
             parsed += 1
             if not parsed % 1000:
                 print("{}/{}".format(parsed, n_abstracts))
+
+        abs_vectors = tf.matmul(tf.constant(asarr(rel_freqs)), tf.constant(self.language_model))
+        with DocumentSpace.class_sess.as_default():
+            abs_vectors = abs_vectors.eval()
+
         assert n_abstracts == parsed
         assert len(abs_vectors) == n_abstracts
         print("Finished calculating abstracts' vectors.")
         return list(zip(labels, abs_vectors))
+
 
     @staticmethod
     def slice(vectors):
