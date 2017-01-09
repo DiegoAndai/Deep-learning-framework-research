@@ -94,27 +94,27 @@ class PVPClassifier:  # Pondered vector paper classifier
 
         elif how == 1:
 
+            self.reference_vectors = []
+            for cls in self.classes:
+                papers_vectors = []
+                for paper in self.reference_papers:
+                    if paper["classification"] == cls:
+                        paper_words = paper["abstract"].split(' ')[:self.span]
 
-            # max_pool_ref_graph = tf.Graph()
-            # with max_pool_ref_graph.as_default():
-            #     tf.nn.embedding_lookup()
+                        word_indices = np.zeros(self.span, dtype=np.int32)
+                        i = 0
+                        while i < self.span:
+                            try:
+                                word_indices[i] = self.lang_mod_order.index(paper_words[i])
+                            except ValueError:
+                                word_indices[i] = 0
+                            i += 1
 
-            with tf.Session().as_default(), tf.device('/cpu:0'):
-                for cls in self.classes:
-                    for paper in self.reference_papers:
-                        if paper["classification"] == cls:
-                            paper_words = paper["abstract"].split(' ')[:self.span]
+                        papers_vectors.append(self.language_model[word_indices])
 
-                            word_indices = np.zeros(self.span, dtype=np.int32)
-                            i = 0
-                            while i < self.span:
-                                try:
-                                    word_indices[i] = self.lang_mod_order.index(paper_words[i])
-                                except ValueError:
-                                    word_indices[i] = 0
-                                i += 1
+                self.reference_vectors.append(np.amax(np.concatenate(papers_vectors)))
 
-                            paper_vectors = tf.nn.embedding_lookup(self.language_model, word_indices).eval()
+            self.reference_vectors = np.asarray(self.reference_vectors)
 
 
     def get_abs_vectors(self, to_classify, new_n_save=True):
