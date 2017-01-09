@@ -54,11 +54,11 @@ class DocumentSpace:
                 word = words[i]
                 if word in lmo:
                     index = self.lang_mod_order.index(word)
-                    word_mtx.append(self.language_model[index])
-                    word_count += 1
+                else:
+                    index = 0
+                word_mtx.append(self.language_model[index])
+                word_count += 1
                 i += 1
-            if len(word_mtx) < 10:
-                word_mtx += [0]*(10-len(word_mtx))
             try:
                 dim_mtx = np.transpose(word_mtx) #transposed : rows:value for every word at a given dimension
                 pooled_vector = [max(dimension) for dimension in dim_mtx]
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
-    predictions = classifier.predict(np.asarray(test_data))
+    predictions = classifier.predict(np.asarray(test_data[1]))
     classes = [ "primary-study",
                  "systematic-review"]
 
@@ -187,32 +187,60 @@ if __name__ == "__main__":
     np.set_printoptions(suppress=True)
     print(conf_mtx)
 
-    assert len(test_labels) == len(predictions)
+    #assert len(test_labels) == len(predictions)
     hits = 0
     for l, p in zip(test_labels, predictions):
         if l == p:
             hits += 1
-    print(hits / len(test_labels))
+    accuracy = hits / len(test_labels) #saved for output
+    print(accuracy)
 
     recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
     recall_sum = 0
+    recall_list = []
     for i in range(0,class_dimension):
         rcl = recall(i)
         if not np.isnan(rcl):
             recall_sum += rcl
+        recall_list.append((i, rcl))
         print('Recall {}: {:.5f}'.format(i, rcl))
     print()
-    print('Recall mean: {:.5f}'.format(recall_sum/class_dimension))
+    recall_mean = recall_sum/class_dimension
+    print('Recall mean: {:.5f}'.format(recall_mean))
 
     precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0,class_dimension)))
     precision_sum = 0
+    precision_list = list()
     for i in range(0,class_dimension):
         label_precision = precision(i)
         if not np.isnan(label_precision):
             precision_sum += label_precision
+        precision_list.append((i, label_precision))
         print('Precision {}: {:.5f}'.format(i, label_precision))
     print()
-    print('Precision mean: {:.5f}'.format(precision_sum/class_dimension))
+    precision_mean = precision_sum/class_dimension
+    print('Precision mean: {:.5f}'.format(precision_mean))
+
+    output = ''
+    output += 'Model: {}\n'.format(args.model_path)
+    output += 'KNN classifier with k = {}\n'.format(args.K)
+    output += 'span = {}\n'.format(args.span)
+    output += 'Set: {}\n'.format(args.KNN_papers_set)
+    output += 'Accuracy : {}\n'.format(accuracy)
+    output += "RECALL\n"
+    for rcl in recall_list:
+        output += 'Recall {}: {:.5f}\n'.format(rcl[0], rcl[1])
+    output += 'Recall mean: {:.5f}\n'.format(recall_mean)
+    output += "PRECISION\n"
+    for pcsn in precision_list:
+        output += 'Precision {}: {:.5f}\n'.format(pcsn[0], pcsn[1])
+    output += 'Precision mean: {:.5f}\n'.format(precision_mean)
+    output += 'CONFUSSION MATRIX\n'
+    output += str(conf_mtx)
+
+
+    with open("output{}.txt".format(args.model_path.split('/')[-2]), "w") as out_file:
+        out_file.write(output)
 
     #for testy, label in zip(test_data, test_labels):
     #    print(label, classifier.predict_proba(np.asarray([testy])), classifier.predict(np.asarray([testy])))
