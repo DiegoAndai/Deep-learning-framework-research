@@ -4,8 +4,8 @@ import numpy as np
 import pickle
 import json
 import sys
-sys.path.insert(0, 'PaperProcessing')
-from open_documents import PaperReader
+# sys.path.insert(0, 'PaperProcessing')
+# from open_documents import PaperReader
 from tabulate import tabulate
 
 
@@ -39,11 +39,11 @@ class PVPClassifier:  # Pondered vector paper classifier
         # word an embedding represents).
         self.predictions = None  # Classification
         self.labels = None
-        with PVPClassifier.class_sess.as_default():
+        with PVPClassifier.class_sess.as_default(), tf.device('/cpu:0'):
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
-    def get_ref_vectors(self, new_n_save=True, how=0):
+    def get_ref_vectors(self, new_n_save=True, how=1):
 
         """Generates one reference vector for each paper type.
         :parameter new_n_save: when True, the vectors are calculated and saved to a file,
@@ -94,9 +94,12 @@ class PVPClassifier:  # Pondered vector paper classifier
 
         elif how == 1:
 
+            print("Generating reference vectors using maxpooling...")
             self.reference_vectors = []
             for cls in self.classes:
+                print("Calculating reference vector for class {}...".format(cls))
                 papers_vectors = []
+                cls_papers_parsed = 0
                 for paper in self.reference_papers:
                     if paper["classification"] == cls:
                         paper_words = paper["abstract"].split(' ')[:self.span]
@@ -111,13 +114,16 @@ class PVPClassifier:  # Pondered vector paper classifier
                             i += 1
 
                         papers_vectors.append(self.language_model[word_indices])
+                        cls_papers_parsed += 1
+                        if not cls_papers_parsed % 5000:
+                            print("{} papers of type {} have been parsed so far".format(cls_papers_parsed, cls))
 
-                self.reference_vectors.append(np.amax(np.concatenate(papers_vectors)))
+                self.reference_vectors.append(np.amax(np.concatenate(papers_vectors), axis=0))
 
             self.reference_vectors = np.asarray(self.reference_vectors)
 
 
-    def get_abs_vectors(self, to_classify, new_n_save=True):
+    def get_abs_vectors(self, to_classify, new_n_save=True, how=1):
 
         """ Generates a vector for every abstract to be classified.
         :parameter to_classify: JSON array (python list) containing
@@ -127,42 +133,79 @@ class PVPClassifier:  # Pondered vector paper classifier
 
         self.labels = [paper["classification"] for paper in to_classify]  # ground truth
 
-        if not new_n_save:
-            with open("abstracts_vectors", "rb") as av:
-                self.abstracts_vectors = pickle.load(av)
-            return
+        if how == 0:
+            if not new_n_save:
+                with open("abstracts_vectors", "rb") as av:
+                    self.abstracts_vectors = pickle.load(av)
+                return
 
-        print("Calculating abstracts' vectors...")
-        reader = PaperReader(to_classify)
-        abs_vectors = list()
-        parsed = 0
-        n_abstracts = len(reader)
-        for abstract in reader:
-            abs_count = collections.Counter(abstract[:self.span])
-            vector = []
-            for word in self.lang_mod_order:
-                if word in abs_count:
-                    vector.append(abs_count[word])
-                    del abs_count[word]
-                else:
-                    vector.append(0)
-            freq = np.array(vector, ndmin=2)
-            nwords = sum(vector)
-            rel_freq = freq / nwords if nwords else freq
-            abs_vector = np.dot(rel_freq, self.language_model).squeeze()
-            abs_vectors.append(abs_vector)
-            parsed += 1
-            if not parsed % 10000:
-                print("{}/{}".format(parsed, n_abstracts))
-        assert n_abstracts == parsed
-        assert len(abs_vectors) == n_abstracts
-        abs_vectors = np.asarray(abs_vectors)
+            print("Calculating abstracts' vectors...")
+            reader = PaperReader(to_classify)
+            abs_vectors = list()
+            parsed = 0
+            n_abstracts = len(reader)
+            for abstract in reader:
+                abs_count = collections.Counter(abstract[:self.span])
+                vector = []
+                for word in self.lang_mod_order:
+                    if word in abs_count:
+                        vector.append(abs_count[word])
+                        del abs_count[word]
+                    else:
+                        vector.append(0)
+                freq = np.array(vector, ndmin=2)
+                nwords = sum(vector)
+                rel_freq = freq / nwords if nwords else freq
+                abs_vector = np.dot(rel_freq, self.language_model).squeeze()
+                abs_vectors.append(abs_vector)
+                parsed += 1
+                if not parsed % 10000:
+                    print("{}/{}".format(parsed, n_abstracts))
+            assert n_abstracts == parsed
+            assert len(abs_vectors) == n_abstracts
+            abs_vectors = np.asarray(abs_vectors)
 
-        with open("abstracts_vectors", "wb") as av:
-            pickle.dump(abs_vectors, av)
+            with open("abstracts_vectors", "wb") as av:
+                pickle.dump(abs_vectors, av)
 
-        self.abstracts_vectors = abs_vectors
-        print("Finished calculating abstracts' vectors.")
+            self.abstracts_vectors = abs_vectors
+            print("Finished calculating abstracts' vectors.")
+
+        elif how == 1:
+
+            print("Calculating abstracts' vectors...")
+            parsed = 0
+            n_abstracts = len(to_classify)
+            print("started vector build")
+            rel_freqs = []
+            pooled_vectors = list()
+            lmo = self.lang_mod_order
+            for paper in to_classify:
+                word_mtx = list()
+                words = paper["abstract"].split()
+                word_count = 0
+                i = 0
+                while word_count < 10 and i < len(words):
+                    word = words[i]
+                    if word in lmo:
+                        index = self.lang_mod_order.index(word)
+                    else:
+                        index = 0
+                    word_mtx.append(self.language_model[index])
+                    word_count += 1
+                    i += 1
+                try:
+                    dim_mtx = np.transpose(word_mtx)  # transposed : rows:value for every word at a given dimension
+                    pooled_vector = [max(dimension) for dimension in dim_mtx]
+                except TypeError:
+                    pooled_vector = [0] * 10
+                pooled_vectors.append(pooled_vector)
+                if not parsed % 1000:
+                    print("{}/{}".format(parsed, n_abstracts))
+                parsed += 1
+            assert n_abstracts == parsed
+            print("Finished calculating abstracts' vectors.")
+            self.abstracts_vectors = pooled_vectors
 
     def classify(self):
 
