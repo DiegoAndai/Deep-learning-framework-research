@@ -12,7 +12,7 @@ Classifications will be done on two classes, systematic-review and primary-study
 
 - KNN: [Scikit-learn implementation](http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier) with k = 5 and default settings. The vector for each document is calculated bia a max pooling regarding the maximun value of each dimension of the document's first 10 words to appear on the model dictionary. Implementation [here](/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification).
 
-- PVP: Add description
+- PVP: Add description. Implementation [here](/Epistemonikos/ModelsEvaluation/PaperClassification/PVPClassification).
 
 #### Hipothesis
 
