@@ -170,7 +170,7 @@ if __name__ == "__main__":
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
-    predictions = classifier.predict(np.asarray(test_data[1]))
+    predictions = classifier.predict(np.asarray(test_data))
     classes = [ "primary-study",
                  "systematic-review"]
 
