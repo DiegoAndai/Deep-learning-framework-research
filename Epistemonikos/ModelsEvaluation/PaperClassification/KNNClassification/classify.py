@@ -19,7 +19,9 @@ class DocumentSpace:
         self.lang_mod_order = lang_mod_order  # list of words of the language model (to know which
         # word an embedding represents)
 
-        with DocumentSpace.class_sess.as_default():
+        with DocumentSpace.class_sess.as_default(), \
+                    tf.device('/cpu:0'):
+
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
@@ -94,6 +96,15 @@ class DocumentSpace:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Classify papers.")
+    parser.add_argument("--K", type=int, required=True, help="Number of nearest neighbours to consider")
+    parser.add_argument("--model_path", help="Path to a folder containing everything related to the model, namely "
+                                             "embeddings and vocab files.",
+                        required=True)
+    parser.add_argument("--span", help="Number of words used for classification, counting from "
+                                       "the start of the abstract", type=int, default=10)
+    parser.add_argument("--KNN_papers_set", help="Path to the KNN paper set.",
+                        required=True)
 
     if os.path.exists("test_data"):
         print("opening previous data")
@@ -105,16 +116,10 @@ if __name__ == "__main__":
             train_labels = pickle.load(trl)
             test_data = pickle.load(ted)
             test_labels = pickle.load(tel)
+
+        args = parser.parse_args()
+
     else:
-        parser = argparse.ArgumentParser(description="Classify papers.")
-        parser.add_argument("--model_path", help="Path to a folder containing everything related to the model, namely "
-                                                 "embeddings and vocab files.",
-                            required=True)
-        parser.add_argument("--span", help="Number of words used for classification, counting from "
-                                           "the start of the abstract", type=int, default=10)
-        parser.add_argument("--KNN_papers_set", help="Path to the KNN paper set.",
-                            required=True)
-        parser.add_argument("--K", type=int, required=True, help="Number of nearest neighbours to consider")
         args = parser.parse_args()
 
         path_to_model = args.model_path
@@ -131,9 +136,24 @@ if __name__ == "__main__":
 
             train = json.load(train_set)
             test = json.load(test_set)
+
+        fthousand = []
+        ps = 0
+        sr = 0
+        i = 0
+        while ps < 5000 or sr < 5000:
+            if test[i]["classification"] == "primary-study" and ps < 5000:
+                fthousand.append(test[i])
+                ps += 1
+            elif test[i]["classification"] == "systematic-review" and sr < 5000:
+                fthousand.append(test[i])
+                sr += 1
+            i += 1
+        print(len(fthousand))
+
         Space = DocumentSpace(model, model_order, args.span)
-        Space.train_vectors = Space.get_abs_vectors(train[:100000])
-        Space.test_vectors = Space.get_abs_vectors(test[:10000])
+        Space.train_vectors = Space.get_abs_vectors(train)
+        Space.test_vectors = Space.get_abs_vectors(fthousand)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
@@ -147,7 +167,9 @@ if __name__ == "__main__":
             pickle.dump(test_labels, tel)
 
     classifier = KNeighborsClassifier(n_neighbors=args.K)  # FIXME: args may not be defined
+    print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
+    print("predicting")
     predictions = classifier.predict(np.asarray(test_data))
     classes = [ "primary-study",
                  "systematic-review"]
