@@ -43,51 +43,79 @@ class PVPClassifier:  # Pondered vector paper classifier
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
-    def get_ref_vectors(self, new_n_save=True):
+    def get_ref_vectors(self, new_n_save=True, how=0):
 
         """Generates one reference vector for each paper type.
         :parameter new_n_save: when True, the vectors are calculated and saved to a file,
-        otherwise they are obtained from reference_vectors file."""
+        otherwise they are obtained from reference_vectors file.
+        :parameter how: non negative integer indicating the way the vectors should be calculated.
+         0: ponder the embeddings by their relative frequencies in the span of the abstract.
+         1: maxpooling from each column of a matrix composed by the vectors of the words in the abstracts' span.
+        """
 
-        if not new_n_save:
-            with open("reference_vectors", "rb") as rv:
-                self.reference_vectors = pickle.load(rv)
-            return
+        if how == 0:
+            if not new_n_save:
+                with open("reference_vectors", "rb") as rv:
+                    self.reference_vectors = pickle.load(rv)
+                return
 
-        reader = PaperReader(self.reference_papers, abstracts_min=self.span)
 
-        print("Calculating reference vectors...")
-        document_vectors = list()
+            print("Calculating reference vectors...")
+            document_vectors = list()
 
-        for type_ in self.classes:
+            for type_ in self.classes:
 
-            reader.remove_all_filters()
-            reader.apply_filter(type_)
-            reader.generate_words_list()
-            type_words = reader.words
-            type_count = collections.Counter(type_words)
+                reader = PaperReader(self.reference_papers, abstracts_min=self.span, filters=[type_])
+                reader.generate_words_list(limit_abstracts=self.span)
+                type_words = reader.words
+                type_count = collections.Counter(type_words)
 
-            vector = []  # list with the frequencies of words for paper type type_
-            for word in self.lang_mod_order:
-                if word in type_count:
-                    vector.append(type_count[word])
-                    del type_count[word]
-                else:
-                    vector.append(0)
+                vector = []  # list with the frequencies of words for paper type type_
+                for word in self.lang_mod_order:
+                    if word in type_count:
+                        vector.append(type_count[word])
+                        del type_count[word]
+                    else:
+                        vector.append(0)
 
-            freq = np.array(vector, ndmin=2)
-            nwords = sum(vector)
-            rel_freq = freq / nwords if nwords else freq
-            document_vectors.append(rel_freq)
+                freq = np.array(vector, ndmin=2)
+                nwords = sum(vector)
+                rel_freq = freq / nwords if nwords else freq
+                document_vectors.append(rel_freq)
 
-        document_embeds = np.asarray([np.dot(vector, self.language_model) for vector in document_vectors])
-        reference_vectors = np.asarray([matrix for wrapped_matrix in document_embeds for matrix in wrapped_matrix])
+            document_embeds = np.asarray([np.dot(vector, self.language_model) for vector in document_vectors])
+            reference_vectors = np.asarray([matrix for wrapped_matrix in document_embeds for matrix in wrapped_matrix])
 
-        with open("reference_vectors", "wb") as rv:
-            pickle.dump(reference_vectors, rv)
+            with open("reference_vectors", "wb") as rv:
+                pickle.dump(reference_vectors, rv)
 
-        self.reference_vectors = reference_vectors
-        print("Finished reference vectors calculation.")
+            self.reference_vectors = reference_vectors
+            print("Finished reference vectors calculation.")
+
+        elif how == 1:
+
+
+            # max_pool_ref_graph = tf.Graph()
+            # with max_pool_ref_graph.as_default():
+            #     tf.nn.embedding_lookup()
+
+            with tf.Session().as_default(), tf.device('/cpu:0'):
+                for cls in self.classes:
+                    for paper in self.reference_papers:
+                        if paper["classification"] == cls:
+                            paper_words = paper["abstract"].split(' ')[:self.span]
+
+                            word_indices = np.zeros(self.span, dtype=np.int32)
+                            i = 0
+                            while i < self.span:
+                                try:
+                                    word_indices[i] = self.lang_mod_order.index(paper_words[i])
+                                except ValueError:
+                                    word_indices[i] = 0
+                                i += 1
+
+                            paper_vectors = tf.nn.embedding_lookup(self.language_model, word_indices).eval()
+
 
     def get_abs_vectors(self, to_classify, new_n_save=True):
 

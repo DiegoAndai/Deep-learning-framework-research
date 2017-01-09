@@ -85,7 +85,6 @@ class PaperReader:
     def __iter__(self):
         looped_over = self.filtered_train_papers if self.loop_train else self.filtered_test_papers
         for paper in looped_over:
-            if not self.filter_by or (paper["classification"] and paper["classification"] in self.filter_by):
                 try:
                     abstract = paper["abstract"]
                     if abstract:
@@ -122,13 +121,13 @@ class PaperReader:
                 return None
         return "".join(ch for ch in word if ch in self.keep)
 
-    def generate_words_list(self):
+    def generate_words_list(self, limit_abstracts=False):
         print("Generating list of words from abstracts with filters {}".format(self.filter_by))
         i = 0
         self.words = []
         for abstract in self:
             if abstract:
-                self.words += abstract
+                self.words += abstract[:limit_abstracts] if limit_abstracts else abstract
             if i % 50000 == 0 and i > 0:
                 print("{} papers parsed so far".format(i))
             i += 1
