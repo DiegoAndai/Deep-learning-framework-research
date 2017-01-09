@@ -10,7 +10,6 @@ import os
 
 
 class DocumentSpace:
-
     class_sess = tf.Session()
 
     def __init__(self, language_model, lang_mod_order, span):
@@ -38,28 +37,53 @@ class DocumentSpace:
         n_abstracts = len(papers)
         print("started vector build")
         rel_freqs = []
+        pooled_vectors = list()
         append_rel_freqs = rel_freqs.append
         lmo = self.lang_mod_order
         span = self.span
         asarr = np.asarray
         for paper in papers:  # 10000
-            abs_count = collections.Counter(paper["abstract"][:span])
-            vector = [abs_count[word] if word in abs_count else 0 for word in lmo]
-            nwords = sum(abs_count.values())
-            append_rel_freqs(asarr(vector) / nwords)
-            parsed += 1
+            word_mtx = list()
+            words = paper["abstract"].split()
+            abs_count = collections.Counter(words)
+            word_count = 0
+            i = 0
+            while word_count < 10 and i < len(words):
+                word = words[i]
+                if word in lmo:
+                    index = self.lang_mod_order.index(word)
+                    word_mtx.append(self.language_model[index])
+                    word_count += 1
+                i += 1
+            if len(word_mtx) < 10:
+                word_mtx += [0]*(10-len(word_mtx))
+            try:
+                dim_mtx = np.transpose(word_mtx) #transposed : rows:value for every word at a given dimension
+                pooled_vector = [max(dimension) for dimension in dim_mtx]
+            except TypeError:
+                pooled_vector = [0] * 10
+            pooled_vectors.append(pooled_vector)
             if not parsed % 1000:
                 print("{}/{}".format(parsed, n_abstracts))
+            parsed += 1
+        assert n_abstracts == parsed
+        print("Finished calculating abstracts' vectors.")
+        return list(zip(labels, pooled_vectors))
+        '''abs_count = collections.Counter(paper["abstract"][:span])
+        vector = [abs_count[word] if word in abs_count else 0 for word in lmo]
+        nwords = sum(abs_count.values())
+        append_rel_freqs(asarr(vector) / nwords)
+        parsed += 1
+        if not parsed % 1000:
+            print("{}/{}".format(parsed, n_abstracts))
 
-        abs_vectors = tf.matmul(tf.constant(asarr(rel_freqs)), tf.constant(self.language_model))
+        abs_vectors = tf.matmul(tf.constant(rel_freqs), tf.constant(self.language_model))
         with DocumentSpace.class_sess.as_default():
             abs_vectors = abs_vectors.eval()
 
-        assert n_abstracts == parsed
         assert len(abs_vectors) == n_abstracts
         print("Finished calculating abstracts' vectors.")
-        return list(zip(labels, abs_vectors))
-
+        return list(zip(labels, abs_vectors))'''
 
     @staticmethod
     def slice(vectors):
@@ -97,20 +121,19 @@ if __name__ == "__main__":
         path_to_papers = args.KNN_papers_set
         join_path = os.path.join
 
-        with open(join_path(path_to_model, "embeddings")) as embeddings, \
+        with open(join_path(path_to_model, "embeddings"), 'rb') as embeddings, \
                 open(join_path(path_to_model, "vocab.txt")) as vocab, \
-                open(join_path(path_to_papers, "train")) as train_set, \
-                open(join_path(path_to_papers, "test")) as test_set:
+                open(join_path(path_to_papers, "train_papers")) as train_set, \
+                open(join_path(path_to_papers, "test_papers")) as test_set:
 
             model = pickle.load(embeddings)
             model_order = [line.split()[0].strip("b'") for line in vocab]
 
             train = json.load(train_set)
             test = json.load(test_set)
-
         Space = DocumentSpace(model, model_order, args.span)
-        Space.train_vectors = Space.get_abs_vectors(train_set)
-        Space.test_vectors = Space.get_abs_vectors(test_set)
+        Space.train_vectors = Space.get_abs_vectors(train)
+        Space.test_vectors = Space.get_abs_vectors(test)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
@@ -125,50 +148,49 @@ if __name__ == "__main__":
 
     classifier = KNeighborsClassifier(n_neighbors=args.K)  # FIXME: args may not be defined
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
-    # '''predictions = classifier.predict(np.asarray(test_data))
-    # classes = [ "primary-study",
-    #             "systematic-review",
-    #             "structured-summary-of-systematic-review",
-    #             "overview",
-    #             "structured-summary-of-primary-study"]
-    #
-    # if len(test_labels) != len(predictions):
-    #     print("dimensions error. labels: {}, predictions: {}".format(len(test_labels),
-    #                                                                  len(predictions)))
-    #
-    # class_dimension = len(classes)
-    # conf_mtx = np.zeros([class_dimension, class_dimension])
-    # for i in range(0, len(predictions)):
-    #     predicted_class = classes.index(predictions[i])
-    #     actual_class = classes.index(test_labels[i])
-    #     conf_mtx[actual_class][predicted_class] += 1
-    # np.set_printoptions(suppress=True)
-    # print(conf_mtx)
-    #
-    # assert len(test_labels) == len(predictions)
-    # hits = 0
-    # for l, p in zip(test_labels, predictions):
-    #     if l == p:
-    #         hits += 1
-    # print(hits / len(test_labels))
-    #
-    # recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
-    # recall_sum = 0
-    # for i in range(0,class_dimension):
-    #     rcl = recall(i)
-    #     recall_sum += rcl
-    #     print('Recall {}: {:.5f}'.format(i, rcl))
-    # print()
-    # print('Recall mean: {:.5f}'.format(recall_sum/class_dimension))
-    #
-    # precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0,class_dimension)))
-    # precision_sum = 0
-    # for i in range(0,class_dimension):
-    #     label_precision = precision(i)
-    #     precision_sum += label_precision
-    #     print('Precision {}: {:.5f}'.format(i, label_precision))
-    # print()
-    # print('Precision mean: {:.5f}'.format(precision_sum/class_dimension))'''
+    predictions = classifier.predict(np.asarray(test_data))
+    classes = [ "primary-study",
+                 "systematic-review"]
 
-    for testy, label in zip(test_data, test_labels):
-        print(label, classifier.predict_proba(np.asarray([testy])), classifier.predict(np.asarray([testy])))
+    if len(test_labels) != len(predictions):
+        print("dimensions error. labels: {}, predictions: {}".format(len(test_labels),
+                                                                      len(predictions)))
+
+    class_dimension = len(classes)
+    conf_mtx = np.zeros([class_dimension, class_dimension])
+    for i in range(0, len(predictions)):
+        predicted_class = classes.index(predictions[i])
+        actual_class = classes.index(test_labels[i])
+        conf_mtx[actual_class][predicted_class] += 1
+    np.set_printoptions(suppress=True)
+    print(conf_mtx)
+
+    assert len(test_labels) == len(predictions)
+    hits = 0
+    for l, p in zip(test_labels, predictions):
+        if l == p:
+            hits += 1
+    print(hits / len(test_labels))
+
+    recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
+    recall_sum = 0
+    for i in range(0,class_dimension):
+        rcl = recall(i)
+        if not np.isnan(rcl):
+            recall_sum += rcl
+        print('Recall {}: {:.5f}'.format(i, rcl))
+    print()
+    print('Recall mean: {:.5f}'.format(recall_sum/class_dimension))
+
+    precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0,class_dimension)))
+    precision_sum = 0
+    for i in range(0,class_dimension):
+        label_precision = precision(i)
+        if not np.isnan(label_precision):
+            precision_sum += label_precision
+        print('Precision {}: {:.5f}'.format(i, label_precision))
+    print()
+    print('Precision mean: {:.5f}'.format(precision_sum/class_dimension))
+
+    #for testy, label in zip(test_data, test_labels):
+    #    print(label, classifier.predict_proba(np.asarray([testy])), classifier.predict(np.asarray([testy])))
