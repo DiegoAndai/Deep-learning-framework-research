@@ -10,7 +10,7 @@ Classifications will be done on two classes, systematic-review and primary-study
 
 - Random: using python's random an even decision will be made for every paper.
 
-- KNN: [Scikit-learn implementation](http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier) with k = 5 and default settings. The vector for each document is calculated via a max pooling regarding the maximun value of each dimension of the document's first 10 words to appear on the model dictionary. Implementation [here](/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification).
+- KNN: [Scikit-learn implementation](http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier) with k = 5 and default settings. The vector for each document is calculated via a max pooling regarding the maximun value of each dimension of the document's first 10 words. Implementation [here](/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification).
 
 - PVP: Add description. Implementation [here](/Epistemonikos/ModelsEvaluation/PaperClassification/PVPClassification).
 
