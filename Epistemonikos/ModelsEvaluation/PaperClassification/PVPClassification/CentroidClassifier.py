@@ -9,22 +9,9 @@ import sys
 from tabulate import tabulate
 
 
-class PVPClassifier:  # Pondered vector paper classifier
+class CentroidClassifier:  # Pondered vector paper classifier
 
     class_sess = tf.Session()
-
-    # Definition of ONE TensorFlow classification graph to use between instances. One graph to rule them all.
-    classification_graph = tf.Graph()
-    with classification_graph.as_default():
-        ref_vecs = tf.placeholder(tf.float32, shape=[None, None])  # vectors to decide classification. Shape depends
-        # on number of document types and embeddings dimensionality.
-
-        to_classify = tf.placeholder(tf.float32, shape=[None, None])  # vectors representing abstracts. Shape depends
-        # on number of papers to classify and embeddings dimensionality
-
-        similarity = tf.matmul(to_classify, ref_vecs, transpose_b=True)  # shape=[papers, document types]
-
-        init_op = tf.global_variables_initializer()
 
     def __init__(self, language_model, lang_mod_order, classes, reference_papers, span=10, span_start=0):
         self.span = span  # How many words to consider from the abstracts to classify them.
@@ -39,7 +26,7 @@ class PVPClassifier:  # Pondered vector paper classifier
         # word an embedding represents).
         self.predictions = None  # Classification
         self.labels = None
-        with PVPClassifier.class_sess.as_default(), tf.device('/cpu:0'):
+        with CentroidClassifier.class_sess.as_default(), tf.device('/cpu:0'):
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
@@ -113,12 +100,12 @@ class PVPClassifier:  # Pondered vector paper classifier
                                 word_indices[i] = 0
                             i += 1
 
-                        papers_vectors.append(self.language_model[word_indices])
+                        papers_vectors.append(np.amax(self.language_model[word_indices], axis=0, keepdims=True))
                         cls_papers_parsed += 1
                         if not cls_papers_parsed % 5000:
                             print("{} papers of type {} have been parsed so far".format(cls_papers_parsed, cls))
 
-                self.reference_vectors.append(np.amax(np.concatenate(papers_vectors), axis=0))
+                self.reference_vectors.append(np.mean(np.concatenate(papers_vectors), axis=0))
 
             self.reference_vectors = np.asarray(self.reference_vectors)
 
@@ -207,18 +194,60 @@ class PVPClassifier:  # Pondered vector paper classifier
             print("Finished calculating abstracts' vectors.")
             self.abstracts_vectors = pooled_vectors
 
-    def classify(self):
+    def classify(self, how=1):
 
-        print("Classifying papers...")
-        with tf.Session(graph=PVPClassifier.classification_graph) as session:
-            PVPClassifier.init_op.run()
-            sim = session.run(PVPClassifier.similarity,
-                              feed_dict={PVPClassifier.ref_vecs: self.reference_vectors,
-                                         PVPClassifier.to_classify: self.abstracts_vectors})
+        """:parameter how: non negative integer indicating the method
+        to use to determine similarities between vectors.
+        0: cosine similarity
+        1: euclidean distance"""
 
-        # list with the classification for abs_to_classify (no argsort in TensorFlow!!!!!)
-        self.predictions = [self.classes[(-row).argsort()[0]] for row in sim]
-        print("Papers classified.")
+        if how == 0:
+
+            cosine_classification_graph = tf.Graph()
+            with cosine_classification_graph.as_default():
+                ref_vecs = tf.placeholder(tf.float32,
+                                          shape=[None, None])  # vectors to decide classification. Shape depends
+                # on number of document types and embeddings dimensionality.
+
+                to_classify = tf.placeholder(tf.float32,
+                                             shape=[None, None])  # vectors representing abstracts. Shape depends
+                # on number of papers to classify and embeddings dimensionality
+
+                similarity = tf.matmul(to_classify, ref_vecs, transpose_b=True)  # shape=[papers, document types]
+
+                init_op = tf.global_variables_initializer()
+
+            print("Classifying papers...")
+            with tf.Session(graph=cosine_classification_graph) as session:
+                init_op.run()
+                sim = session.run(similarity,
+                                  feed_dict={ref_vecs: self.reference_vectors,
+                                             to_classify: self.abstracts_vectors})
+
+            # list with the classification for abs_to_classify (no argsort in TensorFlow!!!!!)
+            self.predictions = [self.classes[(-row).argsort()[0]] for row in sim]
+            print("Papers classified.")
+
+        elif how == 1:
+
+            euclidean_classification_graph = tf.Graph()
+            with euclidean_classification_graph.as_default():
+                ref_vec = tf.placeholder(tf.float32, shape=[None])  # receive 1 vector at a time
+                to_classify = tf.placeholder(tf.float32, shape=[None])  # receive 1 vector at a time
+                distance = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(ref_vec, to_classify))))
+                init_op = tf.global_variables_initializer()
+
+            print("Classifying papers...")
+            with tf.Session(graph=euclidean_classification_graph) as session:
+                init_op.run()
+                distances = np.asarray([[session.run(distance, feed_dict={ref_vec: rv, to_classify: av})
+                                       for rv in self.reference_vectors] for av in self.abstracts_vectors])
+
+                print("distances shape:", distances.shape)
+
+            # list with the classification for abs_to_classify (no argsort in TensorFlow!!!!!)
+            self.predictions = [self.classes[row.argsort()[0]] for row in distances]
+            print("Papers classified.")
 
     def get_accuracy(self):
 

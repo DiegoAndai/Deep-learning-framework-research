@@ -1,0 +1,17 @@
+                     primary-study    systematic-review
+-----------------  ---------------  -------------------
+primary-study                 5115                 4799
+systematic-review             2909                 7005
+
+Accuracy: 0.6112568085535606
+
+Recall:
+primary-study: 0.515937058705
+systematic-review: 0.706576558402
+
+Precision:
+primary-study: 0.637462612164
+systematic-review: 0.593442900712
+
+10 words from the abstracts were used to classify.
+19828 papers were classified.

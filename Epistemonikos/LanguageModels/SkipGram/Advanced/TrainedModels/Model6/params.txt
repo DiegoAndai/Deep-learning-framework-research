@@ -1,0 +1,16 @@
+eval_data: AnalogyTestingFiles/questions-words.txt
+vocab_size: 52465
+vocab_counts: [ 178002 1272323 1159009 ...,       5       5       5]
+train_data: ../../TrainingSets/Set1/train_text.txt
+save_path: TrainedModels/Model6
+min_count: 5
+batch_size: 500
+learning_rate: 0.05
+window_size: 2
+words_per_epoch: 27330942
+subsample: 0.0001
+epochs_to_train: 50
+vocab_words: [b'UNK' b'the' b'of' ..., b'vfg' b'microcephaly' b'ddsrrtx']
+emb_dim: 500
+num_samples: 25
+concurrent_steps: 12
