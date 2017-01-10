@@ -2,7 +2,7 @@ import argparse
 import pickle
 import json
 import sys
-from PVPClassifier import PVPClassifier
+from CentroidClassifier import CentroidClassifier
 
 # TODO: reduce the amount of command line arguments assuming that the files related to one model are in the same path
 parser = argparse.ArgumentParser(description="Classify papers.")
@@ -35,7 +35,7 @@ with open(args.model_path, 'rb') as model_file, \
     ref_papers = json.load(ref_file)
     to_classify = json.load(abs_file)
 
-classifier = PVPClassifier(model, model_order, args.classes, ref_papers, span=args.abstracts_words)
+classifier = CentroidClassifier(model, model_order, args.classes, ref_papers, span=args.abstracts_words)
 classifier.get_ref_vectors(new_n_save=True)
 classifier.get_abs_vectors(to_classify, new_n_save=True)
 classifier.classify()

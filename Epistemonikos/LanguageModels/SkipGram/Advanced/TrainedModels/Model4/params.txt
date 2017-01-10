@@ -1,0 +1,16 @@
+words_per_epoch: 83436520
+vocab_size: 387635
+concurrent_steps: 12
+save_path: TrainedModels/Model4
+min_count: 5
+emb_dim: 500
+eval_data: AnalogyTestingFiles/questions-words.txt
+subsample: 0.0001
+window_size: 2
+learning_rate: 0.05
+epochs_to_train: 50
+train_data: ../../TrainingSets/allwiki
+vocab_words: [b'UNK' b'the' b'of' ..., b'Negus' b'ly' b'Ossiriand,']
+batch_size: 500
+vocab_counts: [2887230 5471681 3133056 ...,       5       5       5]
+num_samples: 25

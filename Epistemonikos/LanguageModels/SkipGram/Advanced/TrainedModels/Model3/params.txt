@@ -1,0 +1,16 @@
+subsample: 0.001
+vocab_counts: [4588977 5471681 3133056 ...,      15      15      15]
+emb_dim: 500
+min_count: 15
+save_path: TrainedModels/Model3
+vocab_words: [b'UNK' b'the' b'of' ..., b'"years' b'Cascade,' b'firstborn,']
+words_per_epoch: 83436520
+learning_rate: 0.025
+concurrent_steps: 12
+eval_data: AnalogyTestingFiles/questions-words.txt
+num_samples: 25
+vocab_size: 171897
+epochs_to_train: 50
+window_size: 5
+batch_size: 500
+train_data: ../../TrainingSets/allwiki
