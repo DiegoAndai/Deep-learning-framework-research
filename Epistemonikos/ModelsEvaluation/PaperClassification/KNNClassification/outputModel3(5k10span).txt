@@ -1,0 +1,16 @@
+Model: ../../../LanguageModels/SkipGram/Advanced/TrainedModels/Model3/
+KNN classifier with k = 5
+span = 10
+Set: Set2
+Accuracy : 0.6773
+RECALL
+Recall 0: 0.58620
+Recall 1: 0.76840
+Recall mean: 0.67730
+PRECISION
+Precision 0: 0.71680
+Precision 1: 0.64997
+Precision mean: 0.68339
+CONFUSSION MATRIX
+[[ 2931.  2069.]
+ [ 1158.  3842.]]
