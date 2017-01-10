@@ -93,7 +93,7 @@ class CentroidClassifier:  # Pondered vector paper classifier
 
                         word_indices = np.zeros(self.span, dtype=np.int32)
                         i = 0
-                        while i < self.span:
+                        while i < self.span - 1:
                             try:
                                 word_indices[i] = self.lang_mod_order.index(paper_words[i])
                             except ValueError:
