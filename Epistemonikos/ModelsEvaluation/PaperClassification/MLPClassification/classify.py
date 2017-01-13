@@ -17,6 +17,7 @@ def batcher(data, batch_size):
             raise StopIteration
         else:
             yield next_batch
+            index += batch_size
 
 
 
@@ -66,22 +67,22 @@ if __name__ == "__main__":
 
     # Create the model
     x = tf.placeholder(tf.float32, [None, dimension])
-    W = tf.Variable(tf.zeros([dimension, 10]))
-    b = tf.Variable(tf.zeros([10]))
+    W = tf.Variable(tf.zeros([dimension, 2]))
+    b = tf.Variable(tf.zeros([2]))
     y = tf.nn.softmax(tf.matmul(x, W) + b)
 
     # Define loss and optimizer
-    y_ = tf.placeholder(tf.float32, [None, 10])
+    y_ = tf.placeholder(tf.float32, [None, 2])
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
     train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
-    tf.initialize_all_variables().run()
+    tf.global_variables_initializer().run()
 
     td_batcher = batcher(train_data, batch_size)
     tl_batcher = batcher(test_hv_labels, batch_size)
 
     # Train
-    for _ in range(10000):
+    for i in range(1000):
         batch_xs = next(td_batcher)
         batch_ys = next(tl_batcher)
         train_step.run({x: batch_xs, y_: batch_ys})
@@ -110,24 +111,24 @@ if __name__ == "__main__":
         precision = tf.div(tp, tf.add(fp, tp))
         recall = tf.div(tp, tf.add(fn, tp))
 
-        current_p = precision.eval({x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels})  # evaluate precision
-        current_r = recall.eval({x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels})  # evaluate recall
+        current_p = precision.eval({x: test_data, y_: test_hv_labels})  # evaluate precision
+        current_r = recall.eval({x: test_data, y_: test_hv_labels})  # evaluate recall
 
         avg_precision += current_p
         avg_recall += current_r
 
         print("Class {}:\nPrecision: {}\nRecall: {}".format(cls, current_p, current_r))
 
-    avg_precision /= 10
-    avg_recall /= 10
+    avg_precision /= 2
+    avg_recall /= 2
     print("Average precision: {}\nAverage recall: {}".format(avg_precision, avg_recall))
-    print("Accuracy: {}\n".format(accuracy.eval({x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels})))
+    print("Accuracy: {}\n".format(accuracy.eval({x: test_data, y_: test_hv_labels})))
 
     # Print confusion matrix
     yvsy_ = tf.transpose(tf.pack([tf.argmax(y, 1), tf.argmax(y_, 1)]))  # vector y packed with y_ and transposed
 
-    confusion = np.zeros([10, 10], int)
-    for p in yvsy_.eval(feed_dict={x: datahandler.np_test_images, y_: datahandler.np_one_hot_test_labels}):
+    confusion = np.zeros([2, 2], int)
+    for p in yvsy_.eval(feed_dict={x: test_data, y_: test_hv_labels}):
         confusion[p[0], p[1]] += 1
 
     print(confusion)
