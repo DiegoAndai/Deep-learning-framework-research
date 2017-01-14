@@ -50,7 +50,7 @@ class DocumentSpace:
             abs_count = collections.Counter(words)
             word_count = 0
             i = 0
-            while word_count < 10 and i < len(words):
+            while word_count < self.span and i < len(words):
                 word = words[i]
                 if word in lmo:
                     index = self.lang_mod_order.index(word)
@@ -71,21 +71,7 @@ class DocumentSpace:
         assert n_abstracts == parsed
         print("Finished calculating abstracts' vectors.")
         return list(zip(labels, pooled_vectors))
-        '''abs_count = collections.Counter(paper["abstract"][:span])
-        vector = [abs_count[word] if word in abs_count else 0 for word in lmo]
-        nwords = sum(abs_count.values())
-        append_rel_freqs(asarr(vector) / nwords)
-        parsed += 1
-        if not parsed % 1000:
-            print("{}/{}".format(parsed, n_abstracts))
 
-        abs_vectors = tf.matmul(tf.constant(rel_freqs), tf.constant(self.language_model))
-        with DocumentSpace.class_sess.as_default():
-            abs_vectors = abs_vectors.eval()
-
-        assert len(abs_vectors) == n_abstracts
-        print("Finished calculating abstracts' vectors.")
-        return list(zip(labels, abs_vectors))'''
 
     @staticmethod
     def slice(vectors):
@@ -166,7 +152,8 @@ if __name__ == "__main__":
             pickle.dump(test_data, ted)
             pickle.dump(test_labels, tel)
 
-    classifier = KNeighborsClassifier(n_neighbors=args.K)  # FIXME: args may not be defined
+
+    classifier = KNeighborsClassifier(n_neighbors=args.K)
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
@@ -187,7 +174,6 @@ if __name__ == "__main__":
     np.set_printoptions(suppress=True)
     print(conf_mtx)
 
-    #assert len(test_labels) == len(predictions)
     hits = 0
     for l, p in zip(test_labels, predictions):
         if l == p:
@@ -241,6 +227,3 @@ if __name__ == "__main__":
 
     with open("output{}.txt".format(args.model_path.split('/')[-2]), "w") as out_file:
         out_file.write(output)
-
-    #for testy, label in zip(test_data, test_labels):
-    #    print(label, classifier.predict_proba(np.asarray([testy])), classifier.predict(np.asarray([testy])))
