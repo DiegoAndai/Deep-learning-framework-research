@@ -92,9 +92,9 @@ if __name__ == "__main__":
                                        "the start of the abstract", type=int, default=10)
     parser.add_argument("--KNN_papers_set", help="Path to the KNN paper set.",
                         required=True)
-    parser.add_argument("--distance_metric", default="euclidean", help="Metric to use to select nearest neighbours. "
-                                                                       "Refer to sklearn.neighbors.DistanceMetric for"
-                                                                       "details.")
+    parser.add_argument("--distance_metric", default="minkowski", help="Metric to use to select nearest neighbours. "
+                                                                       "Currently Minkowsky and dot product are "
+                                                                       "implemented.")
 
     if os.path.exists("test_data"):
         print("opening previous data")
@@ -155,6 +155,9 @@ if __name__ == "__main__":
             pickle.dump(train_labels, trl)
             pickle.dump(test_data, ted)
             pickle.dump(test_labels, tel)
+
+    if args.distance_metric == "dot":
+        args.distance_metric = np.dot
 
     classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric)
     print("fitting")
