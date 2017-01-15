@@ -30,9 +30,8 @@ parser.add_argument("--dispose_empty", default=True, help="Whether to dispose of
 parser.add_argument("--even_train", default=False)
 parser.add_argument("--even_test", default=False)
 parser.add_argument("--mode", default=0, type=int, help="0: Generate text file to train a language model."
-                                                        "1: Generate a PVP classification set."
-                                                        "2: Generate a KNN classification set."
-                                                        "3: All of the preceding.")
+                                                        "1: Generate a paper classification set."
+                                                        "2: All of the preceding.")
 parser.add_argument("--save_path", default="", help="Where to save the output file(s).")
 parser.add_argument("--years", default=None, help="Filter by years", nargs='+')
 args = parser.parse_args()
@@ -45,16 +44,11 @@ paper_reader = PaperReader(papers, args.filters, args.train_percent, args.min_co
                            args.dispose_empty, args.even_train, args.even_test, args.years)
 
 m = args.mode
-if m == 0 or m == 3:
+if m == 0 or m == 2:
 
     paper_reader.generate_train_text_file(join(args.save_path, "train_text.txt"))
 
-if m == 1 or m == 3:
-
-    paper_reader.save_train_papers(join(args.save_path, "train_papers"))
-    paper_reader.save_test_papers(join(args.save_path, "test_papers"))
-
-if m == 2 or m == 3:
+if m == 1 or m == 2:
 
     paper_reader.save_train_papers(join(args.save_path, "train_papers"), form="json")
     paper_reader.save_test_papers(join(args.save_path, "test_papers"), form="json")
