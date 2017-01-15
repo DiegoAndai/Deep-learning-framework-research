@@ -159,7 +159,7 @@ if __name__ == "__main__":
     if args.distance_metric == "dot":
         args.distance_metric = np.dot
 
-    classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric)
+    classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric, n_jobs=-1)
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
