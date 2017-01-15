@@ -92,6 +92,9 @@ if __name__ == "__main__":
                                        "the start of the abstract", type=int, default=10)
     parser.add_argument("--KNN_papers_set", help="Path to the KNN paper set.",
                         required=True)
+    parser.add_argument("--distance_metric", default="euclidean", help="Metric to use to select nearest neighbours. "
+                                                                       "Refer to sklearn.neighbors.DistanceMetric for"
+                                                                       "details.")
 
     if os.path.exists("test_data"):
         print("opening previous data")
@@ -153,14 +156,12 @@ if __name__ == "__main__":
             pickle.dump(test_data, ted)
             pickle.dump(test_labels, tel)
 
-
-    classifier = KNeighborsClassifier(n_neighbors=args.K)
+    classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric)
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
     predictions = classifier.predict(np.asarray(test_data))
-    classes = [ "primary-study",
-                 "systematic-review"]
+    classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
         print("dimensions error. labels: {}, predictions: {}".format(len(test_labels),
@@ -197,7 +198,7 @@ if __name__ == "__main__":
     micro_recall = recall_score(test_labels, predictions, average='micro')
     print('Recall micro average: {:.5f}'.format(micro_recall))
 
-    precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0,class_dimension)))
+    precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0, class_dimension)))
     precision_sum = 0
     precision_list = list()
     for i in range(0,class_dimension):
