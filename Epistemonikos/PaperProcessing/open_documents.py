@@ -9,9 +9,14 @@ class PaperReader:
     significant methods: __init__, save_train/test_papers and generate_train_text_file."""
 
     def __init__(self, papers, filters=None, train_percent=100, abstracts_min=None, dispose_no_abstract=True,
-                 even_train=False, even_test=False):
+                 even_train=False, even_test=False, years=None):
 
         self.abstracts_min_lmt = abstracts_min  # used to dispose short abstracts
+
+        # filter by years:
+        if years:
+            papers = filter(lambda p: p["year"] in years, papers)
+
 
         # Dispose of short (if abstracts_min is True) or empty abstracts otherwise
         self._papers = []
@@ -32,12 +37,19 @@ class PaperReader:
 
         print("filtering and parsing abstracts...")
         self.filtered_papers = list(map(lambda pap: {"abstract": ' '.join(self.parse_line(pap["abstract"])),
-                                                     "classification": pap["classification"], "id": pap["id"]},
+                                                     "classification": pap["classification"], "id": pap["id"],
+                                                     "year": pap["year"]},
                                         [p for p in filter(lambda paper: paper["classification"] in self.filter_by,
                                                            self._papers)] if self.filter_by else self._papers))
         print("finished filtering and parsing.\n"
               "Papers before filtering: {}\n"
               "Papers after filtering: {}\n".format(len(self._papers), len(self.filtered_papers)))
+
+        if abstracts_min:
+            print("Performing abstracts' length final check...")
+            self.filtered_papers = [p for p in filter(lambda paper: len(paper["abstract"].split()) >= abstracts_min,
+                                                      self.filtered_papers)]
+            print("Papers after final check: {}\n".format(len(self.filtered_papers)))
 
         print("splitting papers...")
         divide = int(len(self.filtered_papers) * train_percent / 100)

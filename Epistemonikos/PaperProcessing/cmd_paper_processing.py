@@ -34,6 +34,7 @@ parser.add_argument("--mode", default=0, type=int, help="0: Generate text file t
                                                         "2: Generate a KNN classification set."
                                                         "3: All of the preceding.")
 parser.add_argument("--save_path", default="", help="Where to save the output file(s).")
+parser.add_argument("--years", default=None, help="Filter by years", nargs='+')
 args = parser.parse_args()
 
 
@@ -41,7 +42,7 @@ with open(args.json_file, encoding="utf-8") as jf:
     papers = json.load(jf)
 
 paper_reader = PaperReader(papers, args.filters, args.train_percent, args.min_count,
-                           args.dispose_empty, args.even_train, args.even_test)
+                           args.dispose_empty, args.even_train, args.even_test, args.years)
 
 m = args.mode
 if m == 0 or m == 3:

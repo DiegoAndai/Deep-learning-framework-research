@@ -89,7 +89,7 @@ class CentroidClassifier:  # Pondered vector paper classifier
                 cls_papers_parsed = 0
                 for paper in self.reference_papers:
                     if paper["classification"] == cls:
-                        paper_words = paper["abstract"].split(' ')[:self.span]
+                        paper_words = paper["abstract"].split()[:self.span]
 
                         word_indices = np.zeros(self.span, dtype=np.int32)
                         i = 0
