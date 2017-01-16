@@ -199,7 +199,7 @@ if __name__ == "__main__":
     recall_mean = recall_sum/class_dimension
     print('Recall macro average: {:.5f}'.format(recall_mean))
     micro_recall = recall_score(test_labels, predictions, average='weighted')
-    print('Recall micro average: {:.5f}'.format(micro_recall))
+    print('Recall weighted average: {:.5f}'.format(micro_recall))
 
     precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0, class_dimension)))
     precision_sum = 0
@@ -214,10 +214,10 @@ if __name__ == "__main__":
     precision_mean = precision_sum/class_dimension
     print('Precision macro average: {:.5f}'.format(precision_mean))
     micro_precision = precision_score(test_labels, predictions, average='weighted')
-    print('Precision micro average: {:.5f}'.format(micro_precision))
+    print('Precision weighted average: {:.5f}'.format(micro_precision))
 
     f1 = f1_score(test_labels, predictions, average='weighted')
-    print('F1 score: {:.5f}'.format(f1))
+    print('F1 score weighted average: {:.5f}'.format(f1))
 
     output = ''
     output += 'Model: {}\n'.format(args.model_path)
@@ -229,13 +229,13 @@ if __name__ == "__main__":
     for rcl in recall_list:
         output += 'Recall {}: {:.5f}\n'.format(rcl[0], rcl[1])
     output += 'Recall mean: {:.5f}\n'.format(recall_mean)
-    output += 'Recall micro average: {:.5f}\n'.format(micro_recall)
+    output += 'Recall weighted average: {:.5f}\n'.format(micro_recall)
     output += "PRECISION\n"
     for pcsn in precision_list:
         output += 'Precision {}: {:.5f}\n'.format(pcsn[0], pcsn[1])
     output += 'Precision mean: {:.5f}\n'.format(precision_mean)
-    output += 'Precision micro average: {:.5f}\n'.format(micro_precision)
-    output += 'F1 score micro average: {:.5f}\n'.format(f1)
+    output += 'Precision weighted average: {:.5f}\n'.format(micro_precision)
+    output += 'F1 score weighted average: {:.5f}\n'.format(f1)
     output += 'CONFUSSION MATRIX\n'
     output += str(conf_mtx)
 
