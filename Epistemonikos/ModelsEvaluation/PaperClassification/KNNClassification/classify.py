@@ -1,5 +1,5 @@
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 import numpy as np
 import tensorflow as tf
@@ -216,6 +216,9 @@ if __name__ == "__main__":
     micro_precision = precision_score(test_labels, predictions, average='micro')
     print('Precision micro average: {:.5f}'.format(micro_precision))
 
+    f1 = f1_score(test_labels, predictions, average='micro')
+    print('F1 score: {:.5f}'.format(f1))
+
     output = ''
     output += 'Model: {}\n'.format(args.model_path)
     output += 'KNN classifier with k = {}\n'.format(args.K)
@@ -226,12 +229,13 @@ if __name__ == "__main__":
     for rcl in recall_list:
         output += 'Recall {}: {:.5f}\n'.format(rcl[0], rcl[1])
     output += 'Recall mean: {:.5f}\n'.format(recall_mean)
-    output += 'Recall micro average: {:.5f}'.format(micro_recall)
+    output += 'Recall micro average: {:.5f}\n'.format(micro_recall)
     output += "PRECISION\n"
     for pcsn in precision_list:
         output += 'Precision {}: {:.5f}\n'.format(pcsn[0], pcsn[1])
     output += 'Precision mean: {:.5f}\n'.format(precision_mean)
-    output += 'Precision micro average: {:.5f}'.format(micro_precision)
+    output += 'Precision micro average: {:.5f}\n'.format(micro_precision)
+    output += 'F1 score micro average: {:.5f}\n'.format(f1)
     output += 'CONFUSSION MATRIX\n'
     output += str(conf_mtx)
 
