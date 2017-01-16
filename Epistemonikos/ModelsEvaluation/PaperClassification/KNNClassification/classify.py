@@ -198,7 +198,7 @@ if __name__ == "__main__":
     print()
     recall_mean = recall_sum/class_dimension
     print('Recall macro average: {:.5f}'.format(recall_mean))
-    micro_recall = recall_score(test_labels, predictions, average='micro')
+    micro_recall = recall_score(test_labels, predictions, average='weighted')
     print('Recall micro average: {:.5f}'.format(micro_recall))
 
     precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0, class_dimension)))
@@ -213,10 +213,10 @@ if __name__ == "__main__":
     print()
     precision_mean = precision_sum/class_dimension
     print('Precision macro average: {:.5f}'.format(precision_mean))
-    micro_precision = precision_score(test_labels, predictions, average='micro')
+    micro_precision = precision_score(test_labels, predictions, average='weighted')
     print('Precision micro average: {:.5f}'.format(micro_precision))
 
-    f1 = f1_score(test_labels, predictions, average='micro')
+    f1 = f1_score(test_labels, predictions, average='weighted')
     print('F1 score: {:.5f}'.format(f1))
 
     output = ''
