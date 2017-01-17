@@ -1,0 +1,11 @@
+[[ 2796.  2204.]
+ [ 1004.  3996.]]
+0.6792
+Recall 0: 0.55920
+Recall 1: 0.79920
+
+Recall mean: 0.67920
+Precision 0: 0.73579
+Precision 1: 0.64452
+
+Precision mean: 0.69015
