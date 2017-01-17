@@ -1,0 +1,20 @@
+
+Accuracy: 0.8611565739225314
+
+Recall primary: 0.91758
+Recall systematic: 0.65986
+Recall macro average: 0.78872
+Recall weighted average: 0.86116
+
+Precision primary: 0.90588
+Precision systematic: 0.69175
+Precision macro average: 0.79881
+Precision weighted average: 0.85900
+
+F1 score weighted average: 0.85996
+
+                                        Predicted
+                            primary-study    systematic-review
+        -----------------  ---------------  -------------------
+  True  primary-study                 13137                1180
+        systematic-review             1365                 2648

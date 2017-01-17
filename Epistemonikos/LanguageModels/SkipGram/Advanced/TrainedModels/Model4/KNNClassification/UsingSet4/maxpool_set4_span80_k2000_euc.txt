@@ -1,0 +1,14 @@
+[[ 14063.    254.]
+ [   815.   3198.]]
+0.9416803055100927
+Recall 0: 0.98226
+Recall 1: 0.79691
+
+Recall macro average: 0.88958
+Recall weighted average: 0.94168
+Precision 0: 0.94522
+Precision 1: 0.92642
+
+Precision macro average: 0.93582
+Precision weighted average: 0.94110
+F1 score weighted average: 0.94005

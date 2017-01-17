@@ -1,0 +1,19 @@
+Model: ../../../LanguageModels/SkipGram/Advanced/TrainedModels/Model4/
+KNN classifier with k = 1
+span = 80
+Set: PaperSets/Set4
+Accuracy : 0.8965630114566284
+RECALL
+Recall 0: 0.90270
+Recall 1: 0.87466
+Recall mean: 0.88868
+Recall weighted average: 0.89656
+PRECISION
+Precision 0: 0.96254
+Precision 1: 0.71589
+Precision mean: 0.83921
+Precision weighted average: 0.90854
+F1 score weighted average: 0.90007
+CONFUSSION MATRIX
+[[ 12924.   1393.]
+ [   503.   3510.]]
