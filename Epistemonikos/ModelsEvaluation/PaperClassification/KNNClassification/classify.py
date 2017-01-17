@@ -1,4 +1,5 @@
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 import numpy as np
 import tensorflow as tf
@@ -91,6 +92,9 @@ if __name__ == "__main__":
                                        "the start of the abstract", type=int, default=10)
     parser.add_argument("--KNN_papers_set", help="Path to the KNN paper set.",
                         required=True)
+    parser.add_argument("--distance_metric", default="minkowski", help="Metric to use to select nearest neighbours. "
+                                                                       "Currently Minkowsky and dot product are "
+                                                                       "implemented.")
 
     if os.path.exists("test_data"):
         print("opening previous data")
@@ -123,23 +127,23 @@ if __name__ == "__main__":
             train = json.load(train_set)
             test = json.load(test_set)
 
-        fthousand = []
-        ps = 0
-        sr = 0
-        i = 0
-        while ps < 5000 or sr < 5000:
-            if test[i]["classification"] == "primary-study" and ps < 5000:
-                fthousand.append(test[i])
-                ps += 1
-            elif test[i]["classification"] == "systematic-review" and sr < 5000:
-                fthousand.append(test[i])
-                sr += 1
-            i += 1
-        print(len(fthousand))
+        # fthousand = []
+        # ps = 0
+        # sr = 0
+        # i = 0
+        # while ps < 5000 or sr < 5000:
+        #     if test[i]["classification"] == "primary-study" and ps < 5000:
+        #         fthousand.append(test[i])
+        #         ps += 1
+        #     elif test[i]["classification"] == "systematic-review" and sr < 5000:
+        #         fthousand.append(test[i])
+        #         sr += 1
+        #     i += 1
+        # print(len(fthousand))
 
         Space = DocumentSpace(model, model_order, args.span)
         Space.train_vectors = Space.get_abs_vectors(train)
-        Space.test_vectors = Space.get_abs_vectors(fthousand)
+        Space.test_vectors = Space.get_abs_vectors(test)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
@@ -152,14 +156,15 @@ if __name__ == "__main__":
             pickle.dump(test_data, ted)
             pickle.dump(test_labels, tel)
 
+    if args.distance_metric == "dot":
+        args.distance_metric = np.dot
 
-    classifier = KNeighborsClassifier(n_neighbors=args.K)
+    classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric, n_jobs=-1)
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
     predictions = classifier.predict(np.asarray(test_data))
-    classes = [ "primary-study",
-                 "systematic-review"]
+    classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
         print("dimensions error. labels: {}, predictions: {}".format(len(test_labels),
@@ -192,9 +197,11 @@ if __name__ == "__main__":
         print('Recall {}: {:.5f}'.format(i, rcl))
     print()
     recall_mean = recall_sum/class_dimension
-    print('Recall mean: {:.5f}'.format(recall_mean))
+    print('Recall macro average: {:.5f}'.format(recall_mean))
+    micro_recall = recall_score(test_labels, predictions, average='weighted')
+    print('Recall weighted average: {:.5f}'.format(micro_recall))
 
-    precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0,class_dimension)))
+    precision = lambda i: (conf_mtx[i][i]/sum(conf_mtx[j][i] for j in range(0, class_dimension)))
     precision_sum = 0
     precision_list = list()
     for i in range(0,class_dimension):
@@ -205,7 +212,12 @@ if __name__ == "__main__":
         print('Precision {}: {:.5f}'.format(i, label_precision))
     print()
     precision_mean = precision_sum/class_dimension
-    print('Precision mean: {:.5f}'.format(precision_mean))
+    print('Precision macro average: {:.5f}'.format(precision_mean))
+    micro_precision = precision_score(test_labels, predictions, average='weighted')
+    print('Precision weighted average: {:.5f}'.format(micro_precision))
+
+    f1 = f1_score(test_labels, predictions, average='weighted')
+    print('F1 score weighted average: {:.5f}'.format(f1))
 
     output = ''
     output += 'Model: {}\n'.format(args.model_path)
@@ -217,10 +229,13 @@ if __name__ == "__main__":
     for rcl in recall_list:
         output += 'Recall {}: {:.5f}\n'.format(rcl[0], rcl[1])
     output += 'Recall mean: {:.5f}\n'.format(recall_mean)
+    output += 'Recall weighted average: {:.5f}\n'.format(micro_recall)
     output += "PRECISION\n"
     for pcsn in precision_list:
         output += 'Precision {}: {:.5f}\n'.format(pcsn[0], pcsn[1])
     output += 'Precision mean: {:.5f}\n'.format(precision_mean)
+    output += 'Precision weighted average: {:.5f}\n'.format(micro_precision)
+    output += 'F1 score weighted average: {:.5f}\n'.format(f1)
     output += 'CONFUSSION MATRIX\n'
     output += str(conf_mtx)
 
