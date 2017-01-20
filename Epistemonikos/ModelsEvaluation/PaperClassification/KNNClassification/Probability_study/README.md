@@ -17,7 +17,7 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 |Precision SR|0.93628|0.95570|0.95812|0.95828|
 
 
-## NOTE: From here we only show K values 10 and 100 so it wouldn't get so messy. 10, 50, 100 and 150 K graphs and outputs are on this folder by name. Output logs have all number data, including intervals count and weighted metrics.
+### NOTE: From here we only show K values 10 and 100 so it wouldn't get so messy. 10, 50, 100 and 150 K graphs and outputs are on this folder by name. Output logs have all number data, including intervals count and weighted metrics.
 
 
 # 10K ratios
