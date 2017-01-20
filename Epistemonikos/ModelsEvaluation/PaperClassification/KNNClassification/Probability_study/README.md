@@ -1,4 +1,4 @@
-## Probability Study for KNN Classification
+# Probability Study for KNN Classification
 
 With this, we want to analyze how the classifier's confidence behaves in relation to it's right/wrong rate. Here, confidence is measured in number of neighbors of the predicted class. Our hipothesis is, as the ratio of neighbors becomes greater, the classifier should get more predictions right. 
 
@@ -6,8 +6,7 @@ Ratio here is calculated as (predicted class neighbors/total neighbors), so we e
 
 We tested model 4 on a uneven dataset (set4), with chronological separation (train up to 2010 and test with 2011 papers). These document embeddings where max pooled per dimention. We used 3 different K values to see how this affects metrics. 
 
-### Data:
-#### K values overlook:
+# K values overlook:
 
 | K value | 10 | 50 | 100 |
 |:----|:----|:----|:----|
@@ -17,7 +16,7 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 |Precision PS|0.95223|0.95073|0.94886|
 |Precision SR|0.93628|0.95570|0.95812|
 
-#### 10K ratios
+# 10K ratios
 
 |Predicted|Histogram(x: neighbors of predicted class, y: document count)|
 |:--------|:--------|
@@ -33,7 +32,7 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 |When predicted right SR|1.0|0.6|0.90436|
 |When predicted wrong SR|1.0|0.6|0.69600|
 
-#### 50K ratios
+# 50K ratios
 
 |Predicted|Histogram (x: neighbors of predicted class, y: document count)|
 |:--------|:--------|
@@ -50,7 +49,7 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 |When predicted wrong SR|1.0|0.52|0.65789|
 
 
-#### 100K ratio
+# 100K ratios
 
 |Predicted|Histogram (x: neighbors of predicted class, y: document count)|
 |:--------|:--------|
@@ -70,7 +69,7 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 (Waiting for 150k and maybe 200k)!! update coming
 
 
-### Analysis
+# Analysis
 
 These results confirm our hipothesis, the number of correct classifications rises when the prediction is based on a greater ratio. This means, first, that the classification method is working as expected on the premise that neighbour count is a good indicator for classification. Second, this means that in the high dimension space (D = 500) of the embeddings, is likely that decent defined clusters exist.
 
