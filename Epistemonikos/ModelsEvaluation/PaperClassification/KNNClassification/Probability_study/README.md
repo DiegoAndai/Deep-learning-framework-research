@@ -19,8 +19,12 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 
 #### 10K ratios
 
-![Histogram 10k right]()
-![Histogram 10k wrong]()
+|Predicted|Histogram(x: neighbors of predicted class, y: document count)|
+|:--------|:--------|
+|PS Right|![Histogram 10k right PS](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/primary-study_histo_right_10k.png)|
+|PS Wrong|![Histogram 10k wrong PS](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/primary-study_histo_wrong_10k.png)|
+|SR Right|![Histogram 10k right SR](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/systematic-review_histo_right_10k.png)|
+|SR Wrong|![Histogram 10k wrong SR](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/systematic-review_histo_wrong_10k.png)|
 
 |Ratio measure|Maximum|Minimun|Average|
 |:------------------|:------|:------|:------|
@@ -31,8 +35,12 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 
 #### 50K ratios
 
-![Histogram 50k right]()
-![Histogram 50k wrong]()
+|Predicted|Histogram (x: neighbors of predicted class, y: document count)|
+|:--------|:--------|
+|PS Right|![Histogram 50k right PS](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/primary-study_histo_right_50k.png)|
+|PS Wrong|![Histogram 50k wrong PS](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/primary-study_histo_wrong_50k.png)|
+|SR Right|![Histogram 50k right SR](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/systematic-review_histo_right_50k.png)|
+|SR Wrong|![Histogram 50k wrong SR](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/systematic-review_histo_wrong_50k.png)|
 
 |Ratio measure|Maximum|Minimun|Average|
 |:------------------|:------|:------|:------|
@@ -44,8 +52,13 @@ We tested model 4 on a uneven dataset (set4), with chronological separation (tra
 
 #### 100K ratio
 
-![Histogram 100k right]()
-![Histogram 100k wrong]()
+|Predicted|Histogram (x: neighbors of predicted class, y: document count)|
+|:--------|:--------|
+|PS Right|![Histogram 100k right PS](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/primary-study_histo_right_100k.png)|
+|PS Wrong|![Histogram 100k wrong PS](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/primary-study_histo_wrong_100k.png)|
+|SR Right|![Histogram 100k right SR](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/systematic-review_histo_right_100k.png)|
+|SR Wrong|![Histogram 100k wrong SR](https://github.com/DiegoAndai/Deep-learning-framework-research/blob/master/Epistemonikos/ModelsEvaluation/PaperClassification/KNNClassification/Probability_study/systematic-review_histo_wrong_100k.png)|
+
 
 |Ratio measure|Maximum|Minimum|Average|
 |:------------------|:------|:------|:------|
