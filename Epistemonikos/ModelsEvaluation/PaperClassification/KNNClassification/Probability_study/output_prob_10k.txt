@@ -1,0 +1,56 @@
+OUTPUT LOG:
+
+PRIMARY-STUDY:
+primary-study max probability when wrong: 1.00000
+primary-study min probability when wrong: 0.50000
+primary-study avg probability when wrong: 0.67044
+
+Intervals for wrong primary-study (format |interval, count|):
+| 5.000 - 6.000, 195 || 6.000 - 7.000, 156 || 7.000 - 8.000, 153 || 8.000 - 9.000, 105 || 9.000 - 10.000, 98 |
+
+primary-study max probability when right: 1.00000
+primary-study min probability when right: 0.50000
+primary-study avg probability when right: 0.90657
+
+Intervals for right primary-study (format |interval, count|):
+| 5.000 - 6.000, 248 || 6.000 - 7.000, 527 || 7.000 - 8.000, 933 || 8.000 - 9.000, 1770 || 9.000 - 10.000, 10614 |
+
+
+SYSTEMATIC-REVIEW:
+systematic-review max probability when wrong: 1.00000
+systematic-review min probability when wrong: 0.60000
+systematic-review avg probability when wrong: 0.69600
+
+Intervals for wrong systematic-review (format |interval, count|):
+| 5.000 - 6.000, 0 || 6.000 - 7.000, 116 || 7.000 - 8.000, 49 || 8.000 - 9.000, 26 || 9.000 - 10.000, 34 |
+
+systematic-review max probability when right: 1.00000
+systematic-review min probability when right: 0.60000
+systematic-review avg probability when right: 0.90436
+
+Intervals for right systematic-review (format |interval, count|):
+| 5.000 - 6.000, 0 || 6.000 - 7.000, 214 || 7.000 - 8.000, 276 || 8.000 - 9.000, 424 || 9.000 - 10.000, 2392 |
+
+
+
+METRICS:
+
+Model: ../../../LanguageModels/SkipGram/Advanced/TrainedModels/Model4/
+KNN classifier with k = 10
+span = 80
+Set: Set4
+Accuracy : 0.9491543917075832
+RECALL
+Recall 0: 0.98428
+Recall 1: 0.82382
+Recall mean: 0.90405
+Recall weighted average: 0.94915
+PRECISION
+Precision 0: 0.95223
+Precision 1: 0.93628
+Precision mean: 0.94425
+Precision weighted average: 0.94874
+F1 score weighted average: 0.94795
+CONFUSSION MATRIX
+[[ 14092.    225.]
+ [   707.   3306.]]
