@@ -4,7 +4,9 @@ With this, we want to analyze how the classifier's confidence behaves in relatio
 
 Ratio here is calculated as (predicted class neighbors/total neighbors), so we expect to find a correlation between this measurement and correct predictions.
 
-We tested model 4 on a uneven dataset (set4), with chronological separation (train up to 2010 and test with 2011 papers). These document embeddings where max pooled per dimention. We used 3 different K values to see how this affects metrics. 
+We tested model 4 on a uneven dataset (set4), with chronological separation (train up to 2010 and test with 2011 papers). These document embeddings where max pooled per dimention. We used 3 different K values to see how this affects metrics.
+
+For all this, we used the python script on this folder.
 
 # K values overlook:
 
