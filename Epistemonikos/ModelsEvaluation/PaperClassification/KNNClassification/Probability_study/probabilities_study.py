@@ -11,6 +11,7 @@ import json
 import collections
 import os
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Classify papers.")
     parser.add_argument("--K", type=int, required=True, help="Number of nearest neighbours to consider")
@@ -26,9 +27,7 @@ if __name__ == "__main__":
                                                                        "implemented.")
 
     correct_classified = {"primary-study": [], "systematic-review": []}
-
     incorrect_classified = {"primary-study": [], "systematic-review": []}
-
     predictions = list()
     classes = ["primary-study", "systematic-review"]
     args = parser.parse_args()
@@ -153,9 +152,17 @@ if __name__ == "__main__":
         print("analizing {}".format(_class))
         try:
             output += "\n{}:\n".format(_class.upper())
-            output += "{} max probability when wrong: {:.5f}\n".format(_class, np.amax(incorrect_classified[_class]))
-            output += "{} min probability when wrong: {:.5f}\n".format(_class, np.amin(incorrect_classified[_class]))
-            output += "{} avg probability when wrong: {:.5f}\n".format(_class, np.mean(incorrect_classified[_class]))
+
+            #wrong
+            output += "{} max probability when wrong: {:.5f}\n".format(_class,
+                                                np.amax(incorrect_classified[_class]))
+
+            output += "{} min probability when wrong: {:.5f}\n".format(_class,
+                                                np.amin(incorrect_classified[_class]))
+
+            output += "{} avg probability when wrong: {:.5f}\n".format(_class,
+                                                np.mean(incorrect_classified[_class]))
+
             fig, ax = plt.subplots(1,1)
             histo_info = plt.hist(np.hstack(incorrect_classified[_class]), bins = 5)
             counts = [int(count) for count in histo_info[0]]
@@ -169,9 +176,17 @@ if __name__ == "__main__":
             output += "\n\n"
             plt.savefig("{}_histo_wrong.png".format(_class))
             plt.clf()
-            output += "{} max probability when right: {:.5f}\n".format(_class, np.amax(correct_classified[_class]))
-            output += "{} min probability when right: {:.5f}\n".format(_class, np.amin(correct_classified[_class]))
-            output += "{} avg probability when right: {:.5f}\n".format(_class, np.mean(correct_classified[_class]))
+
+            #right
+            output += "{} max probability when right: {:.5f}\n".format(_class,
+                                                    np.amax(correct_classified[_class]))
+
+            output += "{} min probability when right: {:.5f}\n".format(_class,
+                                                    np.amin(correct_classified[_class]))
+
+            output += "{} avg probability when right: {:.5f}\n".format(_class,
+                                                    np.mean(correct_classified[_class]))
+
             fig, ax = plt.subplots(1,1)
             histo_info = plt.hist(np.hstack(correct_classified[_class]), bins = 5)
             counts = [int(count) for count in histo_info[0]]
@@ -179,7 +194,9 @@ if __name__ == "__main__":
             plt.xticks(histo_info[1], bin_limits, rotation = 30)
             output += "\nIntervals for right {} (format |interval, count|):\n".format(_class)
             for i in range(len(counts)):
-                output += "| {:.3f} - {:.3f}, {:d} |".format(bin_limits[i], bin_limits[i+1], counts[i])
+                output += "| {:.3f} - {:.3f}, {:d} |".format(bin_limits[i],
+                                                             bin_limits[i+1],
+                                                             counts[i])
             for label in ax.get_xticklabels()[::2]:
                 label.set_visible(False)
             output += "\n\n"
@@ -189,8 +206,6 @@ if __name__ == "__main__":
         except (ValueError, IndexError) as error:
             output += "Couldn't compute data for {}, Error log: {}".format(_class, error)
 
-# TODO : remember to fix decimals on intervals so the output looks better
-# TODO : fixed bins
 
 ## METRICS:
 
