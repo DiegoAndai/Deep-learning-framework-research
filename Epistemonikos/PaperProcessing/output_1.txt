@@ -1,0 +1,17 @@
+SETTINGS:
+
+train_percent: 80
+even_test: True
+even_train: False
+years: None
+dispose_no_abstract: True
+abstracts_min: 30
+filters: ['systematic-review', 'primary-study']
+STATS:
+
+train_min_span: 30
+test_mean_span: 232.9254943502825
+train_max_span: 2148
+test_max_span: 1455
+test_min_span: 30
+train_mean_span: 219.8405380408557

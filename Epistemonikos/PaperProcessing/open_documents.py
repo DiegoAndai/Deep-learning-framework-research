@@ -1,5 +1,6 @@
 import string
 import pickle
+import numpy as np
 import json
 
 
@@ -12,6 +13,15 @@ class PaperReader:
                  even_train=False, even_test=False, years=None):
 
         self.abstracts_min_lmt = abstracts_min  # used to dispose short abstracts
+
+        #the next are used in case of set description (for example on the span_stats method)
+        self.settings = {"even_train": even_train,
+                         "even_test": even_test,
+                         "years": years,
+                         "train_percent": train_percent,
+                         "filters": filters,
+                         "abstracts_min": abstracts_min,
+                         "dispose_no_abstract": dispose_no_abstract}
 
         # filter by years:
         if years:
@@ -28,6 +38,8 @@ class PaperReader:
             elif not abstracts_min and not dispose_no_abstract:
                 self._papers = papers
                 break
+
+        print("Dismissed papers previous to filtering and parsing: {}".format(len(papers) - len(self._papers)))
 
         self.keep = string.ascii_lowercase + '-'
         self.dismiss = "123456789"
@@ -93,6 +105,50 @@ class PaperReader:
 
     def remove_filter(self, f):
         self.filter_by.remove(f)
+
+    def span_stats(self, histo = False, vocab = False, filename = False):
+
+        """
+        Returns stats about filtered papers' abstract span (how many words it contains),
+        separating train and test data.
+        :histo: if True, returns a numpy's hstack object (histogram)
+        :vocab: if a list of words is passed, aditional stats will be returned
+                concerning co-occurrences between it and papers
+        :filename: if passed, stats are saved to a .txt file with that name.
+                   Reader's settings also included
+        """
+
+        stats = dict()
+        for data_dict, name in [(self.filtered_train_papers, "train"),
+                           (self.filtered_test_papers, "test")]:
+            data = [paper["abstract"].split() for paper in data_dict]
+            print(name)
+            print(len(data))
+            print(data[0])
+            abstract_len_data = [len(abstract) for abstract in data]
+            print(len(abstract_len_data))
+            print(abstract_len_data[0])
+            stats["{}_mean_span".format(name)] = np.mean(abstract_len_data)
+            stats["{}_max_span".format(name)] = np.amax(abstract_len_data)
+            stats["{}_min_span".format(name)] = np.amin(abstract_len_data)
+            if histo:
+                stats["{}_histogram".format(name)] = np.hstack(abstract_len_data)
+            if vocab:
+                abstract_occurr = list(map(lambda a: list(filter(lambda w: w in vocab , a)) , data))
+                occurr_len_data = [len(abstract) for abstract in abstract_occurr]
+                stats["{}_mean_span_with_cooccurrence".format(name)] = np.mean(occurr_len_data)
+                stats["{}_max_span_with_cooccurrence".format(name)] = np.amax(occurr_len_data)
+                stats["{}_min_span_with_cooccurrence".format(name)] = np.amin(occurr_len_data)
+        if filename:
+            with open("{}.txt".format(filename), "w") as output:
+                output.write("SETTINGS:\n\n")
+                for k, v in self.settings.items():
+                    output.write("{}: {}\n".format(k, v))
+                output.write("STATS:\n\n")
+                for k, v in stats.items():
+                    output.write("{}: {}\n".format(k, v))
+        return stats
+
 
     def __iter__(self):
         looped_over = self.filtered_train_papers if self.loop_train else self.filtered_test_papers
