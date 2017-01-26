@@ -50,7 +50,7 @@ train_labels = [t["classification"] for t in train]
 test_papers = [' '.join(t["abstract"].split()[:span]) for t in test]
 test_labels = [t["classification"] for t in test]
 
-vocabulary = list(set(vocabulary))[:50000]
+vocabulary = list(set(vocabulary))[:5000]
 
 ##VECTORIZE
 
