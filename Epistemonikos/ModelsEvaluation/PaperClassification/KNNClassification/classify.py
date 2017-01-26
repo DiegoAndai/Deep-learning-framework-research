@@ -127,34 +127,20 @@ if __name__ == "__main__":
             train = json.load(train_set)
             test = json.load(test_set)
 
-        # fthousand = []
-        # ps = 0
-        # sr = 0
-        # i = 0
-        # while ps < 5000 or sr < 5000:
-        #     if test[i]["classification"] == "primary-study" and ps < 5000:
-        #         fthousand.append(test[i])
-        #         ps += 1
-        #     elif test[i]["classification"] == "systematic-review" and sr < 5000:
-        #         fthousand.append(test[i])
-        #         sr += 1
-        #     i += 1
-        # print(len(fthousand))
-
         Space = DocumentSpace(model, model_order, args.span)
         Space.train_vectors = Space.get_abs_vectors(train)
         Space.test_vectors = Space.get_abs_vectors(test)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
-        with open("train_data", "wb") as trd, \
+        '''with open("train_data", "wb") as trd, \
                 open("train_labels", "wb") as trl, \
                 open("test_data", "wb") as ted, \
                 open("test_labels", "wb") as tel:
             pickle.dump(train_data, trd)
             pickle.dump(train_labels, trl)
             pickle.dump(test_data, ted)
-            pickle.dump(test_labels, tel)
+            pickle.dump(test_labels, tel)'''
 
     if args.distance_metric == "dot":
         args.distance_metric = np.dot
@@ -163,7 +149,9 @@ if __name__ == "__main__":
     print("fitting")
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
-    predictions = classifier.predict(np.asarray(test_data))
+    predictions = list()
+    for paper in test_data:
+        predictions.append(classifier.predict(paper))
     classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
