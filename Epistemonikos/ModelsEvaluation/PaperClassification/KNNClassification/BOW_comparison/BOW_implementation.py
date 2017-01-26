@@ -58,11 +58,9 @@ index_split = len(train_papers)
 
 vectorizer = CountVectorizer(vocabulary = vocabulary)
 
-matrix = vectorizer.transform(train_papers + test_papers)
-print(np.shape(matrix))
+train_data = vectorizer.transform(train_papers)
+test_data = vectorizer.transform(test_papers)
 
-train_data = matrix[:index_split]
-test_data = matrix[index_split:]
 
 
 
