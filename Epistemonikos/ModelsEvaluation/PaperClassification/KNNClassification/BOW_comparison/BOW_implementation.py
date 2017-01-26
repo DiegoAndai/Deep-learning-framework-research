@@ -66,7 +66,7 @@ test_data = vectorizer.transform(test_papers)
 
 classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric)
 print("fitting")
-classifier.fit(train_data, train_labels)
+classifier.fit(train_data[:50000], train_labels[:50000])
 print("predicting")
 predictions = classifier.predict(test_data)
 classes = ["primary-study", "systematic-review"]
