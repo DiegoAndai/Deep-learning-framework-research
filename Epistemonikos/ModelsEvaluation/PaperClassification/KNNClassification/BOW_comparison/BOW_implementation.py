@@ -51,7 +51,7 @@ test_papers = [' '.join(t["abstract"].split()[:span]) for t in test]
 test_labels = [t["classification"] for t in test]
 
 vocabulary = list(set(vocabulary))[:5000]
-
+[0]
 ##VECTORIZE
 
 index_split = len(train_papers)
@@ -85,10 +85,11 @@ for i in range(0, len(predictions)):
     conf_mtx[actual_class][predicted_class] += 1
 np.set_printoptions(suppress=True)
 print(conf_mtx)
+print(predictions[0])
 
 hits = 0
 for l, p in zip(test_labels, predictions):
-    if l == p:
+    if l == p[0]:
         hits += 1
 accuracy = hits / len(test_labels) #saved for output
 print(accuracy)
