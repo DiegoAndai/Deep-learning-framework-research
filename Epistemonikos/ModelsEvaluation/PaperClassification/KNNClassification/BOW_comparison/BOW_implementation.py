@@ -70,7 +70,7 @@ classifier.fit(train_data, train_labels)
 print("predicting")
 predictions = list()
 for paper in test_data:
-    predictions.append(classifier.predict(paper))
+    predictions.append(classifier.predict(np.asarray(paper).reshape(1, -1)))
 classes = ["primary-study", "systematic-review"]
 
 if len(test_labels) != len(predictions):
