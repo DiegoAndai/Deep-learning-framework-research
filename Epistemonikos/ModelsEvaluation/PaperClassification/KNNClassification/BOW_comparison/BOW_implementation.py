@@ -69,8 +69,12 @@ print("fitting")
 classifier.fit(train_data, train_labels)
 print("predicting")
 predictions = list()
+count = 0
 for paper in test_data:
     predictions.append(classifier.predict(np.asarray(paper).reshape(1, -1)))
+    count += 1
+    if count % 1000 == 0:
+        print("{}/{}".format(count, len(predictions)))
 classes = ["primary-study", "systematic-review"]
 
 if len(test_labels) != len(predictions):
