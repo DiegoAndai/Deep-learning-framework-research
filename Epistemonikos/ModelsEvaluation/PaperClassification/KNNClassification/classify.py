@@ -61,10 +61,9 @@ class DocumentSpace:
                 word_count += 1
                 i += 1
             try:
-                dim_mtx = np.transpose(word_mtx) #transposed : rows:value for every word at a given dimension
-                pooled_vector = [max(dimension) for dimension in dim_mtx]
+                pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
             except TypeError:
-                pooled_vector = [0] * 10
+                pooled_vector = np.zeros(shape = 500)
             pooled_vectors.append(pooled_vector)
             if not parsed % 1000:
                 print("{}/{}".format(parsed, n_abstracts))
@@ -140,7 +139,9 @@ if __name__ == "__main__":
             pickle.dump(train_data, trd)
             pickle.dump(train_labels, trl)
             pickle.dump(test_data, ted)
-            pickle.dump(test_labels, tel)'''
+            pickle.dump(test_labels, tel)
+
+            NOTE: use this only with a capable computer to save time consuming data that can be rehused'''
 
     if args.distance_metric == "dot":
         args.distance_metric = np.dot
