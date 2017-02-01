@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score
 
@@ -19,6 +19,8 @@ parser.add_argument("--papers_set", help="Path to the paper set.",
                     required=True)
 parser.add_argument("--vocab", help="Path to the vocabulary.",
                     required=True)
+parser.add_argument("--tf_idf", help = "Use TF-IDF method if True.",
+                    default = False)
 parser.add_argument("--distance_metric", default="minkowski", help="Metric to use to select nearest neighbours. "
                                                                    "Currently Minkowsky and dot product are "
                                                                    "implemented.")
@@ -30,6 +32,8 @@ path_to_vocab = args.vocab
 join_path = os.path.join
 
 ##LOAD DATA
+
+print("loading data")
 
 vocabulary = list()
 
@@ -50,9 +54,10 @@ train_labels = [t["classification"] for t in train]
 test_papers = [' '.join(t["abstract"].split()[:span]) for t in test]
 test_labels = [t["classification"] for t in test]
 
-vocabulary = list(set(vocabulary))[:5000]
-[0]
+vocabulary = list(set(vocabulary))
 ##VECTORIZE
+
+print("vectorizing")
 
 index_split = len(train_papers)
 
@@ -61,7 +66,11 @@ vectorizer = CountVectorizer(vocabulary = vocabulary)
 train_data = vectorizer.transform(train_papers)
 test_data = vectorizer.transform(test_papers)
 
-
+if args.tf_idf:
+    print("Computing tf_idf")
+    transformer = TfidfTransformer(norm=None)
+    train_data = TfidfTransformer.fit_transform(train_data)
+    test_data = TfidfTransformer.fit_transform(test_data)
 
 
 classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric)
