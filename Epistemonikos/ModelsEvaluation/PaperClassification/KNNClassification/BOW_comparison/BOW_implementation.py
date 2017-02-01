@@ -19,11 +19,15 @@ parser.add_argument("--papers_set", help="Path to the paper set.",
                     required=True)
 parser.add_argument("--vocab", help="Path to the vocabulary.",
                     required=True)
-parser.add_argument("--tf_idf", help = "Use TF-IDF method if True.",
-                    default = False)
+
 parser.add_argument("--distance_metric", default="minkowski", help="Metric to use to select nearest neighbours. "
                                                                    "Currently Minkowsky and dot product are "
                                                                    "implemented.")
+
+
+tf_idf_parser = parser.add_mutually_exclusive_group(required=False)
+tf_idf_parser.add_argument('--tf_idf', dest='tf_idf', action='store_true')
+parser.set_defaults(tf_idf=False)
 
 args = parser.parse_args()
 span = args.span
@@ -54,7 +58,7 @@ train_labels = [t["classification"] for t in train]
 test_papers = [' '.join(t["abstract"].split()[:span]) for t in test]
 test_labels = [t["classification"] for t in test]
 
-vocabulary = list(set(vocabulary))
+vocabulary = list(set(vocabulary))[:50000]
 ##VECTORIZE
 
 print("vectorizing")
@@ -67,10 +71,10 @@ train_data = vectorizer.transform(train_papers)
 test_data = vectorizer.transform(test_papers)
 
 if args.tf_idf:
-    print("Computing tf_idf")
+    print("computing tf_idf")
     transformer = TfidfTransformer(norm=None)
-    train_data = TfidfTransformer.fit_transform(train_data)
-    test_data = TfidfTransformer.fit_transform(test_data)
+    train_data = transformer.fit_transform(train_data, train_labels)
+    test_data = transformer.fit_transform(test_data, test_labels)
 
 
 classifier = KNeighborsClassifier(n_neighbors=args.K, metric=args.distance_metric)
@@ -80,10 +84,10 @@ print("predicting")
 predictions = list()
 count = 0
 for paper in test_data:
-    predictions.append(classifier.predict(np.asarray(paper).reshape(1, -1)))
+    predictions.append(classifier.predict(paper))
     count += 1
     if count % 1000 == 0:
-        print("{}/{}".format(count, len(predictions)))
+        print("{}/{}".format(count, len(test_labels)))
 classes = ["primary-study", "systematic-review"]
 
 if len(test_labels) != len(predictions):
@@ -98,14 +102,9 @@ for i in range(0, len(predictions)):
     conf_mtx[actual_class][predicted_class] += 1
 np.set_printoptions(suppress=True)
 print(conf_mtx)
-print(predictions[0])
-
-hits = 0
-for l, p in zip(test_labels, predictions):
-    if l == p[0]:
-        hits += 1
-accuracy = hits / len(test_labels) #saved for output
-print(accuracy)
+print('')
+accuracy = (sum(conf_mtx[i][i] for i in range(0, len(classes)))/len(predictions))
+print('Accuracy: {}'.format(accuracy))
 
 recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
 recall_sum = 0
@@ -116,7 +115,7 @@ for i in range(0,class_dimension):
         recall_sum += rcl
     recall_list.append((i, rcl))
     print('Recall {}: {:.5f}'.format(i, rcl))
-print()
+print('')
 recall_mean = recall_sum/class_dimension
 print('Recall macro average: {:.5f}'.format(recall_mean))
 micro_recall = recall_score(test_labels, predictions, average='weighted')
@@ -131,7 +130,7 @@ for i in range(0,class_dimension):
         precision_sum += label_precision
     precision_list.append((i, label_precision))
     print('Precision {}: {:.5f}'.format(i, label_precision))
-print()
+print('')
 precision_mean = precision_sum/class_dimension
 print('Precision macro average: {:.5f}'.format(precision_mean))
 micro_precision = precision_score(test_labels, predictions, average='weighted')
@@ -141,8 +140,9 @@ f1 = f1_score(test_labels, predictions, average='weighted')
 print('F1 score weighted average: {:.5f}'.format(f1))
 
 output = ''
-output += 'KNN classifier with k = {}\n'.format(args.K)
-output += 'span = {}\n'.format(span)
+output += 'KNN classifier with k : {}\n'.format(args.K)
+output += 'span : {}\n'.format(span)
+output += 'tf_idf : {}\n'.format(args.tf_idf)
 output += 'Set: {}\n'.format(args.papers_set)
 output += 'Accuracy : {}\n'.format(accuracy)
 output += "RECALL\n"
