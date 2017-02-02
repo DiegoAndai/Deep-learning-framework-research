@@ -42,10 +42,11 @@ class DocumentSpace:
         rel_freqs = []
         pooled_vectors = list()
         append_rel_freqs = rel_freqs.append
+	hash_table = {word : index for (index, word) in enumerate(self.lang_mod_order)}
         lmo = self.lang_mod_order
         span = self.span
         asarr = np.asarray
-        for paper in papers:  # 10000
+        for paper in papers:
             word_mtx = list()
             words = paper["abstract"].split()
             abs_count = collections.Counter(words)
@@ -53,8 +54,8 @@ class DocumentSpace:
             i = 0
             while word_count < self.span and i < len(words):
                 word = words[i]
-                if word in lmo:
-                    index = self.lang_mod_order.index(word)
+                if word in hash_table:
+                    index = hash_table[word]
                 else:
                     index = 0
                 word_mtx.append(self.language_model[index])
@@ -78,7 +79,7 @@ class DocumentSpace:
         data = [t[1] for t in vectors]
         labels = [t[0] for t in vectors]
 
-        return data, labels
+        return np.asarray(data), labels
 
 
 if __name__ == "__main__":
@@ -151,8 +152,12 @@ if __name__ == "__main__":
     classifier.fit(np.asarray(train_data), np.asarray(train_labels))
     print("predicting")
     predictions = list()
+    i = 0
     for paper in test_data:
         predictions.append(classifier.predict(paper))
+        i += 1
+	if not i % 1000:
+	    print('{}/{}'.format(i, len(test_labels)))
     classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
