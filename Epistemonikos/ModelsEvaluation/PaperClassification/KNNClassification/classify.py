@@ -161,7 +161,7 @@ if __name__ == "__main__":
     for paper in test_data:
         predictions.append(classifier.predict(paper.reshape(1, -1))) # add this shitty shit
         i += 1
-        if not i % 10000:
+        if not i % 1000:
 	           print('{}/{}\r'.format(i, len(test_labels)))
     print('{}/{}'.format(i, len(test_labels)))
     classes = ["primary-study", "systematic-review"]
