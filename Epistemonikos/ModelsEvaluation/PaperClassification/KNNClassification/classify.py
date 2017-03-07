@@ -26,6 +26,10 @@ class DocumentSpace:
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
+        print('Shuffling (add flag to this later)')
+        #np.random.shuffle(self.language_model)
+
+
     def get_abs_vectors(self, papers):
 
         """ Generates a vector for every abstract to be classified.
@@ -42,7 +46,7 @@ class DocumentSpace:
         rel_freqs = []
         pooled_vectors = list()
         append_rel_freqs = rel_freqs.append
-	hash_table = {word : index for (index, word) in enumerate(self.lang_mod_order)}
+        hash_table = {word : index for (index, word) in enumerate(self.lang_mod_order)}
         lmo = self.lang_mod_order
         span = self.span
         asarr = np.asarray
@@ -66,9 +70,10 @@ class DocumentSpace:
             except TypeError:
                 pooled_vector = np.zeros(shape = 500)
             pooled_vectors.append(pooled_vector)
-            if not parsed % 1000:
-                print("{}/{}".format(parsed, n_abstracts))
+            if not parsed % 10000:
+                print("{}/{}\r".format(parsed, n_abstracts))
             parsed += 1
+        print("{}/{}".format(parsed, n_abstracts))
         assert n_abstracts == parsed
         print("Finished calculating abstracts' vectors.")
         return list(zip(labels, pooled_vectors))
@@ -154,10 +159,11 @@ if __name__ == "__main__":
     predictions = list()
     i = 0
     for paper in test_data:
-        predictions.append(classifier.predict(paper))
+        predictions.append(classifier.predict(paper.reshape(1, -1))) # add this shitty shit
         i += 1
-	if not i % 1000:
-	    print('{}/{}'.format(i, len(test_labels)))
+        if not i % 10000:
+	           print('{}/{}\r'.format(i, len(test_labels)))
+    print('{}/{}'.format(i, len(test_labels)))
     classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
@@ -172,13 +178,10 @@ if __name__ == "__main__":
         conf_mtx[actual_class][predicted_class] += 1
     np.set_printoptions(suppress=True)
     print(conf_mtx)
+    print('')
+    accuracy = (sum(conf_mtx[i][i] for i in range(0, len(classes)))/len(predictions))
+    print('Accuracy: {}'.format(accuracy))
 
-    hits = 0
-    for l, p in zip(test_labels, predictions):
-        if l == p:
-            hits += 1
-    accuracy = hits / len(test_labels) #saved for output
-    print(accuracy)
 
     recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
     recall_sum = 0
@@ -234,5 +237,5 @@ if __name__ == "__main__":
     output += str(conf_mtx)
 
 
-    with open("output{}.txt".format(args.model_path.split('/')[-2]), "w") as out_file:
+    with open("test_output.txt", "w") as out_file: #add something to distinguish
         out_file.write(output)
