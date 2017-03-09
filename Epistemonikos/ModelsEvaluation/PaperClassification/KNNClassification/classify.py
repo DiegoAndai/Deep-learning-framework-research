@@ -1,5 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score
+from error_finder import MaxPoolLab
 
 import numpy as np
 import tensorflow as tf
@@ -19,6 +20,7 @@ class DocumentSpace:
         self.span = span
         self.lang_mod_order = lang_mod_order  # list of words of the language model (to know which
         # word an embedding represents)
+        self.max_pool_lab = MaxPoolLab()
 
         with DocumentSpace.class_sess.as_default(), \
                     tf.device('/cpu:0'):
@@ -30,7 +32,7 @@ class DocumentSpace:
         #np.random.shuffle(self.language_model)
 
 
-    def get_abs_vectors(self, papers):
+    def get_abs_vectors(self, papers, mp_analysis = False):
 
         """ Generates a vector for every abstract to be classified.
         :parameter papers: JSON array (python list) containing
@@ -38,6 +40,7 @@ class DocumentSpace:
 
 
         labels = [paper["classification"] for paper in papers]  # ground truth
+
 
         print("Calculating abstracts' vectors...")
         parsed = 0
@@ -51,6 +54,11 @@ class DocumentSpace:
         span = self.span
         asarr = np.asarray
         for paper in papers:
+
+            if mp_analysis:
+                doc_id = paper["id"]
+                self.max_pool_lab.add_document(doc_id) #ERROR FINDER
+
             word_mtx = list()
             words = paper["abstract"].split()
             abs_count = collections.Counter(words)
@@ -67,6 +75,12 @@ class DocumentSpace:
                 i += 1
             try:
                 pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
+
+                if mp_analysis:
+                    max_indexes = np.argmax(np.asarray(word_mtx), axis = 0)
+                    for index in max_indexes:
+                        self.max_pool_lab.add_word_occurrence(words[index], index, doc_id)
+
             except TypeError:
                 pooled_vector = np.zeros(shape = 500)
             pooled_vectors.append(pooled_vector)
@@ -133,8 +147,8 @@ if __name__ == "__main__":
             test = json.load(test_set)
 
         Space = DocumentSpace(model, model_order, args.span)
-        Space.train_vectors = Space.get_abs_vectors(train)
-        Space.test_vectors = Space.get_abs_vectors(test)
+        Space.train_vectors = Space.get_abs_vectors(train[:50])
+        Space.test_vectors = Space.get_abs_vectors(test[:10], mp_analysis = True)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
@@ -145,9 +159,9 @@ if __name__ == "__main__":
             pickle.dump(train_data, trd)
             pickle.dump(train_labels, trl)
             pickle.dump(test_data, ted)
-            pickle.dump(test_labels, tel)
+            pickle.dump(test_labels, tel)'''
 
-            NOTE: use this only with a capable computer to save time consuming data that can be rehused'''
+            #NOTE: use the dump above only with a capable computer to save time consuming data that can be rehused
 
     if args.distance_metric == "dot":
         args.distance_metric = np.dot
@@ -183,7 +197,7 @@ if __name__ == "__main__":
     print('Accuracy: {}'.format(accuracy))
 
 
-    recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
+    '''recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
     recall_sum = 0
     recall_list = []
     for i in range(0,class_dimension):
@@ -214,7 +228,7 @@ if __name__ == "__main__":
     print('Precision weighted average: {:.5f}'.format(micro_precision))
 
     f1 = f1_score(test_labels, predictions, average='weighted')
-    print('F1 score weighted average: {:.5f}'.format(f1))
+    print('F1 score weighted average: {:.5f}'.format(f1))'''
 
     output = ''
     output += 'Model: {}\n'.format(args.model_path)
@@ -223,7 +237,7 @@ if __name__ == "__main__":
     output += 'Set: {}\n'.format(args.KNN_papers_set)
     output += 'Accuracy : {}\n'.format(accuracy)
     output += "RECALL\n"
-    for rcl in recall_list:
+    '''for rcl in recall_list:
         output += 'Recall {}: {:.5f}\n'.format(rcl[0], rcl[1])
     output += 'Recall mean: {:.5f}\n'.format(recall_mean)
     output += 'Recall weighted average: {:.5f}\n'.format(micro_recall)
@@ -232,9 +246,10 @@ if __name__ == "__main__":
         output += 'Precision {}: {:.5f}\n'.format(pcsn[0], pcsn[1])
     output += 'Precision mean: {:.5f}\n'.format(precision_mean)
     output += 'Precision weighted average: {:.5f}\n'.format(micro_precision)
-    output += 'F1 score weighted average: {:.5f}\n'.format(f1)
+    output += 'F1 score weighted average: {:.5f}\n'.format(f1)'''
     output += 'CONFUSSION MATRIX\n'
     output += str(conf_mtx)
+    output += Space.max_pool_lab.infographic_from_results()
 
 
     with open("test_output.txt", "w") as out_file: #add something to distinguish
