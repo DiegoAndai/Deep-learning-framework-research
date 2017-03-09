@@ -147,8 +147,8 @@ if __name__ == "__main__":
             test = json.load(test_set)
 
         Space = DocumentSpace(model, model_order, args.span)
-        Space.train_vectors = Space.get_abs_vectors(train[:50])
-        Space.test_vectors = Space.get_abs_vectors(test[:10], mp_analysis = True)
+        Space.train_vectors = Space.get_abs_vectors(train)
+        Space.test_vectors = Space.get_abs_vectors(test[:100], mp_analysis = True)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
