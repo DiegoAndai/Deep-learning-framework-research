@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
         Space = DocumentSpace(model, model_order, args.span)
         Space.train_vectors = Space.get_abs_vectors(train)
-        Space.test_vectors = Space.get_abs_vectors(test[:15], mp_analysis = True)
+        Space.test_vectors = Space.get_abs_vectors(test, mp_analysis = True)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
