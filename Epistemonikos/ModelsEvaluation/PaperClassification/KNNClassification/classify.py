@@ -268,8 +268,8 @@ if __name__ == "__main__":
     with open("Max_pool_lab_results{}".format(save_id), "wb") as out_mpl:
         pickle.dump(Space.max_pool_lab.obtain_results(), out_mpl)
 
-    with open("predictions_proba{}".format(save_id), "wb") as out_pp:
+    '''with open("predictions_proba{}".format(save_id), "wb") as out_pp:
         pickle.dump(predictions, out_pp)
 
     with open("labels{}".format(save_id), "wb") as out_lbl:
-        pickle.dump(test_labels, out_lbl)
+        pickle.dump(test_labels, out_lbl)'''
