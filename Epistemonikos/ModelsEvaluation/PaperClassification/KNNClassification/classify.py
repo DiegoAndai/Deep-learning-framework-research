@@ -29,8 +29,8 @@ class DocumentSpace:
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.'''
 
-        print('Shuffling (add flag to this later)')
-        np.random.shuffle(self.language_model)
+        #print('Shuffling (add flag to this later)')
+        #np.random.shuffle(self.language_model)
 
 
     def get_abs_vectors(self, papers, mp_analysis = False):
