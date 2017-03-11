@@ -30,7 +30,7 @@ class DocumentSpace:
                                                      1).eval()  # Word embeddings used to get vectors from text.'''
 
         print('Shuffling (add flag to this later)')
-        #np.random.shuffle(self.language_model)
+        np.random.shuffle(self.language_model)
 
 
     def get_abs_vectors(self, papers, mp_analysis = False):
