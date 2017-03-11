@@ -12,21 +12,22 @@ import os
 
 
 class DocumentSpace:
-    class_sess = tf.Session()
+    #class_sess = tf.Session()
 
     def __init__(self, language_model, lang_mod_order, span):
         self.train_vectors = list()  # structure: [(type, vector)]
         self.test_vectors = list()  # structure: [(type, vector)]
         self.span = span
         self.lang_mod_order = lang_mod_order  # list of words of the language model (to know which
+        self.language_model = language_model
         # word an embedding represents)
         self.max_pool_lab = MaxPoolLab()
 
-        with DocumentSpace.class_sess.as_default(), \
-                    tf.device('/gpu:0'):
+        '''with DocumentSpace.class_sess.as_default(), \
+                    tf.device('/cpu:0'):
 
             self.language_model = tf.nn.l2_normalize(language_model,
-                                                     1).eval()  # Word embeddings used to get vectors from text.
+                                                     1).eval()  # Word embeddings used to get vectors from text.'''
 
         print('Shuffling (add flag to this later)')
         #np.random.shuffle(self.language_model)
