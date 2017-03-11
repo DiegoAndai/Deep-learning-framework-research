@@ -22,7 +22,8 @@ class DocumentSpace:
         # word an embedding represents)
         self.max_pool_lab = MaxPoolLab()
 
-        with DocumentSpace.class_sess.as_default():
+        with DocumentSpace.class_sess.as_default(), \
+                    tf.device('/gpu:0'):
 
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
