@@ -270,3 +270,6 @@ if __name__ == "__main__":
 
     with open("predictions_proba{}".format(save_id), "wb") as out_pp:
         pickle.dump(predictions, out_pp)
+
+    with open("labels{}".format(save_id), "wb") as out_lbl:
+        pickle.dump(test_labels, out_lbl)
