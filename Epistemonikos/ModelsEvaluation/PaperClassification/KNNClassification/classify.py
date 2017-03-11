@@ -114,6 +114,10 @@ if __name__ == "__main__":
     parser.add_argument("--distance_metric", default="minkowski", help="Metric to use to select nearest neighbours. "
                                                                        "Currently Minkowsky and dot product are "
                                                                        "implemented.")
+    parser.add_argument("--save_id", type=int, required=True, help="out files identifier")
+
+    args = parser.parse_args()
+    save_id = args.save_id
 
     if os.path.exists("test_data"):
         print("opening previous data")
@@ -126,11 +130,8 @@ if __name__ == "__main__":
             test_data = pickle.load(ted)
             test_labels = pickle.load(tel)
 
-        args = parser.parse_args()
 
     else:
-        args = parser.parse_args()
-
         path_to_model = args.model_path
         path_to_papers = args.KNN_papers_set
         join_path = os.path.join
@@ -148,7 +149,7 @@ if __name__ == "__main__":
 
         Space = DocumentSpace(model, model_order, args.span)
         Space.train_vectors = Space.get_abs_vectors(train)
-        Space.test_vectors = Space.get_abs_vectors(test[:100], mp_analysis = True)
+        Space.test_vectors = Space.get_abs_vectors(test[:15], mp_analysis = True)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
@@ -172,8 +173,16 @@ if __name__ == "__main__":
     print("predicting")
     predictions = list()
     i = 0
-    for paper in test_data:
-        predictions.append(classifier.predict(paper.reshape(1, -1))) # add this shitty shit
+    for paper_vector, paper in zip(test_data, test):
+        prediction = classifier.predict(paper_vector.reshape(1, -1))
+
+        if prediction == paper["classification"]:
+            Space.max_pool_lab.add_document_info(paper["id"], "classificated", "correctly")
+        else:
+            Space.max_pool_lab.add_document_info(paper["id"], "classificated", "wrong")
+        Space.max_pool_lab.add_document_info(paper["id"], "classification", paper["classification"])
+
+        predictions.append(prediction)
         i += 1
         if not i % 1000:
 	           print('{}/{}\r'.format(i, len(test_labels)))
@@ -252,5 +261,11 @@ if __name__ == "__main__":
     output += Space.max_pool_lab.infographic_from_results()
 
 
-    with open("test_output.txt", "w") as out_file: #add something to distinguish
+    with open("test_output{}.txt".format(save_id), "w") as out_file: #add something to distinguish
         out_file.write(output)
+
+    with open("Max_pool_lab_results{}".format(save_id), "wb") as out_mpl:
+        pickle.dump(Space.max_pool_lab.obtain_results(), out_mpl)
+
+    with open("predictions_proba{}".format(save_id), "wb") as out_pp:
+        pickle.dump(predictions, out_pp)

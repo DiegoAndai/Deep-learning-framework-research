@@ -3,6 +3,7 @@ class MaxPoolLab:
     def __init__(self):
 
         self.results = dict() #save results, keys referring to document
+        self.meta = dict()
 
     def add_document(self, doc_identifier):
 
@@ -11,6 +12,12 @@ class MaxPoolLab:
         else:
             self.results[doc_identifier] = list()
             return("Added succesfully")
+
+    def add_document_info(self, doc_identifier, key, value):
+
+        if doc_identifier not in self.meta:
+            self.meta[doc_identifier] = dict()
+        self.meta[doc_identifier][key] = value
 
     def delete_document(self, doc_identifier):
 
@@ -41,12 +48,14 @@ class MaxPoolLab:
             result_tuples = self.obtain_results_tuples(doc_identifier)
             indexes, words = self.process_results(result_tuples)
             processed_results[doc_identifier] = {"indexes_occurrence": indexes,
-                                                 "words_occurrence": words}
+                                                 "words_occurrence": words,
+                                                 "meta": self.meta[doc_identifier]}
         else:
             for doc_identifier, result_tuples in self.results.items():
                 indexes, words = self.process_results(result_tuples)
                 processed_results[doc_identifier] = {"indexes_occurrence": indexes,
-                                                     "words_occurrence": words}
+                                                     "words_occurrence": words,
+                                                     "meta": self.meta[doc_identifier]}
 
         return processed_results
 
@@ -72,7 +81,7 @@ class MaxPoolLab:
                                           key = lambda t: t[1])
             infographic += "\n"
             i = 1
-            for _tuple in sorted_by_occurrence:
+            for _tuple in sorted_by_occurrence[:5]:
                 infographic += "{}. {}\n".format(i, _tuple[0])
                 i += 1
 
