@@ -19,7 +19,6 @@ class DocumentSpace:
         self.test_vectors = list()  # structure: [(type, vector)]
         self.span = span
         self.lang_mod_order = lang_mod_order  # list of words of the language model (to know which
-        self.language_model = language_model
         # word an embedding represents)
         self.max_pool_lab = MaxPoolLab()
 
@@ -148,7 +147,7 @@ if __name__ == "__main__":
             train = json.load(train_set)
             test = json.load(test_set)
 
-        Space = DocumentSpace(model, model_order, args.span)
+        Space = DocumentSpace(model[:10000], model_order, args.span)
         Space.train_vectors = Space.get_abs_vectors(train)
         Space.test_vectors = Space.get_abs_vectors(test, mp_analysis = True)
         train_data, train_labels = Space.slice(Space.train_vectors)
