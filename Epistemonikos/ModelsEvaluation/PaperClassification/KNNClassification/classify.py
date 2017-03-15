@@ -1,5 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score
+from nltk.corpus import stopwords
 from error_finder import MaxPoolLab
 
 import numpy as np
@@ -28,15 +29,22 @@ class DocumentSpace:
             self.language_model = tf.nn.l2_normalize(language_model,
                                                      1).eval()  # Word embeddings used to get vectors from text.
 
+        #To shuffle uncomment:
         #print('Shuffling (add flag to this later)')
         #np.random.shuffle(self.language_model)
 
+        #For random matrix uncomment:
+        #print('Random matrix')
+        #self.language_model = np.random.rand(*np.shape(self.language_model))
 
-    def get_abs_vectors(self, papers, mp_analysis = False):
+
+    def get_abs_vectors(self, papers, mp_analysis = False, use_stopwords = False):
 
         """ Generates a vector for every abstract to be classified.
         :parameter papers: JSON array (python list) containing
-        the processed papers, represented as dicts."""
+        the processed papers, represented as dicts.
+
+        mp_analysis is a flag to save info of the process for later study"""
 
 
         labels = [paper["classification"] for paper in papers]  # ground truth
@@ -61,6 +69,8 @@ class DocumentSpace:
 
             word_mtx = list()
             words = paper["abstract"].split()
+            if not use_stopwords:
+                words = list(filter(lambda w: w not in stopwords.words('english'), words))
             abs_count = collections.Counter(words)
             word_count = 0
             i = 0
@@ -73,16 +83,16 @@ class DocumentSpace:
                 word_mtx.append(self.language_model[index])
                 word_count += 1
                 i += 1
-            try:
-                pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
+            #try:
+            pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
 
-                if mp_analysis:
-                    max_indexes = np.argmax(np.asarray(word_mtx), axis = 0)
-                    for index in max_indexes:
-                        self.max_pool_lab.add_word_occurrence(words[index], index, doc_id)
+            if mp_analysis:
+                max_indexes = np.argmax(np.asarray(word_mtx), axis = 0)
+                for index in max_indexes:
+                    self.max_pool_lab.add_word_occurrence(words[index], index, doc_id)
 
-            except TypeError:
-                pooled_vector = np.zeros(shape = 500)
+            #except TypeError:
+            #    pooled_vector = np.zeros(shape = 500)
             pooled_vectors.append(pooled_vector)
             if not parsed % 10000:
                 print("{}/{}\r".format(parsed, n_abstracts))
@@ -205,7 +215,7 @@ if __name__ == "__main__":
     accuracy = (sum(conf_mtx[i][i] for i in range(0, len(classes)))/len(predictions))
     print('Accuracy: {}'.format(accuracy))
 
-
+    #Uncomment below for more specific metrics
     '''recall = lambda i: (conf_mtx[i][i]/sum(conf_mtx[i][j] for j in range(0,class_dimension)))
     recall_sum = 0
     recall_list = []
@@ -260,7 +270,7 @@ if __name__ == "__main__":
     output += str(conf_mtx)
     output += Space.max_pool_lab.infographic_from_results()
 
-
+    #Save results for later analysis:
     with open("test_output{}.txt".format(save_id), "w") as out_file: #add something to distinguish
         out_file.write(output)
 
