@@ -38,7 +38,8 @@ class DocumentSpace:
         #self.language_model = np.random.rand(*np.shape(self.language_model))
 
 
-    def get_abs_vectors(self, papers, mp_analysis = False, use_stopwords = False):
+    def get_abs_vectors(self, papers, mp_analysis = False, use_stopwords = False,
+                              restricted_dict = None):
 
         """ Generates a vector for every abstract to be classified.
         :parameter papers: JSON array (python list) containing
@@ -71,6 +72,10 @@ class DocumentSpace:
             words = paper["abstract"].split()
             if not use_stopwords:
                 words = list(filter(lambda w: w not in stopwords.words('english'), words))
+            #for error study#
+            if restricted_dict:
+                words = list(filter(lambda w: w in restricted_dict, words))
+            #################
             abs_count = collections.Counter(words)
             word_count = 0
             i = 0
@@ -83,8 +88,10 @@ class DocumentSpace:
                 word_mtx.append(self.language_model[index])
                 word_count += 1
                 i += 1
-            #try:
-            pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
+            try:
+                pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
+            except ValueError: #no words
+                pooled_vector = [0] * 500
 
             if mp_analysis:
                 max_indexes = np.argmax(np.asarray(word_mtx), axis = 0)
@@ -157,9 +164,19 @@ if __name__ == "__main__":
             train = json.load(train_set)
             test = json.load(test_set)
 
+        #for error study#
+        with open("Word_proba/proba_ratio_results.json", "r") as restricted_json:
+            restricted_dict = json.load(restricted_json)
+        k = 10
+        restricted_dict = restricted_dict[:5] + restricted_dict[-5:]
+        restricted_dict = [word_info[1] for word_info in restricted_dict]
+        print(len(restricted_dict))
+
+        #################
+
         Space = DocumentSpace(model, model_order, args.span)
-        Space.train_vectors = Space.get_abs_vectors(train)
-        Space.test_vectors = Space.get_abs_vectors(test, mp_analysis = True)
+        Space.train_vectors = Space.get_abs_vectors(train, restricted_dict = restricted_dict)
+        Space.test_vectors = Space.get_abs_vectors(test, restricted_dict = restricted_dict)
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
@@ -274,8 +291,8 @@ if __name__ == "__main__":
     with open("test_output{}.txt".format(save_id), "w") as out_file: #add something to distinguish
         out_file.write(output)
 
-    with open("Max_pool_lab_results{}".format(save_id), "wb") as out_mpl:
-        pickle.dump(Space.max_pool_lab.obtain_results(), out_mpl)
+    '''with open("Max_pool_lab_results{}".format(save_id), "wb") as out_mpl:
+        pickle.dump(Space.max_pool_lab.obtain_results(), out_mpl)'''
 
     '''with open("predictions_proba{}".format(save_id), "wb") as out_pp:
         pickle.dump(predictions, out_pp)
