@@ -168,7 +168,7 @@ if __name__ == "__main__":
         with open("Word_proba/proba_ratio_results.json", "r") as restricted_json:
             restricted_dict = json.load(restricted_json)
         k = 10
-        restricted_dict = restricted_dict[:5] + restricted_dict[-5:]
+        restricted_dict = restricted_dict[:k] + restricted_dict[-k:]
         restricted_dict = [word_info[1] for word_info in restricted_dict]
         print(len(restricted_dict))
 
