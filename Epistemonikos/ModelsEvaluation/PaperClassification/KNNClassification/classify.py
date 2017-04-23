@@ -64,14 +64,8 @@ class DocumentSpace:
         asarr = np.asarray
         for paper in papers:
 
-            if mp_analysis:
-                doc_id = paper["id"]
-                self.max_pool_lab.add_document(doc_id) #ERROR FINDER
-
             word_mtx = list()
             words = paper["abstract"].split()
-            if not use_stopwords:
-                words = list(filter(lambda w: w not in stopwords.words('english'), words))
             #for error study#
             if restricted_dict:
                 words = list(filter(lambda w: w in restricted_dict, words))
@@ -93,18 +87,13 @@ class DocumentSpace:
             except ValueError: #no words
                 pooled_vector = [0] * 500
 
-            if mp_analysis:
-                max_indexes = np.argmax(np.asarray(word_mtx), axis = 0)
-                for index in max_indexes:
-                    self.max_pool_lab.add_word_occurrence(words[index], index, doc_id)
-
             #except TypeError:
             #    pooled_vector = np.zeros(shape = 500)
             pooled_vectors.append(pooled_vector)
             if not parsed % 10000:
-                print("{}/{}\r".format(parsed, n_abstracts))
+                print("--->{}/{}".format(parsed, n_abstracts), end = "\r")
             parsed += 1
-        print("{}/{}".format(parsed, n_abstracts))
+        print("--->{}/{}".format(parsed, n_abstracts))
         assert n_abstracts == parsed
         print("Finished calculating abstracts' vectors.")
         return list(zip(labels, pooled_vectors))
@@ -118,7 +107,8 @@ class DocumentSpace:
         return np.asarray(data), labels
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
+def main(restrict_k):
     parser = argparse.ArgumentParser(description="Classify papers.")
     parser.add_argument("--K", type=int, required=True, help="Number of nearest neighbours to consider")
     parser.add_argument("--model_path", help="Path to a folder containing everything related to the model, namely "
@@ -131,7 +121,6 @@ if __name__ == "__main__":
     parser.add_argument("--distance_metric", default="minkowski", help="Metric to use to select nearest neighbours. "
                                                                        "Currently Minkowsky and dot product are "
                                                                        "implemented.")
-    parser.add_argument("--save_id", type=int, required=True, help="out files identifier")
 
     args = parser.parse_args()
     save_id = args.save_id
@@ -167,9 +156,9 @@ if __name__ == "__main__":
         #for error study#
         with open("Word_proba/proba_ratio_results.json", "r") as restricted_json:
             restricted_dict = json.load(restricted_json)
-        k = 10
-        restricted_dict = restricted_dict[:k] + restricted_dict[-k:]
-        restricted_dict = [word_info[1] for word_info in restricted_dict]
+        if restrict_k:
+            restricted_dict = restricted_dict[:restrict_k] + restricted_dict[-restrict_k:]
+        restricted_dict = [word_info[0] for word_info in restricted_dict]
         print(len(restricted_dict))
 
         #################
@@ -212,8 +201,8 @@ if __name__ == "__main__":
         predictions.append(prediction)
         i += 1
         if not i % 1000:
-	           print('{}/{}\r'.format(i, len(test_labels)))
-    print('{}/{}'.format(i, len(test_labels)))
+	           print('--->{}/{}'.format(i, len(test_labels)), end = "\r")
+    print('--->{}/{}'.format(i, len(test_labels)))
     classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
@@ -288,8 +277,10 @@ if __name__ == "__main__":
     output += Space.max_pool_lab.infographic_from_results()
 
     #Save results for later analysis:
-    with open("test_output{}.txt".format(save_id), "w") as out_file: #add something to distinguish
+    with open("test_output_no_exclusives_{}.txt".format(restrict_k), "w") as out_file: #add something to distinguish
         out_file.write(output)
+
+    return accuracy, conf_mtx
 
     '''with open("Max_pool_lab_results{}".format(save_id), "wb") as out_mpl:
         pickle.dump(Space.max_pool_lab.obtain_results(), out_mpl)'''
