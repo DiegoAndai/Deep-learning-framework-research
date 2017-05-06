@@ -10,6 +10,7 @@ import pickle
 import json
 import collections
 import os
+from random import randint, choice
 
 
 class DocumentSpace:
@@ -36,6 +37,23 @@ class DocumentSpace:
         #For random matrix uncomment:
         #print('Random matrix')
         #self.language_model = np.random.rand(*np.shape(self.language_model))
+
+    def shuffle(self, words):
+        print('Shuffling')
+        to_shuffle_from = []
+        to_shuffle_to = []
+        c = 0
+        for word in words:
+            if word in self.lang_mod_order:
+                c += 1
+                index = self.lang_mod_order.index(word)
+                to = randint(0, len(self.language_model)-1)
+                i = self.language_model[index]
+                j = self.language_model[to]
+                self.language_model[index] = j
+                self.language_model[to]= i
+        print("shufled {} words".format(c))
+
 
 
     def get_abs_vectors(self, papers, mp_analysis = False, use_stopwords = False,
@@ -108,7 +126,7 @@ class DocumentSpace:
 
 
 #if __name__ == "__main__":
-def main(restrict_k):
+def main(restrict_k, restrict_random = False):
     parser = argparse.ArgumentParser(description="Classify papers.")
     parser.add_argument("--K", type=int, required=True, help="Number of nearest neighbours to consider")
     parser.add_argument("--model_path", help="Path to a folder containing everything related to the model, namely "
@@ -123,7 +141,6 @@ def main(restrict_k):
                                                                        "implemented.")
 
     args = parser.parse_args()
-    save_id = args.save_id
 
     if os.path.exists("test_data"):
         print("opening previous data")
@@ -154,16 +171,28 @@ def main(restrict_k):
             test = json.load(test_set)
 
         #for error study#
-        with open("Word_proba/proba_ratio_results.json", "r") as restricted_json:
+        with open("Word_proba/proba_ratio_results_denis_method.json", "r") as restricted_json:
             restricted_dict = json.load(restricted_json)
         if restrict_k:
-            restricted_dict = restricted_dict[:restrict_k] + restricted_dict[-restrict_k:]
+            if restrict_random:
+                choosen_list = []
+                for _ in range(restrict_k * 2):
+                    choosen = choice(restricted_dict)
+                    while choosen in choosen_list:
+                        choosen = choice(restricted_dict)
+                    choosen_list.append(choosen)
+                restricted_dict = choosen_list
+            else:
+                restricted_dict = restricted_dict[:restrict_k] + restricted_dict[-restrict_k:]
         restricted_dict = [word_info[0] for word_info in restricted_dict]
-        print(len(restricted_dict))
+        print(len(restricted_dict), restricted_dict)
 
         #################
 
         Space = DocumentSpace(model, model_order, args.span)
+        #for shuffling only
+        #Space.shuffle(restricted_dict)
+        ####################
         Space.train_vectors = Space.get_abs_vectors(train, restricted_dict = restricted_dict)
         Space.test_vectors = Space.get_abs_vectors(test, restricted_dict = restricted_dict)
         train_data, train_labels = Space.slice(Space.train_vectors)
@@ -280,7 +309,7 @@ def main(restrict_k):
     with open("test_output_no_exclusives_{}.txt".format(restrict_k), "w") as out_file: #add something to distinguish
         out_file.write(output)
 
-    return accuracy, conf_mtx
+    return accuracy, conf_mtx, restricted_dict
 
     '''with open("Max_pool_lab_results{}".format(save_id), "wb") as out_mpl:
         pickle.dump(Space.max_pool_lab.obtain_results(), out_mpl)'''
