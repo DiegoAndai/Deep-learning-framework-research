@@ -86,7 +86,7 @@ class DocumentSpace:
             words = paper["abstract"].split()
             #for error study#
             if restricted_dict:
-                words = list(filter(lambda w: w in restricted_dict, words))
+                words = [word if word in restricted_dict else "UNK" for word in words]
             #################
             abs_count = collections.Counter(words)
             word_count = 0
@@ -185,7 +185,7 @@ def main(restrict_k, restrict_random = False):
             else:
                 restricted_dict = restricted_dict[:restrict_k] + restricted_dict[-restrict_k:]
         restricted_dict = [word_info[0] for word_info in restricted_dict]
-        print(len(restricted_dict), restricted_dict)
+        print(len(restricted_dict))
 
         #################
 
@@ -218,20 +218,25 @@ def main(restrict_k, restrict_random = False):
     print("predicting")
     predictions = list()
     i = 0
+    dict_out = {"correct" : {"primary-study": [], "systematic-review": []},
+                "incorrect": {"primary-study": [], "systematic-review": []}}
     for paper_vector, paper in zip(test_data, test):
         prediction = classifier.predict(paper_vector.reshape(1, -1))
 
         if prediction == paper["classification"]:
-            Space.max_pool_lab.add_document_info(paper["id"], "classificated", "correctly")
+            dict_out["correct"][paper["classification"]].append(paper_vector.tolist())
         else:
-            Space.max_pool_lab.add_document_info(paper["id"], "classificated", "wrong")
-        Space.max_pool_lab.add_document_info(paper["id"], "classification", paper["classification"])
+            dict_out["incorrect"][paper["classification"]].append(paper_vector.tolist())
 
         predictions.append(prediction)
         i += 1
         if not i % 1000:
 	           print('--->{}/{}'.format(i, len(test_labels)), end = "\r")
     print('--->{}/{}'.format(i, len(test_labels)))
+
+    with open("dict_out", "w") as json_out:
+        json.dump(dict_out, json_out)
+
     classes = ["primary-study", "systematic-review"]
 
     if len(test_labels) != len(predictions):
