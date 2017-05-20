@@ -1,3 +1,5 @@
+import json
+
 class MaxPoolLab:
 
     def __init__(self):
@@ -109,3 +111,20 @@ class MaxPoolLab:
                 word_occurrence_dict[_tuple[1]] = 1
 
         return index_occurrence_dict, word_occurrence_dict
+
+class DocLab:
+
+    def __init__(self):
+
+        self.results = dict() #save results, keys referring to document
+
+    def add_doc(self, doc_id, data):
+        self.results[doc_id] = data
+
+    def save(self, save_id = ""):
+        save_id = "_" + str(save_id)
+        with open("doc_lab_out{}.json".format(save_id), "w") as out:
+            json.dump(self.results, out)
+
+    def reset(self):
+        self.results = {}

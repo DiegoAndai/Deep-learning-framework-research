@@ -1,7 +1,7 @@
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score
 from nltk.corpus import stopwords
-from error_finder import MaxPoolLab
+from error_finder import MaxPoolLab, DocLab
 
 import numpy as np
 import tensorflow as tf
@@ -23,6 +23,7 @@ class DocumentSpace:
         self.lang_mod_order = lang_mod_order  # list of words of the language model (to know which
         # word an embedding represents)
         self.max_pool_lab = MaxPoolLab()
+        self.doc_lab = DocLab()
 
         with DocumentSpace.class_sess.as_default(), \
                     tf.device('/cpu:0'):
@@ -57,13 +58,14 @@ class DocumentSpace:
 
 
     def get_abs_vectors(self, papers, mp_analysis = False, use_stopwords = False,
-                              restricted_dict = None):
+                              restricted_dict = None, counting = False):
 
         """ Generates a vector for every abstract to be classified.
         :parameter papers: JSON array (python list) containing
         the processed papers, represented as dicts.
 
-        mp_analysis is a flag to save info of the process for later study"""
+        mp_analysis is a flag to save info of the process for later study
+        counting is a flag to save word count due to restriction"""
 
 
         labels = [paper["classification"] for paper in papers]  # ground truth
@@ -84,17 +86,27 @@ class DocumentSpace:
 
             word_mtx = list()
             words = paper["abstract"].split()
+            if counting:
+                _id = paper["id"]
+                word_count_lab = 0
             #for error study#
-            if restricted_dict:
-                words = [word if word in restricted_dict else "UNK" for word in words]
+            #if restricted_dict:
+            #    words = [word if word in restricted_dict else "UNK" for word in words]
             #################
             abs_count = collections.Counter(words)
             word_count = 0
             i = 0
             while word_count < self.span and i < len(words):
                 word = words[i]
-                if word in hash_table:
+                ## for error study:
+                if restricted_dict:
+                    lookup = restricted_dict
+                else:
+                    lookup = hash_table
+                ##
+                if word in lookup and word in hash_table:
                     index = hash_table[word]
+                    word_count_lab += 1
                 else:
                     index = 0
                 word_mtx.append(self.language_model[index])
@@ -103,11 +115,13 @@ class DocumentSpace:
             try:
                 pooled_vector = np.amax(np.asarray(word_mtx), axis = 0)
             except ValueError: #no words
-                pooled_vector = [0] * 500
+                pooled_vector = self.language_model[0] #unk
 
             #except TypeError:
             #    pooled_vector = np.zeros(shape = 500)
             pooled_vectors.append(pooled_vector)
+            if counting:
+                self.doc_lab.add_doc(_id, word_count_lab)
             if not parsed % 10000:
                 print("--->{}/{}".format(parsed, n_abstracts), end = "\r")
             parsed += 1
@@ -126,7 +140,7 @@ class DocumentSpace:
 
 
 #if __name__ == "__main__":
-def main(restrict_k, restrict_random = False):
+def main(restrict_k, save_id, restrict_random = False):
     parser = argparse.ArgumentParser(description="Classify papers.")
     parser.add_argument("--K", type=int, required=True, help="Number of nearest neighbours to consider")
     parser.add_argument("--model_path", help="Path to a folder containing everything related to the model, namely "
@@ -193,8 +207,11 @@ def main(restrict_k, restrict_random = False):
         #for shuffling only
         #Space.shuffle(restricted_dict)
         ####################
-        Space.train_vectors = Space.get_abs_vectors(train, restricted_dict = restricted_dict)
-        Space.test_vectors = Space.get_abs_vectors(test, restricted_dict = restricted_dict)
+        Space.train_vectors = Space.get_abs_vectors(train, restricted_dict = restricted_dict, counting = True)
+        Space.doc_lab.save("training_{}k_{}id".format(restrict_k, save_id))
+        Space.doc_lab.reset()
+        Space.test_vectors = Space.get_abs_vectors(test, restricted_dict = restricted_dict, counting = True)
+        Space.doc_lab.save("testing_{}k_{}id".format(restrict_k, save_id))
         train_data, train_labels = Space.slice(Space.train_vectors)
         test_data, test_labels = Space.slice(Space.test_vectors)
 
