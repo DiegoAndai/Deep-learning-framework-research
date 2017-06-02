@@ -1,8 +1,8 @@
 import classify
 import json
 
-k_to_test = [10, 50, 100, 500, 5000, 10000, False]
-results = {10: [], 50: [], 500: [], 5000: [], 10000: [], False: []}
+k_to_test = [40000, 80000, 125000]
+results = {40000: [], 80000: [], 125000: []}
 
 for k in [100]:
     for i in range(5):

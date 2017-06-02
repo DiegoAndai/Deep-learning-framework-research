@@ -100,11 +100,9 @@ class DocumentSpace:
                 word = words[i]
                 ## for error study:
                 if restricted_dict:
-                    lookup = restricted_dict
-                else:
-                    lookup = hash_table
+                    word = restricted_dict[word]
                 ##
-                if word in lookup and word in hash_table:
+                if word in hash_table:
                     index = hash_table[word]
                     word_count_lab += 1
                 else:
@@ -186,20 +184,34 @@ def main(restrict_k, save_id, restrict_random = False):
 
         #for error study#
         with open("Word_proba/proba_ratio_results_denis_method.json", "r") as restricted_json:
-            restricted_dict = json.load(restricted_json)
+            whole_dict = json.load(restricted_json)
         if restrict_k:
             if restrict_random:
-                choosen_list = []
+                restricted_dict_aux = []
                 for _ in range(restrict_k * 2):
-                    choosen = choice(restricted_dict)
-                    while choosen in choosen_list:
-                        choosen = choice(restricted_dict)
-                    choosen_list.append(choosen)
-                restricted_dict = choosen_list
+                    choosen = choice(whole_dict)
+                    while choosen in restricted_dict_aux:
+                        choosen = choice(whole_dict)
+                    restricted_dict_aux.append(choosen)
             else:
-                restricted_dict = restricted_dict[:restrict_k] + restricted_dict[-restrict_k:]
-        restricted_dict = [word_info[0] for word_info in restricted_dict]
-        print(len(restricted_dict))
+                restricted_dict_aux = whole_dict[:restrict_k] + whole_dict[-restrict_k:]
+        else:
+            restricted_dict_aux = whole_dict
+        restricted_dict = {}
+        total = len(whole_dict)
+        count = 0
+        known = 0
+        for word_wrap in whole_dict:
+            word = word_wrap[0]
+            if word in restricted_dict_aux:
+                restricted_dict[word] = word
+                known += 1
+            else:
+                restricted_dict[word] = "UNK"
+            count += 1
+            print("Creating resticted dict: {:.2f}%".format(100*count/total), end = "\r")
+        print()
+        print("Finished, known words: ",known)
 
         #################
 
