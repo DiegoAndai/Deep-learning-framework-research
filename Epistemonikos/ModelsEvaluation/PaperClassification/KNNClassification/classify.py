@@ -185,6 +185,7 @@ def main(restrict_k, save_id, restrict_random = False):
         #for error study#
         with open("Word_proba/proba_ratio_results_denis_method.json", "r") as restricted_json:
             whole_dict = json.load(restricted_json)
+        whole_dict = [word_wrap[0] for word_wrap in whole_dict]
         if restrict_k:
             if restrict_random:
                 restricted_dict_aux = []
@@ -201,8 +202,7 @@ def main(restrict_k, save_id, restrict_random = False):
         total = len(whole_dict)
         count = 0
         known = 0
-        for word_wrap in whole_dict:
-            word = word_wrap[0]
+        for word in whole_dict:
             if word in restricted_dict_aux:
                 restricted_dict[word] = word
                 known += 1
