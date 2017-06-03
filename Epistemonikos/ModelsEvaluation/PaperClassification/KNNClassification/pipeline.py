@@ -4,7 +4,7 @@ import json
 k_to_test = [40000, 80000, 125000]
 results = {40000: [], 80000: [], 125000: []}
 
-for k in [100]:
+for k in k_to_test:
     for i in range(5):
         acc, conf, restricted_dict = classify.main(k, i, restrict_random = True)
         conf_list = [list(conf[0]), list(conf[1])]
