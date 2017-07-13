@@ -243,7 +243,7 @@ class Word2Vec(object):
         with open(os.path.join(opts.save_path, "vocab.txt"), "w") as f:
             for i in xrange(opts.vocab_size):
                 vocab_word = tf.compat.as_text(opts.vocab_words[i]).encode("utf-8")
-                f.write("%s %d\n" % (str(vocab_word).strip("b'"),
+                f.write("%s %d\n" % (str(vocab_word),
                                      opts.vocab_counts[i]))
 
     def build_eval_graph(self):
@@ -425,10 +425,10 @@ def main(_):
     with tf.Graph().as_default(), tf.Session() as session:
         with tf.device("/cpu:0"):
             model = Word2Vec(opts, session)
-            model.read_analogies()  # Read analogy questions
+            #model.read_analogies()  # Read analogy questions
         for _ in xrange(opts.epochs_to_train):
             model.train()  # Process one epoch
-            model.eval()  # Eval analogies.
+            #model.eval()  # Eval analogies.
         # Perform a final save.
         # model.saver.save(session, os.path.join(opts.save_path, "model.ckpt"),
         #                 global_step=model.global_step)

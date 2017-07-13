@@ -177,7 +177,7 @@ def main(restrict_k, save_id, restrict_random = False):
                 open(join_path(path_to_papers, "test_papers")) as test_set:
 
             model = pickle.load(embeddings)
-            model_order = [line.split()[0].strip("b'") for line in vocab]
+            model_order = [line.split()[0] for line in vocab]
 
             train = json.load(train_set)
             test = json.load(test_set)
